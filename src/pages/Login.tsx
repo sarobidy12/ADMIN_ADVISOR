@@ -109,6 +109,7 @@ const LoginPage: React.FC = () => {
           }
   
         })
+        
 
         enqueueSnackbar('Succès de la connexion', { variant: 'success' });
 
