@@ -1,6 +1,8 @@
 {
   "short_name": "Advisor back office",
   "name": "Advisor back offic",
+  "description": "Shows random fox pictures. Hey, at least it isn't cats.",
+  "display": "fullscreen",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +20,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
+  "start_url": "https://61b458088d16ffaceea992ae--gallant-edison-56701d.netlify.app/",
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }

@@ -32,19 +32,19 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function(payload) {
+// messaging.onBackgroundMessage(function(payload) {
 
-    console.log("Received background message ", payload);
+//     console.log("Received background message ", payload);
 
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
-        body: payload.notification.body,
-        icon: "/logo192.png",
-    };
+//     const notificationTitle = payload.notification.title;
+//     const notificationOptions = {
+//         body: payload.notification.body,
+//         icon: "/logo192.png",
+//     };
 
-    //     // eslint-disable-next-line no-restricted-globals
-    return self.registration.showNotification(
-        notificationTitle,
-        notificationOptions
-    );
-});
+//     //     // eslint-disable-next-line no-restricted-globals
+//     return self.registration.showNotification(
+//         notificationTitle,
+//         notificationOptions
+//     );
+// });
