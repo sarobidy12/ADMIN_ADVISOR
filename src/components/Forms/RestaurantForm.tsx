@@ -26,7 +26,9 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useCallback, useEffect, useState } from 'react';
 import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
 import Category from '../../models/Category.model';
+// import FoodType from '../../models/FoodType.model';
 import { getCategories } from '../../services/categories';
+// import { getFoodTypes } from '../../services/foodTypes';
 import IOSSwitch from '../Common/IOSSwitch';
 import { DropzoneArea } from 'material-ui-dropzone';
 import {
@@ -312,7 +314,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     errors,
     setLivraison,
     phoneNumberChange,
-    addnewLivraison
   } = useForm<RestaurantFormType>(
     {
       ...initialValues,
@@ -387,15 +388,12 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   const theme = useTheme();
 
   useEffect(() => {
-
     setLoadingCategories(true);
-
     getCategories()
       .then((data) => setCategoryOptions(data))
       .finally(() => setLoadingCategories(false));
 
     setLoadingUsers(true);
-
     getUsers({ role: 'ROLE_RESTAURANT_ADMIN', alreadyRestaurantAdmin: false })
       .then((data) => {
         setUserOptions(data)
@@ -406,7 +404,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       .then((data: any) => {
         setExistAdmin(data._doc);
       })
-      
   }, [values.admin]);
 
   useEffect(() => {
@@ -417,9 +414,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       });
     }
 
-    addnewLivraison(initialValues.livraison);
+    // addnewLivraison(initialValues.livraison);
 
-  }, [enqueueSnackbar, errors, addnewLivraison, initialValues]);
+  }, [enqueueSnackbar, errors]);
 
   const onChangeAddress = async (data: any) => {
     const results = await geocodeByAddress(data.description);
@@ -832,19 +829,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
         <Grid item xs={12}>
 
-          {/* <TextField
-            type="tel"
-            name="phoneNumber"
-            placeholder="Mobile"
-            variant="outlined"
-            fullWidth
-            defaultValue={initialValues.phoneNumber}
-            error={!!errors.phoneNumber}
-            helperText={errors.phoneNumber}
-            onBlur={handleInputBlur}
-            required
-          /> */}
-
           <div
             style={{
               width: '100%',
@@ -879,19 +863,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               }}
             />
           </div>
-          {/*           
-          <TextField
-            type="tel"
-            name="fixedLinePhoneNumber"
-            placeholder="Téléphone fixe"
-            variant="outlined"
-            fullWidth
-            defaultValue={initialValues.fixedLinePhoneNumber}
-            error={!!errors.fixedLinePhoneNumber}
-            helperText={errors.fixedLinePhoneNumber}
-            onBlur={handleInputBlur}
-            required
-          /> */}
+
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom>
@@ -943,39 +915,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             )}
           />
         </Grid>
-        {/* <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            Types de plats
-          </Typography>
-          <Autocomplete
-            loadingText="Chargement"
-            noOptionsText="Aucun type disponible"
-            multiple
-            disableCloseOnSelect
-            loading={loadingTypes}
-            filterSelectedOptions
-            options={typeOptions}
-            value={typeOptions.filter(
-              ({ _id }) => !!values.foodTypes.find((d) => _id === d),
-            )}
-            onChange={(_, v) => {
-              setValues((old) => {
-                old.foodTypes = v.map(({ _id }) => _id);
-                return { ...old };
-              });
-            }}
-            getOptionLabel={(option) => option.name.fr}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder="Types de plats"
-                error={!!errors.foodTypes}
-                helperText={errors.foodTypes}
-              />
-            )}
-          />
-        </Grid> */}
+
         <Grid item xs={12}>
           <Box height={theme.spacing(6)} />
           <Typography variant="h4" style={{ fontWeight: 'bold' }} gutterBottom>

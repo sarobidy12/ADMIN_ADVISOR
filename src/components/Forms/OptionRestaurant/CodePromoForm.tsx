@@ -184,8 +184,8 @@ const ComponentForm: FC<Iprops> = (props: any) => {
                 </Grid>
 
                 <FormDialog
-                    title={`Ajouter un code `}
-                    open={openModal}
+                    title="Ajouter un code"
+                    open={!!openModal}
                     fullScreen={false}
                     onClose={() => {
                         setOpenModal(false)
