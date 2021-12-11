@@ -80,6 +80,10 @@ const LoginPage: React.FC = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  window.addEventListener('appinstalled', (evt) => {
+    console.log("appinstalled")
+  })
+
   const history = useHistory();
   const location = useLocation();
 
@@ -104,12 +108,13 @@ const LoginPage: React.FC = () => {
 
         window.addEventListener('appinstalled', (evt) => {
 
+
           if (!user?.roles.includes("ROLE_ADMIN")) {
             return enqueueSnackbar('Vous n\'avez pas d\'accès', { variant: 'error' });
           }
-  
+
         })
-        
+
 
         enqueueSnackbar('Succès de la connexion', { variant: 'success' });
 
