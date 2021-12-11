@@ -94,7 +94,6 @@ export default class DateRangeFilter extends React.Component<
                       );
                     }}
                     editableDateInputs
-                    showSelectionPreview={true}
                     moveRangeOnFirstSelection={false}
                     months={2}
                     inputRanges={[]}
