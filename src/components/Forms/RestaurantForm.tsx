@@ -22,17 +22,11 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
 import Category from '../../models/Category.model';
-// import FoodType from '../../models/FoodType.model';
 import { getCategories } from '../../services/categories';
-// import { getFoodTypes } from '../../services/foodTypes';
 import IOSSwitch from '../Common/IOSSwitch';
 import { DropzoneArea } from 'material-ui-dropzone';
 import {
@@ -393,12 +387,15 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   const theme = useTheme();
 
   useEffect(() => {
+
     setLoadingCategories(true);
+
     getCategories()
       .then((data) => setCategoryOptions(data))
       .finally(() => setLoadingCategories(false));
 
     setLoadingUsers(true);
+
     getUsers({ role: 'ROLE_RESTAURANT_ADMIN', alreadyRestaurantAdmin: false })
       .then((data) => {
         setUserOptions(data)
@@ -409,6 +406,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       .then((data: any) => {
         setExistAdmin(data._doc);
       })
+      
   }, [values.admin]);
 
   useEffect(() => {
@@ -421,7 +419,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
     addnewLivraison(initialValues.livraison);
 
-  }, [enqueueSnackbar, errors]);
+  }, [enqueueSnackbar, errors, addnewLivraison, initialValues]);
 
   const onChangeAddress = async (data: any) => {
     const results = await geocodeByAddress(data.description);
@@ -789,7 +787,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           />
         </Grid>
         {isAdmin && (
-          
+
           <Grid item xs={12}>
 
             <Typography variant="h5" gutterBottom>
@@ -829,7 +827,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             />
 
           </Grid>
-        
+
         )}
 
         <Grid item xs={12}>
@@ -1389,7 +1387,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
  */}
 
         {(isDelivery && !deliveryFixed) && (<>
-        
+
           <Grid item xs={12}>
             <Typography variant="h4" style={{ fontWeight: 'bold' }} gutterBottom>
               Paramètres du livraison

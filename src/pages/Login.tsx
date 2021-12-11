@@ -105,7 +105,7 @@ const LoginPage: React.FC = () => {
         window.addEventListener('appinstalled', (evt) => {
 
           if (!user?.roles.includes("ROLE_ADMIN")) {
-            return enqueueSnackbar('Vous n\avez pas d\'accès', { variant: 'error' });
+            return enqueueSnackbar('Vous n\'avez pas d\'accès', { variant: 'error' });
           }
   
         })

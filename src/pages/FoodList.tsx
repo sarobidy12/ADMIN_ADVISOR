@@ -1,5 +1,5 @@
 import { Avatar, Chip, makeStyles, Paper, TableCell } from '@material-ui/core';
-import { Fastfood as FastfoodIcon, Check, Close } from '@material-ui/icons';
+import { Fastfood as FastfoodIcon } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PageHeader from '../components/Admin/PageHeader';

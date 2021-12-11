@@ -16,7 +16,6 @@ import FormDialog from '../components/Common/FormDialog';
 import PlatRecommanderForm, {
   PlatRecommanderFormType,
 } from '../components/Forms/PlatRecommanderForm';
-import EditButton from '../components/Common/EditButton';
 import DeleteButton from '../components/Common/DeleteButton';
 import useDelete from '../hooks/useDelete';
 import TableContainer, { HeadCell } from '../components/Table/TableContainer';
@@ -53,7 +52,6 @@ const PlatRecommanderListPage: React.FC = () => {
   const [saving, setSaving] = useState<boolean>(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
-  const [activeOndragDrop, setActiveOndragDrop] = useState<boolean>(false);
   const modif = useRef<PlatRecommanderFormType>();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -163,13 +161,6 @@ const PlatRecommanderListPage: React.FC = () => {
     fetch();
   }, [fetch]);
 
-  const setArraySelected = (data: any) => {
-    if (data.restaurant !== "") {
-      setActiveOndragDrop(true);
-    }
-  }
-
-
   return (
     <>
       <PageHeader title="Plats populaire" subTitle="Liste des plats populaire" icon={ListIcon} />
@@ -179,7 +170,6 @@ const PlatRecommanderListPage: React.FC = () => {
           records={records}
           selected={selected}
           onSelectedChange={setSelected}
-          setArraySelected={setArraySelected}
           onDeleteClick={() => {
             setUpdating(true);
             handleDeleteSelection().finally(() => setUpdating(false));

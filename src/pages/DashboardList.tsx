@@ -1,27 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
+import  { useCallback, useEffect, useState } from 'react';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import PageHeader from '../components/Admin/PageHeader';
 import { useSnackbar } from 'notistack';
 import EventEmitter from '../services/EventEmitter';
 import MediaCard from '../components/Common/Card'
 import { getDashboard } from '../services/dashboard';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}));
+ 
 
 const DashboardListPage = () => {
-    const classes = useStyles();
 
-    const [loading, setLoading] = useState<boolean>(false);
     const [dashboard, setDashboard] = useState<any>([]);
     const { enqueueSnackbar } = useSnackbar();
 
     const fetch = useCallback(() => {
-        setLoading(true);
         setDashboard([])
         getDashboard()
             .then((data) => {
@@ -33,7 +24,6 @@ const DashboardListPage = () => {
                 });
             })
             .finally(() => {
-                setLoading(false);
             });
     }, [enqueueSnackbar]);
 
@@ -81,28 +71,7 @@ const DashboardListPage = () => {
                 BestRestoYearSomme={dashboard.best_resto_year[1]?.price}
                 BestRestoYearCommande={dashboard.best_resto_year[0]?.nombre_commande}
             />}
-            {/* <h1>Nombre de commande</h1> 
-          <h2>Aujourd'hui: <span>{dashboard.dashboard_day}</span></h2> 
-          <h2>Cette Semaine: <span>{dashboard.dashboard_week}</span></h2> 
-          <h2>Ce mois: <span>{dashboard.dashboard_month}</span></h2> 
-          <h2>Cette annee: <span>{dashboard.dashboard_year}</span></h2> 
-          <h1>Chiffre d'affaire</h1>  
-          <h2>Aujourd'hui: <span>{dashboard.chiffre_affaire_day}</span></h2> 
-          <h2>Ce mois: <span>{dashboard.chiffre_affaire_month}</span></h2> 
-          <h2>Cette annee: <span>{dashboard.chiffre_affaire_year}</span></h2> 
-          <h1>Meilleur Restaurant: </h1>
-          <h2>Aujourd'hui: <span>{dashboard.best_resto_day[0]?.resto}</span> </h2>
-          <h2>somme total : <span>{dashboard.best_resto_day[1]?.price}</span></h2>
-          <h2>Nombre Total commande: <span>{dashboard.best_resto_day[0]?.nombre_commande}</span></h2> 
-          <h2>Cette semaine: <span>{dashboard.best_resto_week[0]?.resto}</span> </h2>
-          <h2>somme total : <span>{dashboard.best_resto_week.length > 1 ? dashboard.best_resto_week[2]?.price : dashboard.best_resto_week[1]?.price}</span></h2>
-          <h2>Nombre Total commande: <span>{dashboard.best_resto_week[0]?.nombre_commande}</span></h2> 
-          <h2>Cet mois: <span>{dashboard.best_resto_month[0]?.resto}</span> </h2>
-          <h2>somme total : <span>{dashboard.best_resto_month[1]?.price}</span></h2>
-          <h2>Nombre Total commande: <span>{dashboard.best_resto_month[0]?.nombre_commande}</span></h2> 
-          <h2>Cette annee: <span>{dashboard.best_resto_month[0]?.resto}</span> </h2>
-          <h2>somme total : <span>{dashboard.best_resto_month[1]?.price}</span></h2>
-          <h2>Nombre Total commande: <span>{dashboard.best_resto_month[0]?.nombre_commande}</span></h2>  */}
+
         </>
     )
 }

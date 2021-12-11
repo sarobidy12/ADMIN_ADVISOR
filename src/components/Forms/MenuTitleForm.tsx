@@ -5,8 +5,6 @@ import {
     CircularProgress,
     Grid,
     makeStyles,
-    MenuItem,
-    Select,
     TextField,
     Typography,
     useTheme,
@@ -48,7 +46,6 @@ const MenuTitleForm: React.FC<MenuTitleFormProps> = ({
     onSave,
     onCancel,
     saving,
-    isUpdate
 }) => {
     const classes = useStyles();
 
@@ -56,22 +53,19 @@ const MenuTitleForm: React.FC<MenuTitleFormProps> = ({
     const { enqueueSnackbar } = useSnackbar();
     const { isRestaurantAdmin, restaurant } = useAuth();
 
-    const validation = useCallback<FormValidationHandler<MenuTitleFormType>>(
-        (data) => {
+    const validation = useCallback<FormValidationHandler<MenuTitleFormType>>((data) => {
+
             const errors: FormError<MenuTitleFormType> = {};
 
             if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
             if (!data.restaurant.length) errors.restaurant = 'Ce champ ne doit pas être vide';
 
             return errors;
-        },
-        [],
-    );
+
+        },[]);
 
     const [loadingRestaurants, setLoadingRestaurants] = useState<boolean>(false);
     const [restaurantOptions, setRestaurantOptions] = useState<Restaurant[]>([]);
-    const [selectedResto, setSelectedResto] = useState<Restaurant | null>(null);
-    const [disableAll, setDisableAll] = useState(true);
 
     const {
         values,
@@ -79,30 +73,11 @@ const MenuTitleForm: React.FC<MenuTitleFormProps> = ({
         setValues,
         errors,
         validate,
-        handleSelectChange
     } = useForm<MenuTitleFormType>(initialValues, false, validation);
 
-    const handleSelectResto = useCallback(
-        (resto: Restaurant) => {
-            if (resto) {
-                setSelectedResto(resto);
-                setDisableAll(false);
-            }
-        }, []
-    )
-
+ 
     useEffect(() => {
-        // if (isRestaurantAdmin) {
-        //   setValues((old) => {
-        //     old.restaurant = restaurant || undefined;
-        //     return { ...old };
-        //   });
-        // }
-        // getRestaurants()
-        //     .then(data => setRestoOptions(data || []))
-        //     .catch(e => {
-        //         enqueueSnackbar('Erreur lors du chargement des restos', {variant: 'error'})
-        //     })
+     
         setLoadingRestaurants(true);
         getRestaurants()
             .then((data) => setRestaurantOptions(data))
@@ -156,12 +131,10 @@ const MenuTitleForm: React.FC<MenuTitleFormProps> = ({
                         onChange={(_, v) => {
                             if (v) {
                                 setValues((old) => ({ ...old, restaurant: v._id }));
-                                handleSelectResto(v)
+                            
                             }
                             else {
                                 setValues((old) => ({ ...old, restaurant: '' }));
-                                setSelectedResto(null)
-                                setDisableAll(true)
                             }
                         }}
                         renderInput={(params) => (

@@ -16,7 +16,6 @@ import FormDialog from '../components/Common/FormDialog';
 import PlatRecommanderForm, {
   PlatRecommanderFormType,
 } from '../components/Forms/PlatRecommanderForm';
-import EditButton from '../components/Common/EditButton';
 import DeleteButton from '../components/Common/DeleteButton';
 import useDelete from '../hooks/useDelete';
 import TableContainer, { HeadCell } from '../components/Table/TableContainer';

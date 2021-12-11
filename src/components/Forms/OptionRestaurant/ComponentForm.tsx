@@ -12,15 +12,13 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import IOSSwitch from '../../Common/IOSSwitch';
-import Input from '../../Common/inputChip';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import {
     AddCircle as AddCircleIcon,
-    ExpandMore as ExpandMoreIcon,
-    Close as Close,
+    Close as CloseIcon,
 } from '@material-ui/icons';
 
 
@@ -35,7 +33,7 @@ interface Iprops {
 
 const ComponentForm: FC<Iprops> = (props: any) => {
 
-    const { isView, setValue, title, values, type, code } = props as Iprops;
+    const { isView, setValue, title, values, type } = props as Iprops;
 
     const [open, setOpen] = useState(false);
 
@@ -272,7 +270,7 @@ const ComponentForm: FC<Iprops> = (props: any) => {
                                                 e.stopPropagation();
                                                 removeList(item.id)
                                             }}>
-                                                <Close />
+                                                <CloseIcon />
                                             </IconButton>
                                         </Grid>
 

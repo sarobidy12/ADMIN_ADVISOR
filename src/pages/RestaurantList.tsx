@@ -1,4 +1,4 @@
-import { Avatar, Button, Chip, makeStyles, Paper, TableCell } from '@material-ui/core';
+import { Avatar, Chip, makeStyles, Paper, TableCell } from '@material-ui/core';
 import {
   Restaurant as RestaurantIcon
 } from '@material-ui/icons';
@@ -207,7 +207,6 @@ const RestaurantListPage: React.FC = () => {
       openingTimes,
       paiementLivraison,
       priority,
-      imageURL,
       paiementCB,
       cbDirectToAdvisor,
       customerStripeKey,
@@ -365,35 +364,6 @@ const RestaurantListPage: React.FC = () => {
             ],
             selectOnClick: false,
             onRowClick: (_, restaurant) => showModification(restaurant),
-            // onDragEnd: (source, destination) =>
-            //   setRecords((records) => {
-            //     const p1 = source.priority,
-            //       p2 = destination.priority;
-
-            //     if (p1 === p2) return records;
-
-            //     if (p1 > p2) {
-            //       // Queueing up
-            //       records
-            //         .filter(({ priority }) => priority >= p2 && priority < p1)
-            //         .forEach((v) => {
-            //           v.priority++;
-            //           updateRestaurant(v._id, { priority: v.priority });
-            //         });
-            //     } else {
-            //       // Queueing down
-            //       records
-            //         .filter(({ priority }) => priority > p1 && priority <= p2)
-            //         .forEach((v) => {
-            //           v.priority--;
-            //           updateRestaurant(v._id, { priority: v.priority });
-            //         });
-            //     }
-            //     source.priority = p2;
-            //     updateRestaurant(source._id, { priority: p2 });
-
-            //     return [...records];
-            //   }),
             customComparators: {
               admin: (a, b) =>
                 `${b.admin.name.last} ${b.admin.name.first}`.localeCompare(

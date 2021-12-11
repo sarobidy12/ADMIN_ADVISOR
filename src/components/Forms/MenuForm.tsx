@@ -139,7 +139,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
 
   }, [values, setDisableAll, setRestaurantOptions, setLoadingRestaurants]);
 
-  const filterArray = (a: any[], b: any[]) => {
+  const filterArray = useCallback((a: any[], b: any[]) => {
 
     const arrayHasFilter: any[] = [];
     const idExist: any[] = [];
@@ -147,7 +147,6 @@ const MenuForm: React.FC<MenuFormProps> = ({
     for (let i = 0; i < b.length; i++) {
 
       if (b[i].length > 0) {
-
 
         for (let t = 0; t < b[i].length; t++) {
 
@@ -172,8 +171,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
     });
 
     setFoodOptions(mapTest);
-
-  }
+  }, [setFoodOptions])
 
   useEffect(() => {
 
@@ -194,7 +192,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
-  }, [values, selectedResto, filterArray, isRestaurantAdmin,restaurant]);
+  }, [values, selectedResto, filterArray, isRestaurantAdmin, restaurant]);
 
   const listPrice = (a: any[], b: any[]) => {
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles, Paper, TableCell, Button, Tooltip } from '@material-ui/core';
 import {
   Check,
@@ -8,7 +8,6 @@ import {
 } from '@material-ui/icons';
 import PageHeader from '../components/Admin/PageHeader';
 import Command from '../models/Command.model';
-import { } from '../services/commands';
 import { useSnackbar } from 'notistack';
 import EventEmitter from '../services/EventEmitter';
 import useDeleteSelection from '../hooks/useDeleteSelection';
@@ -23,7 +22,6 @@ import ShowButton from '../components/Common/ShowButton';
 import CommandDetailsDialog from '../components/Common/CommandDetailsDialog';
 import TableContainer, { HeadCell } from '../components/Table/TableContainer';
 import { Loading } from '../components/Common';
-import { estimateCommandPrice } from '../services/price';
 import { useDispatch } from 'react-redux';
 import { useSelector } from '../utils/redux';
 import { getAllCommands } from '../actions/commandes.action';
@@ -32,8 +30,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import SendNotification from '../services/SendNotification';
-import { getCommandCount } from '../services/commands';
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,7 +69,9 @@ const headCells: HeadCell<Command>[] = [
 ];
 
 const TakeawayCommandList: React.FC = () => {
+
   const classes = useStyles();
+
   const { isRestaurantAdmin, restaurant } = useAuth();
 
   const dispatch = useDispatch();
@@ -82,8 +80,6 @@ const TakeawayCommandList: React.FC = () => {
     data: commands.takeaway,
     isLoaded: commands.isLoaded
   }));
-
-  const interval = useRef<number>();
 
   const [records, setRecords] = useState<Command[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -147,28 +143,7 @@ const TakeawayCommandList: React.FC = () => {
     }
   }, [fetch, isLoaded]);
 
-  // useEffect(() => {
-
-  //   interval.current = window.setInterval(fetch, 15000);
-
-  //   getCommandCount('takeaway', {
-  //     restaurant: isRestaurantAdmin ? restaurant?._id || '' : undefined,
-  //     validated: false,
-  //   }).then((data) => {
-
-  //     const nbr = sessionStorage.getItem("takeaway") || 0;
-
-  //     if (nbr !== data) {
-
-  //       fetch();
-
-  //     }
-
-  //   });
-
-  //   return () => window.clearInterval(interval.current);
-
-  // }, [fetch]);
+ 
 
   const toValidateAll = () => {
 
@@ -238,6 +213,7 @@ const TakeawayCommandList: React.FC = () => {
           variant: 'error',
         });
       });
+
   }
 
   const EmporteAll = () => {

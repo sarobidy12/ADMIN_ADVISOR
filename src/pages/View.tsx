@@ -12,7 +12,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PageHeader from '../components/Admin/PageHeader';
 import IOSSwitch from '../components/Common/IOSSwitch';
 import View from '../models/View.model';
-import { useAuth } from '../providers/authentication';
 import EventEmitter from '../services/EventEmitter';
 import { getView, updateView } from '../services/View';
 
@@ -27,8 +26,6 @@ const ViewList: React.FC = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [view, setView] = useState<View>()
-
-    const { user, isAdmin } = useAuth();
 
     const { enqueueSnackbar } = useSnackbar();
 

@@ -16,7 +16,6 @@ import FormDialog from '../components/Common/FormDialog';
 import RestoRecommanderForm, {
   RestoRecommandedFormType,
 } from '../components/Forms/RestoRecommanderForm';
-import EditButton from '../components/Common/EditButton';
 import DeleteButton from '../components/Common/DeleteButton';
 import useDelete from '../hooks/useDelete';
 import TableContainer, { HeadCell } from '../components/Table/TableContainer';
@@ -38,6 +37,7 @@ const headCells: HeadCell<RestoRecommander>[] = [
 ];
 
 const RestoRecommanderListPage: React.FC = () => {
+
   const classes = useStyles();
 
   const { isAdmin, isRestaurantAdmin, restaurant } = useAuth();
@@ -48,6 +48,7 @@ const RestoRecommanderListPage: React.FC = () => {
   const [saving, setSaving] = useState<boolean>(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
+  
   const modif = useRef<RestoRecommandedFormType>();
 
   const { enqueueSnackbar } = useSnackbar();

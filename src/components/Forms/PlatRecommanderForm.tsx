@@ -5,8 +5,6 @@ import {
   CircularProgress,
   Grid,
   makeStyles,
-  MenuItem,
-  Select,
   Typography,
   useTheme,
   TextField
@@ -53,9 +51,7 @@ const PlatRecommanderForm: React.FC<PlatRecommandedFormProps> = ({
 }) => {
   const [foods, setFoods] = useState<Food[]>();
 
-  const [restaurantOptions, setRestaurantOptions] = useState<Restaurant[]>([]);
   const [loadingRestaurants, setLoadingRestaurants] = useState<boolean>(false);
-  const [disableAll, setDisableAll] = useState(true);
 
   const classes = useStyles();
 
@@ -80,25 +76,25 @@ const PlatRecommanderForm: React.FC<PlatRecommandedFormProps> = ({
     values,
     setValues,
     validate,
-    handleSelectChange
   } = useForm<PlatRecommanderFormType>(initialValues, false, validation);
 
   useEffect(() => {
-    setLoadingRestaurants(true)
-    getFoods().then((data) => {
-      setLoadingRestaurants(false)
-      setFoods(data)
-    })
+
+    setLoadingRestaurants(true);
+
+    getFoods()
+      .then((data) => {
+        setLoadingRestaurants(false);
+        setFoods(data);
+      })
 
     getRestaurants()
       .then(data => setRestoOptions(data || []))
       .catch(e => {
-        enqueueSnackbar('Erreur lors du chargement des restos', { variant: 'error' })
+        enqueueSnackbar('Erreur lors du chargement des restos', { variant: 'error' });
       })
-  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
 
-
-
+  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues]);
 
   return (
     <form

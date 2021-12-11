@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles, Paper, TableCell, Button, Tooltip } from '@material-ui/core';
 import {
   Check,
@@ -30,7 +30,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import DirectionsBikeIcon from '@material-ui/icons/DirectionsBike';
 import SendNotification from '../services/SendNotification';
 import { getAllCommands } from '../actions/commandes.action';
-import { getCommandCount } from '../services/commands';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,7 +74,9 @@ const headCells: HeadCell<Command>[] = [
 ];
 
 const DeliveryCommandList: React.FC = () => {
+
   const classes = useStyles();
+
   const { isRestaurantAdmin, restaurant } = useAuth();
 
   const dispatch = useDispatch();
@@ -83,8 +85,6 @@ const DeliveryCommandList: React.FC = () => {
     data: commands.delivery,
     isLoaded: commands.isLoaded
   }));
-
-  const interval = useRef<number>();
 
   const [records, setRecords] = useState<Command[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -194,29 +194,6 @@ const DeliveryCommandList: React.FC = () => {
       });
 
   }
-
-  // useEffect(() => {
-
-  //   interval.current = window.setInterval(fetch, 15000);
-
-  //   getCommandCount('delivery', {
-  //     restaurant: isRestaurantAdmin ? restaurant?._id || '' : undefined,
-  //     validated: false,
-  //   }).then((data) => {
-
-  //     const nbr = sessionStorage.getItem("delivery") || 0;
-
-  //     if (nbr !== data) {
-
-  //       fetch();
-
-  //     }
-
-  //   });
-
-  //   return () => window.clearInterval(interval.current);
-
-  // }, [fetch]);
 
   const Emporter = (_id: any) => {
 
@@ -365,7 +342,6 @@ const DeliveryCommandList: React.FC = () => {
               revoked,
               payed: { status: payed },
               optionLivraison,
-              priceLivraison,
               hasDelivery
             } = command;
 

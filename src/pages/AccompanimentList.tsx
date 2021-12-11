@@ -257,7 +257,7 @@ const AccompanimentListPage: React.FC = () => {
           }}
         >
           {(accompaniment) => {
-            const { _id, name, isObligatory, imageURL, restaurant, price } = accompaniment;
+            const { _id, name, imageURL, restaurant, price } = accompaniment;
 
             return (
               <React.Fragment key={_id}>

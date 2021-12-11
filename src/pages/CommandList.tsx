@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles, Paper, TableCell, Button, Tooltip } from '@material-ui/core';
 import {
   Check,
@@ -30,7 +30,6 @@ import { revokeCommand, validateCommand } from '../services/commands';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import SendNotification from '../services/SendNotification';
-import { getCommandCount } from '../services/commands';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +61,6 @@ const headCells: HeadCell<Command>[] = [
 ];
 
 const CommandList: React.FC = () => {
-  const interval = useRef<number>();
 
   const classes = useStyles();
   const { isRestaurantAdmin, restaurant } = useAuth();
@@ -78,7 +76,6 @@ const CommandList: React.FC = () => {
   const [selectedCommand, setSelectedCommand] = useState<Command>();
   const [selected, setSelected] = useState<string[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
-  const [count, setCount] = useState<any>(0);
 
   const { enqueueSnackbar } = useSnackbar();
   const { handleDeleteSelection } = useDeleteSelection(
@@ -100,7 +97,7 @@ const CommandList: React.FC = () => {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const getCommande = await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || '' : undefined));
+      await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || '' : undefined));
     } catch (e) {
       enqueueSnackbar('Erreur lors du chargement...', {
         variant: 'error',
@@ -132,11 +129,6 @@ const CommandList: React.FC = () => {
   }, [fetch]);
 
   useEffect(() => {
-
-    if (sessionStorage.getItem("count") !== null) {
-      setCount(`${sessionStorage.getItem("count") || ""}`)
-    }
-
     if (!isLoaded) {
       fetch();
     }
@@ -149,8 +141,8 @@ const CommandList: React.FC = () => {
     toValidate(selected)
       .then((res: any) => {
         SendNotification({
-          title: "Commande commande",
-          body: "Votre Commande a été validé ",
+          title: "Commande validée",
+          body: "Votre commande a été validée ",
           isRedirectAdmin: false,
           to: res.tokenNavigator
         })
@@ -185,25 +177,6 @@ const CommandList: React.FC = () => {
       });
 
   }
-
-  // useEffect(() => {
-
-  //   interval.current = window.setInterval(fetch, 15000);
-
-  //   if (+count !== +(sessionStorage.getItem("count") || 0)) {
-
-  //     fetch();
-
-  //   }
-
-  //   console.log("count", count);
-
-  //   console.log("sessionStorage", +(sessionStorage.getItem("count") || 0));
-
-  //   return () => window.clearInterval(interval.current);
-
-  // });
-
 
   return (
     <>
@@ -293,7 +266,6 @@ const CommandList: React.FC = () => {
               validated,
               revoked,
               createdAt,
-              totalPrice
             } = command;
 
             return (

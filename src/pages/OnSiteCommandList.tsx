@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   makeStyles,
   Paper,
@@ -34,7 +34,7 @@ import { revokeCommand, validateCommand, deleteCommand, toValidate, toRefuseAll 
 import CheckIcon from '@material-ui/icons/Check';
 import SendNotification from '../services/SendNotification';
 import ClearIcon from '@material-ui/icons/Clear';
-import { getCommandCount } from '../services/commands';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +62,6 @@ const headCells: HeadCell<Command>[] = [
 ];
 
 const OnSiteCommandList: React.FC = () => {
-  const interval = useRef<number>();
 
   const classes = useStyles();
   const { isRestaurantAdmin, restaurant } = useAuth();

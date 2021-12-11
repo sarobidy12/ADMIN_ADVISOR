@@ -128,7 +128,7 @@ type Filter<T> = {
     | {
       type: 'PRICE';
       minLabel?: string;
-      maxLabel?: string
+      maxLabel?: string;
     }
   );
 
@@ -241,14 +241,6 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setRestaurantSelected]);
-
-  const autoDate = (id: any, setActiveButtonId: any) => {
-    onFilterValuesChange?.(id as string, {
-      startDate: moment().subtract(6, 'days').toDate(),
-      endDate: new Date(),
-    })
-    setActiveButtonId(2)
-  }
 
   const renderFilters = useCallback(() => {
     const commandTypeOptions = [
@@ -757,7 +749,11 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
     onDeactivateFilter,
     onFilterValuesChange,
     activeButtonId,
-    restoOptions
+    restoOptions,
+    activeType,
+    foodType,
+    loadingRestaurant,
+    restaurantSelected
   ]);
 
   return (

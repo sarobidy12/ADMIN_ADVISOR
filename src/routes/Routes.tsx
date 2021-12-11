@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { CircularProgress, CssBaseline, makeStyles } from '@material-ui/core';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import NavigationDrawer from '../components/Admin/NavigationDrawer';
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 const AdminRoutes: React.FC = () => {
   const classes = useStyles();
 
-  const { restaurant, isRestaurantAdmin } = useAuth();
+  const { isRestaurantAdmin } = useAuth();
   const { loged }: any = useSelector(({ event }: any) => ({ loged: event.loged }));
 
   const [openMobileDrawer, setOpenMobileDrawer] = useState(false);

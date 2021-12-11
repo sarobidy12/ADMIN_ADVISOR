@@ -19,7 +19,6 @@ import PageHeader from '../../components/Admin/PageHeader';
 import AddressInput from '../../components/Common/AddressInput';
 import { getRestaurants } from '../../services/restaurant';
 import { Autocomplete } from '@material-ui/lab';
-import { useSnackbar } from 'notistack';
 import DialogAlert from './Dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,12 +33,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-let map
+let map;
 
 const SimulationLivraison: FC = () => {
 
     const classes = useStyles();
-    const { enqueueSnackbar } = useSnackbar();
 
     const [Destination, setDestination] = useState<any>({});
     const [loading, setLoading] = useState(false);

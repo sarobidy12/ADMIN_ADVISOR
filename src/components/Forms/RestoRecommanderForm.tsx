@@ -5,8 +5,6 @@ import {
   CircularProgress,
   Grid,
   makeStyles,
-  MenuItem,
-  Select,
   Typography,
   useTheme,
   TextField
@@ -47,7 +45,6 @@ const RestoRecommanderForm: React.FC<RestoRecommandedFormProps> = ({
   records,
   onCancel,
   saving,
-  isUpdate
 }) => {
   const classes = useStyles();
 
@@ -73,7 +70,6 @@ const RestoRecommanderForm: React.FC<RestoRecommandedFormProps> = ({
     values,
     setValues,
     validate,
-    handleSelectChange
   } = useForm<RestoRecommandedFormType>(initialValues, false, validation);
 
   useEffect(() => {
@@ -93,7 +89,7 @@ const RestoRecommanderForm: React.FC<RestoRecommandedFormProps> = ({
       .catch(e => {
         enqueueSnackbar('Erreur lors du chargement des restos', { variant: 'error' })
       })
-  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
+  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues, records])
 
   return (
     <form

@@ -27,7 +27,7 @@ interface Iprops {
 
 const ComponentForm: FC<Iprops> = (props: any) => {
 
-    const { isView, setValue, title, values, type, code } = props as Iprops;
+    const { isView, setValue, title, values, type } = props as Iprops;
 
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
@@ -313,7 +313,6 @@ const ComponentForm: FC<Iprops> = (props: any) => {
 
                 </FormDialog>
             </div>
-
 
         )
         }

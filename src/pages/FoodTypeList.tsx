@@ -22,7 +22,6 @@ import useDelete from '../hooks/useDelete';
 import TableContainer, { HeadCell } from '../components/Table/TableContainer';
 import { Loading } from '../components/Common';
 import { useAuth } from '../providers/authentication';
-import { updateRestaurant } from '../services/restaurant';
 
 const useStyles = makeStyles((theme) => ({
   root: {
