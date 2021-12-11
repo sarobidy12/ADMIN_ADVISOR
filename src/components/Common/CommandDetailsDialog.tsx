@@ -852,7 +852,7 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
               <Typography
                 variant="h6"
                 style={{ fontWeight: 300 }}
-              >{`€ ${(+command.remiseDelivery ).toLocaleString(undefined, {
+              >{`€ ${(+command.remiseDelivery).toLocaleString(undefined, {
                 minimumFractionDigits: 1,
               })}`}</Typography>
             </Grid>}
@@ -887,7 +887,7 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
                 variant="h6"
                 style={{ fontWeight: 300 }}
               >
-                Remise
+                Remise sur la totalite
               </Typography>
               <Typography
                 variant="h6"
@@ -896,7 +896,6 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
                 minimumFractionDigits: 1,
               })}`}</Typography>
             </Grid>}
-
 
             <Grid container justify="space-between" alignItems="center">
               <Grid item>

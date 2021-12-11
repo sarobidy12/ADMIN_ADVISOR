@@ -27,6 +27,7 @@ import { useDispatch } from '../utils/redux';
 import { setLoged } from '../actions/event.action';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100vw',
@@ -65,8 +66,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoginPage: React.FC = () => {
+
   const classes = useStyles();
+  
   const dispatch = useDispatch();
+
   const theme = useTheme();
 
   const [username, setUsername] = useState('');
@@ -76,17 +80,12 @@ const LoginPage: React.FC = () => {
   const [formValidation, setFormValidation] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { login, user } = useAuth();
+  const { login } = useAuth();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  // Initialize deferredPrompt for use later to show browser install prompt.
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    console.log("dsdsd")
-  })
   const history = useHistory();
+
   const location = useLocation();
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
@@ -108,16 +107,6 @@ const LoginPage: React.FC = () => {
 
         await login(username, password, rememberMe);
 
-        window.addEventListener('appinstalled', (evt) => {
-
-
-          if (!user?.roles.includes("ROLE_ADMIN")) {
-            return enqueueSnackbar('Vous n\'avez pas d\'accès', { variant: 'error' });
-          }
-
-        })
-
-
         enqueueSnackbar('Succès de la connexion', { variant: 'success' });
 
         await dispatch(setLoged(true));
@@ -128,7 +117,7 @@ const LoginPage: React.FC = () => {
         else history.push('/');
 
       } catch (e) {
-        console.log("eroor---", e)
+
         enqueueSnackbar('Erreur lors de la connexion', { variant: 'error' });
       } finally {
         setLogingIn(false);

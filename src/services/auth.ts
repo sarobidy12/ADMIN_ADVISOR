@@ -2,6 +2,7 @@ import Axios from 'axios';
 import User from '../models/User.model';
 import Api from '../Api';
 import TokenValidity from '../types/TokenValidity';
+import checkIsPwa from 'check-is-pwa';
 
 export type LoginResult = {
   user: User;
@@ -13,6 +14,9 @@ export const login: (
   login: string,
   password: string,
 ) => Promise<LoginResult> = async (login, password) => {
+
+  const isPwa = checkIsPwa();
+
   try {
 
     const { data, status } = await Api.post('/login', {
@@ -22,6 +26,7 @@ export const login: (
     });
 
     if (status === 200) {
+
       const {
         user,
         access_token: accessToken,
@@ -32,7 +37,16 @@ export const login: (
 
       Api.defaults.headers.authorization = `Bearer ${accessToken}`;
 
+      if (isPwa) {
+
+        if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
+          return Promise.reject(data);
+        }
+
+      }
+
       return { user, accessToken, refreshToken };
+
     }
 
     return Promise.reject(data);
