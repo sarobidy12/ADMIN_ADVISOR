@@ -80,8 +80,12 @@ const LoginPage: React.FC = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
- // Initialize deferredPrompt for use later to show browser install prompt.
+  // Initialize deferredPrompt for use later to show browser install prompt.
 
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    console.log("dsdsd")
+  })
   const history = useHistory();
   const location = useLocation();
 
