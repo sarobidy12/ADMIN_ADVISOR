@@ -185,7 +185,7 @@ type TableOptions<T> = {
   onDragEnd?: (source: T, destination: T) => void;
   selectOnClick?: boolean;
   onRowClick?: (event: React.MouseEvent<unknown>, row: T) => void;
-  filters?: Filters<T>;
+  filters?: Filters;
   activeType?: boolean;
   listType?: any[];
 };

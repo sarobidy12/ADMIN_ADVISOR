@@ -95,44 +95,44 @@ export type FilterSwitchOption = {
   value: string;
 };
 
-type Filter<T> = {
-  id: any;
-  label: string;
-  alwaysOn?: boolean;
-} & (
-    | {
-      type: 'STRING' |
-      'DATE' |
-      'NUMBER' |
-      'CATEGORY' |
-      'COMMAND_TYPE' |
-      'RESTAURANT' |
-      'ATTRIBUTES' |
-      'TYPE_PLAT' |
-      'PRICE' |
-      'ALLERGENE'
+// type Filter<T> = {
+//   id: any;
+//   label: string;
+//   alwaysOn?: boolean;
+// } & (
+//     | {
+//       type: 'STRING' |
+//       'DATE' |
+//       'NUMBER' |
+//       'CATEGORY' |
+//       'COMMAND_TYPE' |
+//       'RESTAURANT' |
+//       'ATTRIBUTES' |
+//       'TYPE_PLAT' |
+//       'PRICE' |
+//       'ALLERGENE'
 
-    }
-    | {
-      type: 'BOOLEAN';
-    }
-    | {
-      type: 'SWITCH';
-      options: FilterSwitchOption[];
-    }
-    | {
-      type: 'NUMBER_INTERVAL';
-      minLabel?: string;
-      maxLabel?: string
-    }
-    | {
-      type: 'PRICE';
-      minLabel?: string;
-      maxLabel?: string;
-    }
-  );
+//     }
+//     | {
+//       type: 'BOOLEAN';
+//     }
+//     | {
+//       type: 'SWITCH';
+//       options: FilterSwitchOption[];
+//     }
+//     | {
+//       type: 'NUMBER_INTERVAL';
+//       minLabel?: string;
+//       maxLabel?: string
+//     }
+//     | {
+//       type: 'PRICE';
+//       minLabel?: string;
+//       maxLabel?: string;
+//     }
+//   );
 
-export type Filters<T> = Filter<T>[];
+export type Filters = any[];
 
 export type FilterValue = {
   value?: string | number | boolean;
@@ -162,7 +162,7 @@ interface TableToolbarProps<T> {
   EmporteAll?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   livreAll?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   toReadAll?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  filters?: Filters<T>;
+  filters?: Filters;
   onFilterValuesChange?: (id: string, value: FilterValue) => void;
   activatedFilters?: string[];
   onActivateFilter?: (id: string, type: FilterType) => void;
