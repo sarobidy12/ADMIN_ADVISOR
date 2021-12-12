@@ -108,7 +108,12 @@ export const AuthProvider: React.FC = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
+    
     (async () => {
+
+      console.log("accessToken",accessToken);
+      console.log("refreshToken",refreshToken);
+      
       if (accessToken && refreshToken) {
         try {
           const tokenValidity = await checkToken(accessToken, refreshToken);

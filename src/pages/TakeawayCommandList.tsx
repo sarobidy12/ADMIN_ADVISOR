@@ -153,8 +153,8 @@ const TakeawayCommandList: React.FC = () => {
       .then((res: any) => {
 
         SendNotification({
-          title: "Commande validé",
-          body: "Votre commande a été validé",
+          title: "Commande validée",
+          body: "Votre commande a été validée",
           isRedirectAdmin: false,
           to: res.tokenNavigator
         })
@@ -177,8 +177,8 @@ const TakeawayCommandList: React.FC = () => {
       .then((res: any) => {
 
         SendNotification({
-          title: "Commande refusé",
-          body: "Votre commande a été refusé",
+          title: "Commande refusée",
+          body: "Votre commande a été refusée",
           isRedirectAdmin: false,
           to: res.tokenNavigator
         })

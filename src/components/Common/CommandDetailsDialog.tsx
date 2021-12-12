@@ -837,7 +837,7 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
               </>
             )}
 
-            {(+command.remiseDelivery > 0 && command.commandType === "delivery") && <Grid
+            {(+command.discountDelivery > 0 && command.commandType === "delivery") && <Grid
               container
               justify="space-between"
               alignItems="center"
@@ -852,12 +852,12 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
               <Typography
                 variant="h6"
                 style={{ fontWeight: 300 }}
-              >{`€ ${(+command.remiseDelivery).toLocaleString(undefined, {
+              >{`€ ${(+command.discountDelivery).toLocaleString(undefined, {
                 minimumFractionDigits: 1,
               })}`}</Typography>
             </Grid>}
 
-            {(+command.remiseCode > 0) && <Grid
+            {(+command.discountCode > 0) && <Grid
               container
               justify="space-between"
               alignItems="center"
@@ -872,12 +872,15 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
               <Typography
                 variant="h6"
                 style={{ fontWeight: 300 }}
-              >{`€ ${(+command.remiseCode).toLocaleString(undefined, {
-                minimumFractionDigits: 1,
-              })}`}</Typography>
+              >
+                {`€ ${(+command.discountCode).toLocaleString(undefined, {
+                  minimumFractionDigits: 1,
+                })}`}
+              </Typography>
             </Grid>}
 
-            {(+command.remiseTotal > 0) && <Grid
+
+            {(+command.discountPrice > 0) && <Grid
               container
               justify="space-between"
               alignItems="center"
@@ -892,9 +895,11 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
               <Typography
                 variant="h6"
                 style={{ fontWeight: 300 }}
-              >{`€ ${(+command.remiseTotal).toLocaleString(undefined, {
+              >
+                {`€ ${(+command.discountPrice).toLocaleString(undefined, {
                 minimumFractionDigits: 1,
-              })}`}</Typography>
+              })}`}
+              </Typography>
             </Grid>}
 
             <Grid container justify="space-between" alignItems="center">

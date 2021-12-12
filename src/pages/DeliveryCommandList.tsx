@@ -229,10 +229,11 @@ const DeliveryCommandList: React.FC = () => {
   }
 
   const livreAll = () => {
+    
     CommandAllLivre(selected)
       .then((res: any) => {
 
-        enqueueSnackbar('Commande emportée', {
+        enqueueSnackbar('Commande livrée', {
           variant: 'success',
         });
 

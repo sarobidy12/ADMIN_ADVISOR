@@ -163,8 +163,8 @@ const CommandList: React.FC = () => {
     toRefuseAll(selected)
       .then((res: any) => {
         SendNotification({
-          title: "Commande refusé",
-          body: "Votre commande a été refusé ",
+          title: "Commande refusée",
+          body: "Votre commande a été refusée",
           isRedirectAdmin: false,
           to: res.tokenNavigator
         })
@@ -411,8 +411,8 @@ const CommandList: React.FC = () => {
                                   });
 
                                   SendNotification({
-                                    title: "Commande refusé",
-                                    body: "Votre commande a été refusé ",
+                                    title: "Commande refusée",
+                                    body: "Votre commande a été refusée ",
                                     isRedirectAdmin: false,
                                     to: new Array(res.data.tokenNavigator)
                                   })

@@ -58,9 +58,9 @@ export interface Command {
   customer?: Customer;
   commandType: CommandType;
   shippingAddress: string;
-  remiseCode:string;
-  remiseTotal:string;
-  remiseDelivery:string;
+  remiseCode: string;
+  remiseTotal: string;
+  remiseDelivery: string;
   shippingTime: number;
   priceLivraison: string;
   totalPriceSansRemise: string;
@@ -84,6 +84,8 @@ export interface Command {
   discountPrice: any;
   isCodePromo: any;
   codePromo: any;
+  discountDelivery: string;
+  discountCode: string;
   hasDelivery: boolean;
 }
 

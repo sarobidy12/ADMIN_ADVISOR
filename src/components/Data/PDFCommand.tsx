@@ -12,7 +12,6 @@ import {
 } from '@react-pdf/renderer';
 import React from 'react';
 import Command from '../../models/Command.model';
-import { estimateCommandPrice } from '../../services/price';
 import DateFormatter from '../../utils/DateFormatter';
 import NumberFormatter from '../../utils/NumberFormatter';
 import PriceFormatter from '../../utils/PriceFormatter';
@@ -514,6 +513,31 @@ const PDFCommand: React.FC<PDFCommandProps> = ({ command }) => {
             { flexDirection: 'column', alignItems: 'stretch' },
           ]}
         >
+
+          <View
+            style={[
+              styles.heading,
+              { paddingVertical: 0, borderTop: 'none', borderBottom: 'none' },
+            ]}
+          >
+            <Text
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              Sous-total de produits
+            </Text>
+            <Text
+              style={{ fontSize: 14, color: '#dc143c', fontWeight: 'bold' }}
+            >
+              {`€${(
+                ((+command.totalPriceSansRemise || 0) / 100)
+              ).toLocaleString(undefined, {
+                minimumFractionDigits: 1,
+              })}`}
+            </Text>
+          </View>
+          
           {command.commandType === 'delivery' && (
             <View
               style={[
@@ -535,6 +559,77 @@ const PDFCommand: React.FC<PDFCommandProps> = ({ command }) => {
               </Text>
             </View>
           )}
+
+          {(+command.discountDelivery > 0 && command.commandType === "delivery") &&
+
+            (<View
+              style={[
+                styles.heading,
+                { paddingVertical: 0, borderTop: 'none', borderBottom: 'none' },
+              ]}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Remise sur le transport
+              </Text>
+              <Text
+                style={{ fontSize: 14, color: '#dc143c', fontWeight: 'bold' }}
+              >
+                {`€ ${(+command.discountDelivery).toLocaleString(undefined, {
+                  minimumFractionDigits: 1,
+                })}`}
+              </Text>
+            </View>)}
+
+          {(+command.discountCode > 0) &&
+            (<View
+              style={[
+                styles.heading,
+                { paddingVertical: 0, borderTop: 'none', borderBottom: 'none' },
+              ]}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Remise code promo
+              </Text>
+              <Text
+                style={{ fontSize: 14, color: '#dc143c', fontWeight: 'bold' }}
+              >
+                {`€ ${(+command.discountCode).toLocaleString(undefined, {
+                  minimumFractionDigits: 1,
+                })}`}
+              </Text>
+            </View>)}
+
+          {(+command.discountPrice > 0) &&
+            (<View
+              style={[
+                styles.heading,
+                { paddingVertical: 0, borderTop: 'none', borderBottom: 'none' },
+              ]}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Remise sur la totalite
+              </Text>
+              <Text
+                style={{ fontSize: 14, color: '#dc143c', fontWeight: 'bold' }}
+              >
+                {`€ ${(+command.discountPrice).toLocaleString(undefined, {
+                  minimumFractionDigits: 1,
+                })}`}
+              </Text>
+            </View>)}
+
           <View
             style={[
               styles.heading,
@@ -551,12 +646,12 @@ const PDFCommand: React.FC<PDFCommandProps> = ({ command }) => {
             <Text
               style={{ fontSize: 14, color: '#dc143c', fontWeight: 'bold' }}
             >
-              {PriceFormatter.format({
-                amount: estimateCommandPrice(command),
-                currency: 'eur',
-              })}
+              {`€ ${(+command.totalPrice / 100).toLocaleString(undefined, {
+                minimumFractionDigits: 1,
+              })}`}
             </Text>
           </View>
+
         </View>
 
         <Text
