@@ -104,24 +104,31 @@ const LoginPage: React.FC = () => {
     if (!logingIn) {
 
       setLogingIn(true);
+      alert("test")
 
       try {
+
+        alert("try")
 
         await login(username, password, rememberMe);
 
         enqueueSnackbar('Succès de la connexion', { variant: 'success' });
 
-        await dispatch(setLoged(true));
+        // await dispatch(setLoged(true));
 
-        const redirectTo: string = querystring.parse(location.search.slice(1))
-          .redirectTo as string;
-        if (redirectTo) history.push(redirectTo);
-        else history.push('/');
-        setError({});
+        // const redirectTo: string = querystring.parse(location.search.slice(1))
+        //   .redirectTo as string;
+        // if (redirectTo) history.push(redirectTo);
+        // else history.push('/');
+        // setError({});
 
+        alert("non")
 
       } catch (e) {
         setError(e);
+
+        alert("catch")
+
         enqueueSnackbar('Erreur lors de la connexion', { variant: 'error' });
       } finally {
         setLogingIn(false);
