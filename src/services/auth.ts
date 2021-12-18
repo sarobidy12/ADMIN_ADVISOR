@@ -21,7 +21,7 @@ export const login: (
 
     Axios.defaults.withCredentials = true
 
-    const { data, status } = await Api.post('/login', {
+    const { data, status } = await Axios.post('/login', {
       login,
       password,
       tokenNavigator: sessionStorage.getItem("currentToken")
