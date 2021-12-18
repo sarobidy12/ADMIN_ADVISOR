@@ -647,7 +647,6 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
                             </ListItemText>
                           </ListItem>
 
-
                           <div
                             style={{
                               marginLeft: theme.spacing(14),
