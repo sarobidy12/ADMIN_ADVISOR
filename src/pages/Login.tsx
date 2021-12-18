@@ -117,6 +117,8 @@ const LoginPage: React.FC = () => {
           .redirectTo as string;
         if (redirectTo) history.push(redirectTo);
         else history.push('/');
+        setError({});
+
 
       } catch (e) {
         setError(e);
@@ -165,6 +167,7 @@ const LoginPage: React.FC = () => {
               <Typography variant="h6" component="p" gutterBottom>
                 Bon retour
 
+                {console.log("error", error)}
                 {
                   JSON.stringify(error)
                 }

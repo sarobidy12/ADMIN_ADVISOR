@@ -29,6 +29,8 @@ export const login: (
 
     if (status === 200) {
 
+      alert("success");
+
       const {
         user,
         access_token: accessToken,
@@ -51,6 +53,8 @@ export const login: (
       return { user, accessToken, refreshToken };
 
     }
+
+    alert("error");
 
     return Promise.reject(data);
   } catch (error) {
