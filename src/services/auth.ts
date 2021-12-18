@@ -38,10 +38,11 @@ export const login: (
       Api.defaults.headers.authorization = `Bearer ${accessToken}`;
 
       if (isPwa) {
+        alert("isPwa");
 
-        if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
-          return Promise.reject(data);
-        }
+        // if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
+        //   return Promise.reject(data);
+        // }
 
       }
 
