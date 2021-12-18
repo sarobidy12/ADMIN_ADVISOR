@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 const LoginPage: React.FC = () => {
 
   const classes = useStyles();
-  
+
   const dispatch = useDispatch();
 
   const theme = useTheme();
@@ -79,6 +79,8 @@ const LoginPage: React.FC = () => {
   const [logingIn, setLogingIn] = useState(false);
   const [formValidation, setFormValidation] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState<any>({})
 
   const { login } = useAuth();
 
@@ -117,7 +119,7 @@ const LoginPage: React.FC = () => {
         else history.push('/');
 
       } catch (e) {
-
+        setError(e);
         enqueueSnackbar('Erreur lors de la connexion', { variant: 'error' });
       } finally {
         setLogingIn(false);
@@ -162,6 +164,10 @@ const LoginPage: React.FC = () => {
               </div>
               <Typography variant="h6" component="p" gutterBottom>
                 Bon retour
+
+                {
+                  JSON.stringify(error)
+                }
               </Typography>
               <Typography variant="h5" component="p" gutterBottom>
                 Se connecter à votre compte
