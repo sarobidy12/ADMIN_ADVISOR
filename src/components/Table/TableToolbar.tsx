@@ -18,7 +18,6 @@ import {
   useMediaQuery,
   Theme,
 } from '@material-ui/core';
-import clsx from 'clsx';
 import {
   AddCircle as AddCircleIcon,
   Close,
