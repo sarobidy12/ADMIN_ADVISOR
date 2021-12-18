@@ -19,6 +19,8 @@ export const login: (
 
   try {
 
+    Axios.defaults.withCredentials = true
+
     const { data, status } = await Api.post('/login', {
       login,
       password,
