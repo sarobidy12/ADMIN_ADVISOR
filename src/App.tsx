@@ -14,6 +14,7 @@ import { ImageViewerProvider } from './components/Common/ImageViewer';
 import { onMessageListener } from './Firebase/Firebase';
 import { getMessaging, getToken } from "firebase/messaging";
 import ReactNotificationComponent from "./components/Notifications/ReactNotification";
+import firebase from "firebase/compat/app";
 
 const App: FC = () => {
 
@@ -40,13 +41,18 @@ const App: FC = () => {
 
     const messaging = getMessaging();
 
+    if (firebase.messaging.isSupported()) {
+      alert("ok")
+    } else {
+      alert("unsuported")
+    }
+
     getToken(messaging, { vapidKey: 'BJmO7UXc0phrIYym8zDuP2Hs3hhigy9J_r_Yq6Vn7BW6UQbBq-QnAH-SpbAuKOBQsQieIsk-aigPrI6lmsUOR9g' })
       .then((currentToken: any) => {
 
         if (currentToken) {
 
           sessionStorage.setItem("currentToken", currentToken)
-          alert("ok")
 
         } else {
           // Show permission request UI
@@ -64,14 +70,7 @@ const App: FC = () => {
 
   return (
     <>
-      {show ? (
-        <ReactNotificationComponent
-          title={notification.title}
-          body={notification.body}
-        />
-      ) : (
-        <></>
-      )}
+
       <MuiThemeProvider theme={defaultTheme}>
         <SnackbarProvider maxSnack={3}>
           <ConfirmProvider>
