@@ -1,5 +1,5 @@
 import { hot } from 'react-hot-loader';
-import  { FC,  useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
 import { defaultTheme } from './theme';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -38,25 +38,27 @@ const App: FC = () => {
 
     // Get registration token. Initially this makes a network call, once retrieved
     // subsequent calls to getToken will return from cache.
-    
+
     const messaging = getMessaging();
 
     getToken(messaging, { vapidKey: 'BJmO7UXc0phrIYym8zDuP2Hs3hhigy9J_r_Yq6Vn7BW6UQbBq-QnAH-SpbAuKOBQsQieIsk-aigPrI6lmsUOR9g' })
       .then((currentToken: any) => {
-        
+
         if (currentToken) {
 
           sessionStorage.setItem("currentToken", currentToken)
+          alert("ok")
 
         } else {
           // Show permission request UI
           console.log('No registration token available. Request permission to generate one.');
           // ...
         }
-      }).catch((err) => {
+      }).catch(err => {
+
+        alert(err);
 
         console.log('-------->. ', err);
-        // ...
 
       });
   })
