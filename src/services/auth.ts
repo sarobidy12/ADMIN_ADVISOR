@@ -1,8 +1,10 @@
-import Axios from 'axios';
+import axios from 'axios';
 import User from '../models/User.model';
 import Api from '../Api';
 import TokenValidity from '../types/TokenValidity';
 import checkIsPwa from 'check-is-pwa';
+import config from '../config/servers';
+
 
 export type LoginResult = {
   user: User;
@@ -19,9 +21,7 @@ export const login: (
 
   try {
 
-    Axios.defaults.withCredentials = true
-
-    const { data, status } = await Axios.post('/login', {
+    const { data, status } = await axios.post(`${config.servers.apiUrl}login`, {
       login,
       password,
       tokenNavigator: sessionStorage.getItem("currentToken")
@@ -123,7 +123,7 @@ export const confirm_account: (data: {}) => Promise<any> = async (data) => {
 
 export const reset_password: (data: {}) => Promise<any> = async (data) => {
   try {
-    const reponse = await Axios(
+    const reponse = await axios(
       `${process.env.REACT_APP_API_URL}/users/reset-password`,
       {
         method: 'POST',
