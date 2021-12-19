@@ -105,11 +105,7 @@ const LoginPage: React.FC = () => {
 
       setLogingIn(true);
 
-      alert("test")
-
       try {
-
-        alert("try")
 
         await login(username, password, rememberMe);
 
@@ -126,8 +122,6 @@ const LoginPage: React.FC = () => {
 
       } catch (e) {
         setError(e);
-
-        alert("catch")
 
         enqueueSnackbar('Erreur lors de la connexion', { variant: 'error' });
       } finally {
