@@ -331,15 +331,17 @@ const TakeawayCommandList: React.FC = () => {
                     fontWeight: !validated && !revoked ? 'bold' : undefined,
                   }}
                 >
+
                   {`${NumberFormatter.format(code, { minimumIntegerDigits: 5 })} `}
 
-                  {!mdUp && (<span
+                  {!mdUp && !isRestaurantAdmin && (<span
                     style={{
                       margin: "0 1vh",
                     }}
                   >
                     {restaurant.name}
                   </span>)}
+
                 </TableCell>
                 {mdUp && (<>
                   <TableCell

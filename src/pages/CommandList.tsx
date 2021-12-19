@@ -301,7 +301,7 @@ const CommandList: React.FC = () => {
                 >
                   {`${NumberFormatter.format(code, { minimumIntegerDigits: 5 })} `}
 
-                  {!mdUp && (<span
+                  {!mdUp && !isRestaurantAdmin && (<span
                     style={{
                       margin: "0 1vh",
                     }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, Grid } from "@material-ui/core";
 import logo from "../../assets/img/logo.png";
 import clsx from "clsx";
 
@@ -9,9 +9,6 @@ const useStyles = makeStyles((theme) => ({
     "&>div:first-child": {
       display: "flex",
       alignItems: "center",
-    },
-    [theme.breakpoints.down("sm")]: {
-      margin:"20vh 0 0 0"
     },
   },
   logo: {
@@ -47,28 +44,39 @@ const Logo: React.FC<LogoProps> = ({ className, classes: cls }) => {
   const classes = useStyles();
 
   return (
-    <div className={clsx(classes.container, className, cls?.container)}>
-      <div className={clsx(classes.textContainer, cls?.text)}>
-        <span>
-          <img
-            className={clsx(classes.logo, cls?.image)}
-            src={logo}
-            alt="menu-advisor"
-          />
-        </span>
-        <Typography variant="h6" component="span" align="center">
-          Menu
-        </Typography>{" "}
-        <Typography
-          variant="h6"
-          component="span"
-          color="primary"
-          align="center"
-        >
-          Advisor
-        </Typography>
-      </div>
-    </div>
+
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Grid item>
+        <div className={clsx(classes.container, className, cls?.container)}>
+          <div className={clsx(classes.textContainer, cls?.text)}>
+            <span>
+              <img
+                className={clsx(classes.logo, cls?.image)}
+                src={logo}
+                alt="menu-advisor"
+              />
+            </span>
+            <Typography variant="h6" component="span" align="center">
+              Menu
+            </Typography>{" "}
+            <Typography
+              variant="h6"
+              component="span"
+              color="primary"
+              align="center"
+            >
+              Advisor
+            </Typography>
+          </div>
+        </div>
+      </Grid>
+
+    </Grid>
   );
 };
 

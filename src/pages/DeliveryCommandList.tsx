@@ -92,6 +92,21 @@ const headCellsMobil: HeadCell<Command>[] = [
   },
 ];
 
+const headCellsMobilIsAdmin: HeadCell<Command>[] = [
+  {
+    id: 'code',
+    label: 'Numéro de commande',
+  },
+  {
+    id: 'totalPrice',
+    label: 'Montant total',
+  },
+  {
+    id: 'shippingTime',
+    label: 'Date de livraison',
+  },
+];
+
 const DeliveryCommandList: React.FC = () => {
 
   const classes = useStyles();
@@ -375,7 +390,7 @@ const DeliveryCommandList: React.FC = () => {
                 >
                   {`${NumberFormatter.format(code, { minimumIntegerDigits: 5 })} `}
 
-                  {!mdUp && (<span
+                  {!mdUp && !isRestaurantAdmin && (<span
                     style={{
                       margin: "0 1vh",
                     }}

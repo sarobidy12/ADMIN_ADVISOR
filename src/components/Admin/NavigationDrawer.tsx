@@ -74,15 +74,9 @@ const useStyles = makeStyles<Theme, { mini?: boolean }>((theme) => ({
   root: {
     width: "100%",
     height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "stretch",
   },
   toolbar: {
     justifyContent: "center",
-    marginBottom: "auto",
-    height: "fit-content",
   },
   links: {
     marginBottom: "auto",
@@ -148,7 +142,12 @@ const useStyles = makeStyles<Theme, { mini?: boolean }>((theme) => ({
       !mini ? theme.typography.pxToRem(28) : theme.typography.h6.fontSize,
   },
   restoImg: {
-    width: ({ mini }) => (!mini ? 60 : 40),
+    width: ({ mini }) => (!mini ? 60 : 30),
+    height: ({ mini }) => (!mini ? 60 : 30),
+    borderRadius: ({ mini }) => (!mini ? 60 : 30),
+    textAlign: "center",
+    margin: "auto",
+    display: "flex"
   },
   title: {
     marginLeft: 8,
@@ -296,11 +295,13 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   mobileOpen,
   onClose,
 }) => {
+
   const [mini, setMini] = useState(false);
 
   const { logout, isAdmin, isRestaurantAdmin, restaurant, user } = useAuth();
 
   const classes = useStyles({ mini });
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { pathname } = useLocation();
@@ -313,119 +314,109 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
   const drawer = (
     <div className={classes.root}>
-      <Toolbar className={classes.toolbar}>
-        <Grid container>
-          <Grid item md={12} xs={12}>
-            <Logo
-              className={classes.logo}
-              classes={{ image: classes.logoImage, text: classes.logoText }}
-            />
 
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              style={{
-                margin: "3vh 0"
-              }}
-            >
-              {isRestaurantAdmin &&
-                restaurant &&
-                (mini ? (
-                  <Grid item>
-                    <img
-                      className={classes.restoImg}
-                      src={restaurant?.logo}
-                      alt={restaurant?.name}
-                    />
-                  </Grid>
-                ) : (
-                  <Grid item>
+      <Logo
+        className={classes.logo}
+        classes={{ image: classes.logoImage, text: classes.logoText }}
+      />
 
-                    {
-                      restaurant?.logo ? (
-                        <img
-                          className={classes.restoImg}
-                          src={restaurant?.logo}
-                          alt={restaurant?.name}
-                        />
-                      ) : (
-                        <FastfoodIcon />
-                      )
-                    }
-
-                    <Typography variant="h5" className={classes.title}>
-                      {restaurant?.name}
-                    </Typography>
-
-                  </Grid>
-                ))}
-            </Grid>
-          </Grid>
-          <br />
-          <Grid item md={12} xs={12}>
-            {!mini && (
-              <div style={{ marginLeft: "8px", textAlign: "center" }}>
-                {isRestaurantAdmin
-                  ? "RESTAURATEUR"
-                  : isAdmin
-                    ? "ADMINISTRATEUR"
-                    : null}
-              </div>
-            )}
-          </Grid>
-          <Spacer />
-        </Grid>
-      </Toolbar>
       <Grid
         container
         direction="row"
         justifyContent="center"
         alignItems="center"
+        style={{
+          margin: "3vh 0"
+        }}
       >
-        <Grid item>
-          {!mdUp && (
-            <div>
+        {isRestaurantAdmin &&
+          restaurant &&
+          (mini ? (
+            <Grid item>
+              <img
+                className={classes.restoImg}
+                src={restaurant?.logo}
+                alt={restaurant?.name}
+              />
+            </Grid>
+          ) : (
+            <Grid item>
 
-              <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                style={{
-                  margin: "3vh 0"
-                }}
-              >
-                <Grid item>
-                  <h2>{user?.name.first}</h2>
+              {
+                restaurant?.logo ? (
+                  <img
+                    className={classes.restoImg}
+                    src={restaurant?.logo}
+                    alt={restaurant?.name}
+                  />
+                ) : (
+                  <FastfoodIcon />
+                )
+              }
 
-                </Grid>
-                <Grid item>
+              <Typography variant="h5" className={classes.title}>
+                {restaurant?.name}
+              </Typography>
 
-                  <Tooltip title="Se déconnecter">
-                    <IconButton
-                      color="inherit"
-                      aria-label="logout"
-                      onClick={() => {
-                        logout().then(async () => {
-                          await dispatch(setLoged(false));
-                          sessionStorage.removeItem("isREstorateur");
-                          history.push("/login");
-                          enqueueSnackbar("Déconnecté!", { variant: "success" });
-                        });
-                      }}
-                    >
-                      <ExitToAppIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              </Grid>
-
-            </div>
-          )}
-        </Grid>
+            </Grid>
+          ))}
       </Grid>
+
+      <br />
+
+      {!mini && (
+        <div style={{
+          textAlign: "center"
+        }}>
+          {isRestaurantAdmin
+            ? "RESTAURATEUR"
+            : isAdmin
+              ? "ADMINISTRATEUR"
+              : null}
+        </div>
+      )}
+
+      <Spacer />
+
+      {!mdUp && (
+        <Toolbar className={classes.toolbar}>
+
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            style={{
+              margin: "3vh 0"
+            }}
+          >
+            <Grid item>
+              <h2>{user?.name.first}</h2>
+
+            </Grid>
+            <Grid item>
+
+              <Tooltip title="Se déconnecter">
+                <IconButton
+                  color="inherit"
+                  aria-label="logout"
+                  onClick={() => {
+                    logout().then(async () => {
+                      await dispatch(setLoged(false));
+                      sessionStorage.removeItem("isREstorateur");
+                      history.push("/login");
+                      enqueueSnackbar("Déconnecté!", { variant: "success" });
+                    });
+                  }}
+                >
+                  <ExitToAppIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+        </Toolbar>
+
+      )}
 
       <Toolbar className={classes.toolbar}>
 

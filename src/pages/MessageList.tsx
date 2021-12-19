@@ -60,6 +60,17 @@ const headCells: HeadCell<Message>[] = [
   },
 ];
 
+const headCellsMobil: HeadCell<Message>[] = [
+  {
+    id: 'name',
+    label: 'Nom',
+  },
+  {
+    id: 'message',
+    label: 'Message',
+  },
+];
+
 const MessageListPage: React.FC = () => {
   const classes = useStyles();
 
@@ -137,7 +148,7 @@ const MessageListPage: React.FC = () => {
       />
       <Paper className={classes.root}>
         <TableContainer
-          headCells={headCells}
+          headCells={mdUp ? headCells : headCellsMobil}
           records={records}
           selected={selected}
           toReadAll={toReadAll}
@@ -165,26 +176,29 @@ const MessageListPage: React.FC = () => {
                 <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
                   {name}
                 </TableCell>
-                <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
-                  {email}
-                </TableCell>
-                <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
-                  {phoneNumber}
-                </TableCell>
+                {mdUp && (<>
+                  <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
+                    {email}
+                  </TableCell>
+                  <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
+                    {phoneNumber}
+                  </TableCell>
+                </>)}
                 <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
                   {message}
                 </TableCell>
-                <TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
+                {mdUp && (<><TableCell style={{ fontWeight: !read ? 'bold' : 'initial' }}>
                   {DateFormatter.format(createdAt)}
                 </TableCell>
-                <TableCell>
-                  <ShowButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setMessageToShow(data);
-                    }}
-                  />
-                </TableCell>
+                  <TableCell>
+                    <ShowButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMessageToShow(data);
+                      }}
+                    />
+                  </TableCell>
+                </>)}
               </>
             );
           }}
