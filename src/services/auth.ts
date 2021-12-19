@@ -21,15 +21,13 @@ export const login: (
 
   try {
 
-    const { data, status } = await axios.post(`${config.servers.apiUrl}login`, {
+    const { data, status } = await Api.post('/login', {
       login,
       password,
       tokenNavigator: sessionStorage.getItem("currentToken")
     });
 
     if (status === 200) {
-
-      alert("success");
 
       const {
         user,
@@ -42,11 +40,10 @@ export const login: (
       Api.defaults.headers.authorization = `Bearer ${accessToken}`;
 
       if (isPwa) {
-        alert("isPwa");
 
-        // if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
-        //   return Promise.reject(data);
-        // }
+        if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
+          return Promise.reject(data);
+        }
 
       }
 
@@ -54,9 +51,8 @@ export const login: (
 
     }
 
-    alert("error");
-
     return Promise.reject(data);
+
   } catch (error) {
     return Promise.reject(error);
   }

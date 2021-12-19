@@ -173,11 +173,6 @@ const LoginPage: React.FC = () => {
               </div>
               <Typography variant="h6" component="p" gutterBottom>
                 Bon retour
-
-                {console.log("error", error)}
-                {
-                  JSON.stringify(error)
-                }
               </Typography>
               <Typography variant="h5" component="p" gutterBottom>
                 Se connecter à votre compte
