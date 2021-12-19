@@ -13,7 +13,6 @@ import MomentUtils from '@date-io/moment';
 import { ImageViewerProvider } from './components/Common/ImageViewer';
 import { onMessageListener } from './Firebase/Firebase';
 import { getMessaging, getToken } from "firebase/messaging";
-import Notifications from "./components/Notifications/Notifications";
 import ReactNotificationComponent from "./components/Notifications/ReactNotification";
 
 const App: FC = () => {
@@ -73,7 +72,6 @@ const App: FC = () => {
       ) : (
         <></>
       )}
-      <Notifications />
       <MuiThemeProvider theme={defaultTheme}>
         <SnackbarProvider maxSnack={3}>
           <ConfirmProvider>
