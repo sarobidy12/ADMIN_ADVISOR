@@ -36,15 +36,10 @@ const App: FC = () => {
 
   useEffect(() => {
 
-    // Get registration token. Initially this makes a network call, once retrieved
-    // subsequent calls to getToken will return from cache.
-
     const messaging = getMessaging();
 
-    if (firebase.messaging.isSupported()) {
-      alert("ok")
-    } else {
-      alert("unsuported")
+    if (!firebase.messaging.isSupported()) {
+      alert("vous ne recevez pas de notification par ce que votre navigateur est incompatible")
     }
 
     getToken(messaging, { vapidKey: 'BJmO7UXc0phrIYym8zDuP2Hs3hhigy9J_r_Yq6Vn7BW6UQbBq-QnAH-SpbAuKOBQsQieIsk-aigPrI6lmsUOR9g' })
@@ -61,11 +56,10 @@ const App: FC = () => {
         }
       }).catch(err => {
 
-        alert(err);
-
         console.log('-------->. ', err);
 
       });
+
   })
 
   return (
