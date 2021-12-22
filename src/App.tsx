@@ -19,46 +19,42 @@ import firebase from "firebase/compat/app";
 import request from "request";
 
 const App: FC = () => {
+
   const [show, setShow] = useState("SHOW TOKEN");
-  const [notification, setNotification] = useState({ title: "", body: "" });
 
   useEffect(() => {
-    setInterval(() => {
       onMessageListener()
         .then((payload: any) => {
-          alert("notification Recive");
+          
+          alert("recive Notioncation")
 
-          setNotification({
-            title: payload.notification.title,
-            body: payload.notification.body,
-          });
+          console.log("payload",payload);
 
-          new Notification(payload.notification.title, {
-            body: payload.notification.body,
-            icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-          });
+          if ("serviceWorker" in navigator) {
+            
+            navigator.serviceWorker
+              .register("./firebase-messaging-sw.js")
+              .then(function (registration) {
+                if (Notification.permission == "granted") {
+                  navigator.serviceWorker
+                    .getRegistration()
+                    .then(function (reg: any) {
+                      reg.showNotification(payload.notification.title, {
+                        body: payload.notification.body,
+                        icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+                      });
+                    });
+                }
+              })
+              .catch(function (err) {
+                console.log("Service worker registration failed, error:", err);
+              });
+          }
 
           console.log("payload", payload);
+
         })
         .catch((err) => console.log("failed: ", err));
-    }, 1000);
-  });
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("./firebase-messaging-sw.js")
-        .then(function (registration) {
-          if (Notification.permission == "granted") {
-            navigator.serviceWorker.getRegistration().then(function (reg: any) {
-              reg.showNotification("Hello world!");
-            });
-          }
-        })
-        .catch(function (err) {
-          console.log("Service worker registration failed, error:", err);
-        });
-    }
   });
 
   useEffect(() => {
@@ -92,10 +88,28 @@ const App: FC = () => {
   });
 
   const viewNotifiction = () => {
-    new Notification("payload.notification.title", {
-      body: "payload.notification.body",
-      icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-    });
+
+    if ("serviceWorker" in navigator) {
+            
+      navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then(function (registration) {
+          if (Notification.permission == "granted") {
+            navigator.serviceWorker
+              .getRegistration()
+              .then(function (reg: any) {
+                reg.showNotification("View notification", {
+                  body: "View notification",
+                  icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+                });
+              });
+          }
+        })
+        .catch(function (err) {
+          console.log("Service worker registration failed, error:", err);
+        });
+    }
+
   };
 
   const SendNotification = () => {
@@ -166,12 +180,7 @@ const App: FC = () => {
       >
         view Notifiarion
       </Button>
-      <div>
-        {notification.title}
-        <br />
-        {notification.body}
-        <br />
-      </div>
+   
     </>
   );
 };
