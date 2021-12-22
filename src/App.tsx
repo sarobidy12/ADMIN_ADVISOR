@@ -115,11 +115,13 @@ const App: FC = () => {
         }),
       },
       function (error: any, response: any, body: any) {
-        if (response.success === 1) {
+
+        const BodyPArte= JSON.parse(body);
+        
+        if (BodyPArte.success === 1) {
           alert("ok");
+          console.log("dsd")
         }
-        console.log("body---->", body);
-        console.log("response---->", body);
       }
     );
   };
