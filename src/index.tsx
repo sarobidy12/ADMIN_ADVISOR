@@ -11,15 +11,14 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { initializeFirebase } from "./Firebase/Firebase";
 
 ReactDOM.render(
-
       <App />
   ,
   document.getElementById("root")
 );
 
-// initializeFirebase();
+initializeFirebase();
 
-// serviceWorker();
+serviceWorker();
 
 // // If you want to start measuring performance in your app, pass a function
 // // to log results (for example: reportWebVitals(console.log))

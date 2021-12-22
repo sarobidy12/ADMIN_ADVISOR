@@ -19,7 +19,6 @@ import ReactNotificationComponent from "./components/Notifications/ReactNotifica
 import firebase from "firebase/compat/app";
 
 const App: FC = () => {
-  
   const [show, setShow] = useState("SHOW TOKEN");
   const [notification, setNotification] = useState({ title: "", body: "" });
 
@@ -49,7 +48,7 @@ const App: FC = () => {
     })
       .then((currentToken: any) => {
         if (currentToken) {
-          setShow(currentToken)
+          setShow(currentToken);
           sessionStorage.setItem("currentToken", currentToken);
         } else {
           // Show permission request UI
@@ -66,6 +65,8 @@ const App: FC = () => {
 
   return (
     <>
+      tEST
+      <br />
       {show}
     </>
   );
