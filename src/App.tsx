@@ -26,16 +26,19 @@ const App: FC = () => {
     setInterval(() => {
       onMessageListener()
         .then((payload: any) => {
-
           alert("notification Recive");
-          
+
+          setNotification({
+            title: payload.notification.title,
+            body: payload.notification.body,
+          });
+
           new Notification(payload.notification.title, {
             body: payload.notification.body,
             icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
           });
 
           console.log("payload", payload);
-
         })
         .catch((err) => console.log("failed: ", err));
     }, 1000);
@@ -71,20 +74,21 @@ const App: FC = () => {
       });
   });
 
-  const viewNotifiction=()=>{
+  const viewNotifiction = () => {
     new Notification("payload.notification.title", {
       body: "payload.notification.body",
       icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
     });
-  }
-  
+  };
+
   const SendNotification = () => {
     request.post(
       {
         url: "https://fcm.googleapis.com/fcm/send",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'key=AAAAzkz8-xg:APA91bGHoGL6SyhcCmU01UdRdMKI6cKW5ZirZGsTuFHbq24POW6pFyGC0wQPbi5XirB6fh3ZJvfyNDxvN0PhuSHbTQIN1X_Hl8XH6I1waUqVe-INqixKh2dlKJhixW83iVWjZV4A5MN9'
+          "Content-Type": "application/json",
+          Authorization:
+            "key=AAAAzkz8-xg:APA91bGHoGL6SyhcCmU01UdRdMKI6cKW5ZirZGsTuFHbq24POW6pFyGC0wQPbi5XirB6fh3ZJvfyNDxvN0PhuSHbTQIN1X_Hl8XH6I1waUqVe-INqixKh2dlKJhixW83iVWjZV4A5MN9",
         },
         body: JSON.stringify({
           to: show,
@@ -111,7 +115,9 @@ const App: FC = () => {
         }),
       },
       function (error: any, response: any, body: any) {
-        alert("ok")
+        if (response.success === 1) {
+          alert("ok");
+        }
         console.log("body---->", body);
         console.log("response---->", body);
       }
@@ -128,19 +134,26 @@ const App: FC = () => {
         onClick={() => {
           SendNotification();
         }}
-        variant="contained" color="primary"
+        variant="contained"
+        color="primary"
       >
         Send Me
       </Button>
-
       <Button
         onClick={() => {
           viewNotifiction();
         }}
-        variant="contained" color="primary"
+        variant="contained"
+        color="primary"
       >
         view Notifiarion
       </Button>
+      <div>
+        {notification.title}
+        <br />
+        {notification.body}
+        <br />
+      </div>
     </>
   );
 };
