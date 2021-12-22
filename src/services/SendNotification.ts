@@ -75,7 +75,7 @@ const SendNotification = (data: INotification) => {
                     }
                 }
             })
-
+ 
         }, function (error: any, response: any, body: any) {
             console.log("body---->", body);
             console.log("response---->", body);

@@ -8,6 +8,7 @@ import store from "./config/store";
 import { Provider } from "react-redux";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
+import { initializeFirebase } from "./Firebase/Firebase";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,6 +18,8 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
+
+initializeFirebase();
 
 serviceWorker();
 
