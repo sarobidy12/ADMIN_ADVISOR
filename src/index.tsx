@@ -9,6 +9,8 @@ import { Provider } from "react-redux";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 
+ 
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
