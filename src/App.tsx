@@ -13,43 +13,48 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { ImageViewerProvider } from "./components/Common/ImageViewer";
 import { onMessageListener } from "./Firebase/Firebase";
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import firebase from "firebase/compat/app";
 
 const App: FC = () => {
-  
-  useEffect(() => {
-    setInterval(() => {
-      onMessageListener()
-        .then((payload: any) => {
-          console.log("payload", payload);
-          if ("serviceWorker" in navigator) {
-            navigator.serviceWorker
-              .register("./firebase-messaging-sw.js")
-              .then(function (registration) {
-                if (Notification.permission == "granted") {
-                  navigator.serviceWorker
-                    .getRegistration()
-                    .then(function (reg: any) {
-                      reg.showNotification(payload.notification.title, {
-                        body: payload.notification.body,
-                        icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-                      });
-                    });
-                }
-              })
-              .catch(function (err) {
-                console.log("Service worker registration failed, error:", err);
+
+  const messaging = getMessaging();
+
+  onMessage(messaging, (payload: any) => {
+    console.log("Message received. ", payload);
+    // ...
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then(function (registration) {
+          if (Notification.permission == "granted") {
+            navigator.serviceWorker.getRegistration().then(function (reg: any) {
+              reg.showNotification(payload.notification.title, {
+                body: payload.notification.body,
+                icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
               });
+            });
           }
         })
-        .catch((err) => console.log("failed: ", err));
-    }, 1000);
+        .catch(function (err) {
+          console.log("Service worker registration failed, error:", err);
+        });
+    }
+
   });
 
-  useEffect(() => {
-    const messaging = getMessaging();
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     onMessageListener()
+  //       .then((payload: any) => {
+  //         console.log("payload", payload);
 
+  //       })
+  //       .catch((err) => console.log("failed: ", err));
+  //   }, 1000);
+  // });
+
+  useEffect(() => {
     if (!firebase.messaging.isSupported()) {
       alert(
         "vous ne recevez pas de notification par ce que votre navigateur est incompatible"

@@ -8,8 +8,7 @@ import store from "./config/store";
 import { Provider } from "react-redux";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
-
- 
+import { InitialiseFirebase } from "./Firebase/Firebase";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -21,6 +20,8 @@ ReactDOM.render(
 );
 
 serviceWorker();
+
+InitialiseFirebase();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
