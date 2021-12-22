@@ -101,6 +101,7 @@ const App: FC = () => {
         }),
       },
       function (error: any, response: any, body: any) {
+        alert("send")
         console.log("body---->", body);
         console.log("response---->", body);
       }
