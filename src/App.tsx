@@ -23,19 +23,19 @@ const App: FC = () => {
   const [show, setShow] = useState("SHOW TOKEN");
   const [notification, setNotification] = useState({ title: "", body: "" });
 
-  useEffect(() => {
-    setInterval(() => {
-      onMessageListener()
-        .then((payload: any) => {
-          new Notification(payload.notification.title, {
-            body: payload.notification.body,
-            icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-          });
-          console.log("payload", payload);
-        })
-        .catch((err) => console.log("failed: ", err));
-    }, 1000);
-  });
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     onMessageListener()
+  //       .then((payload: any) => {
+  //         new Notification(payload.notification.title, {
+  //           body: payload.notification.body,
+  //           icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+  //         });
+  //         console.log("payload", payload);
+  //       })
+  //       .catch((err) => console.log("failed: ", err));
+  //   }, 1000);
+  // });
 
   useEffect(() => {
     const messaging = getMessaging();
