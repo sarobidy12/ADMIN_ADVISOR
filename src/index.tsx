@@ -11,20 +11,18 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { initializeFirebase } from "./Firebase/Firebase";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
+
       <App />
-    </Provider>
-  </React.StrictMode>,
+  ,
   document.getElementById("root")
 );
 
-initializeFirebase();
+// initializeFirebase();
 
-serviceWorker();
+// serviceWorker();
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// // If you want to start measuring performance in your app, pass a function
+// // to log results (for example: reportWebVitals(console.log))
+// // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 
-reportWebVitals(console.log);
+// reportWebVitals(console.log);
