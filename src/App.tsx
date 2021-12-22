@@ -14,6 +14,7 @@ import MomentUtils from "@date-io/moment";
 import { ImageViewerProvider } from "./components/Common/ImageViewer";
 import { onMessageListener } from "./Firebase/Firebase";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { onBackgroundMessage } from "firebase/messaging/sw";
 import firebase from "firebase/compat/app";
 
 const App: FC = () => {
@@ -22,7 +23,6 @@ const App: FC = () => {
 
   onMessage(messaging, (payload: any) => {
     console.log("Message received. ", payload);
-    // ...
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("./firebase-messaging-sw.js")
@@ -40,21 +40,10 @@ const App: FC = () => {
           console.log("Service worker registration failed, error:", err);
         });
     }
-
   });
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     onMessageListener()
-  //       .then((payload: any) => {
-  //         console.log("payload", payload);
-
-  //       })
-  //       .catch((err) => console.log("failed: ", err));
-  //   }, 1000);
-  // });
-
+ 
   useEffect(() => {
+    
     if (!firebase.messaging.isSupported()) {
       alert(
         "vous ne recevez pas de notification par ce que votre navigateur est incompatible"
