@@ -14,7 +14,6 @@ import MomentUtils from "@date-io/moment";
 import { ImageViewerProvider } from "./components/Common/ImageViewer";
 import { onMessageListener } from "./Firebase/Firebase";
 import { getMessaging, getToken } from "firebase/messaging";
-import { askForPermissionToReceiveNotifications } from "./Firebase/Firebase";
 import ReactNotificationComponent from "./components/Notifications/ReactNotification";
 import firebase from "firebase/compat/app";
 import request from "request";
@@ -34,7 +33,9 @@ const App: FC = () => {
             body: payload.notification.body,
             icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
           });
+
           console.log("payload", payload);
+
         })
         .catch((err) => console.log("failed: ", err));
     }, 1000);
