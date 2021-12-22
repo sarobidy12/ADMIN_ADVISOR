@@ -33,10 +33,10 @@ const App: FC = () => {
             body: payload.notification.body,
           });
 
-          new Notification(payload.notification.title, {
-            body: payload.notification.body,
-            icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-          });
+          // new Notification(payload.notification.title, {
+          //   body: payload.notification.body,
+          //   icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+          // });
 
           console.log("payload", payload);
         })
