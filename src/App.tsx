@@ -67,6 +67,13 @@ const App: FC = () => {
       });
   });
 
+  const viewNotifiction=()=>{
+    new Notification("payload.notification.title", {
+      body: "payload.notification.body",
+      icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+    });
+  }
+  
   const SendNotification = () => {
     request.post(
       {
@@ -120,6 +127,15 @@ const App: FC = () => {
         variant="contained" color="primary"
       >
         Send Me
+      </Button>
+
+      <Button
+        onClick={() => {
+          viewNotifiction();
+        }}
+        variant="contained" color="primary"
+      >
+        view Notifiarion
       </Button>
     </>
   );
