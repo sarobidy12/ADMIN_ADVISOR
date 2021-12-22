@@ -45,6 +45,23 @@ const App: FC = () => {
   });
 
   useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then(function (registration) {
+          if (Notification.permission == "granted") {
+            navigator.serviceWorker.getRegistration().then(function (reg: any) {
+              reg.showNotification("Hello world!");
+            });
+          }
+        })
+        .catch(function (err) {
+          console.log("Service worker registration failed, error:", err);
+        });
+    }
+  });
+
+  useEffect(() => {
     const messaging = getMessaging();
 
     if (!firebase.messaging.isSupported()) {
