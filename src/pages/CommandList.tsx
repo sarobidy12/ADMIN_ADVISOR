@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   makeStyles,
   Paper,
@@ -6,91 +6,100 @@ import {
   Button,
   Tooltip,
   useMediaQuery,
-  Theme
-} from '@material-ui/core';
+  Theme,
+} from "@material-ui/core";
 import {
   Check,
   Close,
   LocalShipping as LocalShippingIcon,
   Remove,
-} from '@material-ui/icons';
-import PageHeader from '../components/Admin/PageHeader';
-import Command from '../models/Command.model';
-import { deleteCommand, toValidate, toRefuseAll } from '../services/commands';
-import { useSnackbar } from 'notistack';
-import EventEmitter from '../services/EventEmitter';
-import useDeleteSelection from '../hooks/useDeleteSelection';
-import NumberFormatter from '../utils/NumberFormatter';
-import PriceFormatter from '../utils/PriceFormatter';
-import moment from 'moment';
-import { useAuth } from '../providers/authentication';
-import PDFButton from '../components/Common/PDFButton';
-import ShowButton from '../components/Common/ShowButton';
-import { useHistory } from 'react-router';
-import CommandDetailsDialog from '../components/Common/CommandDetailsDialog';
-import TableContainer, { HeadCell } from '../components/Table/TableContainer';
-import { Loading } from '../components/Common';
-import { useDispatch } from 'react-redux';
-import { getAllCommands } from '../actions/commandes.action';
-import { useSelector } from '../utils/redux';
-import DateFormatter from '../utils/DateFormatter';
-import { revokeCommand, validateCommand } from '../services/commands';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import SendNotification from '../services/SendNotification';
+} from "@material-ui/icons";
+import PageHeader from "../components/Admin/PageHeader";
+import Command from "../models/Command.model";
+import { deleteCommand, toValidate, toRefuseAll } from "../services/commands";
+import { useSnackbar } from "notistack";
+import EventEmitter from "../services/EventEmitter";
+import useDeleteSelection from "../hooks/useDeleteSelection";
+import NumberFormatter from "../utils/NumberFormatter";
+import PriceFormatter from "../utils/PriceFormatter";
+import moment from "moment";
+import { useAuth } from "../providers/authentication";
+import PDFButton from "../components/Common/PDFButton";
+import ShowButton from "../components/Common/ShowButton";
+import { useHistory } from "react-router";
+import CommandDetailsDialog from "../components/Common/CommandDetailsDialog";
+import TableContainer, { HeadCell } from "../components/Table/TableContainer";
+import { Loading } from "../components/Common";
+import { useDispatch } from "react-redux";
+import { getAllCommands } from "../actions/commandes.action";
+import { useSelector } from "../utils/redux";
+import DateFormatter from "../utils/DateFormatter";
+import { revokeCommand, validateCommand } from "../services/commands";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
+import SendNotification from "../services/SendNotification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-      width: "98%"
-    }
+      width: "98%",
+    },
+  },
+  textHead: {
+    fontSize: "1.25vh",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1vh",
+    },
   },
 }));
 
 const headCells: HeadCell<Command>[] = [
   {
-    id: 'code',
-    label: 'Numéro de commande',
+    id: "code",
+    label: "Numéro de commande",
   },
   {
-    id: 'restaurant',
-    label: 'Restaurant',
+    id: "restaurant",
+    label: "Restaurant",
   },
   {
-    id: 'totalPrice',
-    label: 'Montant total',
+    id: "totalPrice",
+    label: "Montant total",
   },
   {
-    id: 'createdAt',
-    label: 'Date de la commande',
+    id: "createdAt",
+    label: "Date de la commande",
   },
   {
-    id: 'validated',
-    label: 'Validation',
+    id: "validated",
+    label: "Validation",
   },
 ];
 
 const headCellsMobil: HeadCell<Command>[] = [
   {
-    id: 'code',
-    label: 'Numéro de commande',
+    id: "code",
+    label: "Numéro de commande",
   },
   {
-    id: 'totalPrice',
-    label: 'Montant total',
+    id: "createdAt",
+    label: "Date de la commande",
+  },
+  {
+    id: "totalPrice",
+    label: "Montant total",
   },
 ];
 
 const CommandList: React.FC = () => {
-
   const classes = useStyles();
   const { isRestaurantAdmin, restaurant } = useAuth();
   const dispatch = useDispatch();
 
   const { data, isLoaded }: any = useSelector(({ commands }: any) => ({
     data: commands.all,
-    isLoaded: commands.isLoaded
+    isLoaded: commands.isLoaded,
   }));
 
   const [records, setRecords] = useState<Command[]>([]);
@@ -106,23 +115,22 @@ const CommandList: React.FC = () => {
     {
       onDeleteRecord: (id) =>
         setRecords((v) => v.filter(({ _id }) => _id !== id)),
-    },
+    }
   );
 
-  useEffect(
-    () => {
-      setRecords(data);
-    },
-    [data]
-  )
+  useEffect(() => {
+    setRecords(data);
+  }, [data]);
 
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || '' : undefined));
+      await dispatch(
+        getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
+      );
     } catch (e) {
-      enqueueSnackbar('Erreur lors du chargement...', {
-        variant: 'error',
+      enqueueSnackbar("Erreur lors du chargement...", {
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -135,7 +143,7 @@ const CommandList: React.FC = () => {
     (id: string) => {
       history.push(`/pdf-command/${id}`);
     },
-    [history],
+    [history]
   );
 
   useEffect(() => {
@@ -143,10 +151,10 @@ const CommandList: React.FC = () => {
       fetch();
     };
 
-    EventEmitter.on('REFRESH', onRefresh);
+    EventEmitter.on("REFRESH", onRefresh);
 
     return () => {
-      EventEmitter.removeListener('REFRESH', onRefresh);
+      EventEmitter.removeListener("REFRESH", onRefresh);
     };
   }, [fetch]);
 
@@ -157,50 +165,68 @@ const CommandList: React.FC = () => {
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {
-
     setUpdating(true);
 
     toValidate(selected)
       .then((res: any) => {
-        SendNotification({
-          title: "Commande validée",
-          body: "Votre commande a été validée ",
-          isRedirectAdmin: false,
-          to: res.tokenNavigator
-        })
+        for (let i = 0; i <= res.length; i++) {
+          let { name, code, totalPrice, tokenNavigator } = res[i];
+
+          SendNotification({
+            title: `Commande ${`${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} `}`,
+            body: `${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} - ${name} - votre commande de ${PriceFormatter.format({
+              amount: +totalPrice / 100,
+              currency: "eur",
+            })} a été validée `,
+            isRedirectAdmin: false,
+            to: new Array(tokenNavigator),
+          });
+        }
       })
       .finally(() => {
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
       });
-
-  }
+  };
 
   const toRefuseAllSelected = () => {
-
     setUpdating(true);
 
     toRefuseAll(selected)
       .then((res: any) => {
-        SendNotification({
-          title: "Commande refusée",
-          body: "Votre commande a été refusée",
-          isRedirectAdmin: false,
-          to: res.tokenNavigator
-        })
+        for (let i = 0; i <= res.length; i++) {
+          let { name, code, totalPrice, tokenNavigator } = res[i];
+
+          SendNotification({
+            title: `Commande ${`${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} `}`,
+            body: `${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} - ${name} - votre commande de ${PriceFormatter.format({
+              amount: +totalPrice / 100,
+              currency: "eur",
+            })} a été refusée  `,
+            isRedirectAdmin: false,
+            to: new Array(tokenNavigator),
+          });
+        }
       })
       .finally(() => {
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
       });
+  };
 
-  }
-
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   return (
     <>
@@ -221,49 +247,49 @@ const CommandList: React.FC = () => {
           onDeleteClick={() => {
             setUpdating(true);
             handleDeleteSelection().finally(() => {
-              EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+              EventEmitter.emit("REFRESH_NAVIGATION_BAR");
               setUpdating(false);
             });
           }}
           loading={loading}
           emptyPlaceholder="Aucune commande"
           options={{
-            orderBy: 'validated',
-            order: 'asc',
+            orderBy: "validated",
+            order: "asc",
             hasActionsColumn: true,
             filters: [
               {
-                id: 'code',
-                label: 'Numero de commande',
-                type: 'NUMBER',
+                id: "code",
+                label: "Numero de commande",
+                type: "NUMBER",
               },
               {
-                id: 'restaurant',
-                label: 'Restaurant',
-                type: 'RESTAURANT',
+                id: "restaurant",
+                label: "Restaurant",
+                type: "RESTAURANT",
                 alwaysOn: isRestaurantAdmin ? false : true,
               },
               {
-                id: 'totalPrice',
-                label: 'Prix',
-                type: 'PRICE',
+                id: "totalPrice",
+                label: "Prix",
+                type: "PRICE",
               },
               {
-                id: 'createdAt',
-                label: 'Date',
-                type: 'DATE',
+                id: "createdAt",
+                label: "Date",
+                type: "DATE",
                 alwaysOn: true,
               },
 
               {
-                id: 'validated',
-                label: 'Validé',
-                type: 'BOOLEAN',
+                id: "validated",
+                label: "Validé",
+                type: "BOOLEAN",
               },
               {
-                id: 'commandType',
-                label: 'Type',
-                type: 'COMMAND_TYPE',
+                id: "commandType",
+                label: "Type",
+                type: "COMMAND_TYPE",
               },
             ],
             selectOnClick: false,
@@ -272,223 +298,262 @@ const CommandList: React.FC = () => {
               restaurant: (a, b) =>
                 b.restaurant.name.localeCompare(a.restaurant.name),
               createdAt: (a, b) =>
-                moment(a.createdAt).diff(b.createdAt, 'days'),
+                moment(a.createdAt).diff(b.createdAt, "days"),
               payed: (a, b) =>
                 b.payed.status > a.payed.status
                   ? 1
                   : b.payed.status === a.payed.status
-                    ? 0
-                    : -1,
+                  ? 0
+                  : -1,
             },
           }}
         >
           {(command) => {
-            const {
-              _id,
-              code,
-              restaurant,
-              validated,
-              revoked,
-              createdAt,
-            } = command;
+            const { _id, code, restaurant, validated, revoked, createdAt } =
+              command;
 
             return (
               <>
                 <TableCell
+                  className={classes.textHead}
                   style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
+                    fontWeight: !validated && !revoked ? "bold" : undefined,
                   }}
                 >
-                  {`${NumberFormatter.format(code, { minimumIntegerDigits: 5 })} `}
-
-                  {!mdUp && !isRestaurantAdmin && (<span
+                  {`${NumberFormatter.format(code, {
+                    minimumIntegerDigits: 5,
+                  })} `}
+                </TableCell>
+                {mdUp && (
+                  <TableCell
+                    className={classes.textHead}
                     style={{
-                      margin: "0 1vh",
+                      fontWeight: !validated && !revoked ? "bold" : undefined,
                     }}
                   >
                     {restaurant.name}
-                  </span>)}
-                </TableCell>
-
-                {mdUp && <TableCell
-                  style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
-                  }}
-                >
-                  {restaurant.name}
-                </TableCell>}
-
+                  </TableCell>
+                )}
+                {!mdUp && (
+                  <TableCell
+                    className={classes.textHead}
+                    style={{
+                      fontWeight: !validated && !revoked ? "bold" : undefined,
+                    }}
+                  >
+                    {DateFormatter.format(createdAt, true)}
+                  </TableCell>
+                )}
                 <TableCell
+                  className={classes.textHead}
                   style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
+                    fontWeight: !validated && !revoked ? "bold" : undefined,
                   }}
                 >
                   {PriceFormatter.format({
                     amount: command.totalPrice,
-                    currency: 'eur',
+                    currency: "eur",
                   })}
-                </TableCell>
-
-                {mdUp && (<> <TableCell
-                  style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
-                  }}
-                >
-                  {DateFormatter.format(createdAt)}
-                </TableCell>
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {validated ? (
-                      <Check htmlColor="green" />
-                    ) : revoked ? (
-                      <Close htmlColor="red" />
-                    ) : (
-                      <Remove />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <ShowButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedCommand(command);
+                </TableCell>{" "}
+                {mdUp && (
+                  <>
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
                       }}
-                    />
+                    >
+                      {DateFormatter.format(createdAt)}
+                    </TableCell>
 
-                    {!command.validated &&
-                      (<>
-                        <Tooltip title="Valider">
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
+                      }}
+                    >
+                      {validated ? (
+                        <Check htmlColor="green" />
+                      ) : revoked ? (
+                        <Close htmlColor="red" />
+                      ) : (
+                        <Remove />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <ShowButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCommand(command);
+                        }}
+                      />
 
-                          <Button
-                            variant="contained"
-                            style={{
-                              minWidth: 'fit-content',
-                              borderRadius: 4,
-                              padding: 6,
-                              margin: 4,
-                              backgroundColor: 'green',
-                              color: 'white'
-                            }}
-                            onClick={(e: any) => {
+                      {!command.validated && (
+                        <>
+                          <Tooltip title="Valider">
+                            <Button
+                              className={classes.textHead}
+                              variant="contained"
+                              style={{
+                                minWidth: "fit-content",
+                                borderRadius: 4,
+                                padding: 6,
+                                margin: 4,
+                                backgroundColor: "green",
+                                color: "white",
+                              }}
+                              onClick={(e: any) => {
+                                e.stopPropagation();
+                                e.preventDefault();
 
-                              e.stopPropagation();
-                              e.preventDefault();
+                                command &&
+                                  validateCommand(command._id)
+                                    .then((res: any) => {
+                                      enqueueSnackbar("Commande validée", {
+                                        variant: "success",
+                                      });
 
-                              command &&
-                                validateCommand(command._id)
-                                  .then((res: any) => {
-                                    enqueueSnackbar('Commande validée', {
-                                      variant: 'success',
-                                    });
+                                      SendNotification({
+                                        title: `Commande ${`${NumberFormatter.format(
+                                          code,
+                                          {
+                                            minimumIntegerDigits: 5,
+                                          }
+                                        )} `}`,
+                                        body: `${NumberFormatter.format(code, {
+                                          minimumIntegerDigits: 5,
+                                        })} - ${
+                                          restaurant.name
+                                        } - votre commande de ${PriceFormatter.format(
+                                          {
+                                            amount: +command.totalPrice / 100,
+                                            currency: "eur",
+                                          }
+                                        )} a été validée `,
+                                        isRedirectAdmin: false,
+                                        to: new Array(res.data.tokenNavigator),
+                                      });
 
-                                    SendNotification({
-                                      title: "Commande validée",
-                                      body: "Votre commande a été validée ",
-                                      isRedirectAdmin: false,
-                                      to: new Array(res.data.tokenNavigator)
-                                    });
+                                      setRecords(
+                                        records.map((item: any) => {
+                                          if (command._id === item._id) {
+                                            return {
+                                              ...item,
+                                              validated: true,
+                                            };
+                                          }
 
-                                    setRecords(records.map((item: any) => {
+                                          return item;
+                                        })
+                                      );
 
-                                      if (command._id === item._id) {
-
-                                        return {
-                                          ...item,
-                                          validated: true
-                                        }
-
-                                      }
-
-                                      return item
-
-                                    }));
-
-                                    EventEmitter.emit('REFRESH_NAVIGATION_BAR');
-
-                                  })
-                                  .catch(() => {
-                                    enqueueSnackbar('Erreur lors de la validation', {
-                                      variant: 'error',
-                                    });
-                                  });
-                            }}
-                          >
-                            <CheckIcon />
-
-                          </Button>
-                        </Tooltip>
-                        {!revoked && (<Tooltip title="Refuser">
-
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            style={{
-                              minWidth: 'fit-content',
-                              borderRadius: 4,
-                              padding: 6,
-                              margin: 4,
-                            }}
-                            onClick={(e: any) => {
-
-                              e.stopPropagation();
-                              e.preventDefault();
-
-                              command &&
-                                revokeCommand(command._id)
-                                  .then((res: any) => {
-
-                                    enqueueSnackbar('Commande refusée', {
-                                      variant: 'info',
-                                    });
-
-                                    SendNotification({
-                                      title: "Commande refusée",
-                                      body: "Votre commande a été refusée ",
-                                      isRedirectAdmin: false,
-                                      to: new Array(res.data.tokenNavigator)
+                                      EventEmitter.emit(
+                                        "REFRESH_NAVIGATION_BAR"
+                                      );
                                     })
-
-                                    setRecords(records.map((item: any) => {
-
-                                      if (command._id === item._id) {
-                                        return {
-                                          ...item,
-                                          revoked: true
+                                    .catch(() => {
+                                      enqueueSnackbar(
+                                        "Erreur lors de la validation",
+                                        {
+                                          variant: "error",
                                         }
+                                      );
+                                    });
+                              }}
+                            >
+                              <CheckIcon />
+                            </Button>
+                          </Tooltip>
+                          {!revoked && (
+                            <Tooltip title="Refuser">
+                              <Button
+                                className={classes.textHead}
+                                color="primary"
+                                variant="contained"
+                                style={{
+                                  minWidth: "fit-content",
+                                  borderRadius: 4,
+                                  padding: 6,
+                                  margin: 4,
+                                }}
+                                onClick={(e: any) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
 
-                                      }
+                                  command &&
+                                    revokeCommand(command._id)
+                                      .then((res: any) => {
+                                        enqueueSnackbar("Commande refusée", {
+                                          variant: "info",
+                                        });
 
-                                      return item;
+                                        SendNotification({
+                                          title: `Commande ${`${NumberFormatter.format(
+                                            code,
+                                            {
+                                              minimumIntegerDigits: 5,
+                                            }
+                                          )} `}`,
+                                          body: `${NumberFormatter.format(
+                                            code,
+                                            {
+                                              minimumIntegerDigits: 5,
+                                            }
+                                          )} - ${
+                                            restaurant.name
+                                          } - votre commande de ${PriceFormatter.format(
+                                            {
+                                              amount: +command.totalPrice / 100,
+                                              currency: "eur",
+                                            }
+                                          )} a été refusée `,
+                                          isRedirectAdmin: false,
+                                          to: new Array(
+                                            res.data.tokenNavigator
+                                          ),
+                                        });
 
-                                    }))
-                                    EventEmitter.emit('REFRESH_NAVIGATION_BAR');
-                                  })
-                                  .catch(() => {
-                                    enqueueSnackbar(
-                                      'Erreur lors du refus de la commande',
-                                      {
-                                        variant: 'error',
-                                      },
-                                    );
-                                  });
-                            }}
-                          >
-                            <ClearIcon />
+                                        setRecords(
+                                          records.map((item: any) => {
+                                            if (command._id === item._id) {
+                                              return {
+                                                ...item,
+                                                revoked: true,
+                                              };
+                                            }
 
-                          </Button>
-                        </Tooltip>
-                        )}
-
-                      </>)}
-                    <PDFButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        downloadPDF(_id);
-                      }}
-                    />
-                  </TableCell></>)}
+                                            return item;
+                                          })
+                                        );
+                                        EventEmitter.emit(
+                                          "REFRESH_NAVIGATION_BAR"
+                                        );
+                                      })
+                                      .catch(() => {
+                                        enqueueSnackbar(
+                                          "Erreur lors du refus de la commande",
+                                          {
+                                            variant: "error",
+                                          }
+                                        );
+                                      });
+                                }}
+                              >
+                                <ClearIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </>
+                      )}
+                      <PDFButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          downloadPDF(_id);
+                        }}
+                      />
+                    </TableCell>
+                  </>
+                )}
               </>
             );
           }}
@@ -506,7 +571,6 @@ const CommandList: React.FC = () => {
         semiTransparent
         backgroundColor="rgba(0, 0, 0, .7)"
       />
-
     </>
   );
 };

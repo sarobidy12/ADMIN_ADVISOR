@@ -1,10 +1,8 @@
-import axios from 'axios';
-import User from '../models/User.model';
-import Api from '../Api';
-import TokenValidity from '../types/TokenValidity';
-import checkIsPwa from 'check-is-pwa';
-import config from '../config/servers';
-
+import axios from "axios";
+import User from "../models/User.model";
+import Api from "../Api";
+import TokenValidity from "../types/TokenValidity";
+import checkIsPwa from "check-is-pwa";
 
 export type LoginResult = {
   user: User;
@@ -14,17 +12,16 @@ export type LoginResult = {
 
 export const login: (
   login: string,
-  password: string,
+  password: string
 ) => Promise<LoginResult> = async (login, password) => {
-
   const isPwa = checkIsPwa();
 
   try {
 
-    const { data, status } = await Api.post('/login', {
+    const { data, status } = await Api.post("/login", {
       login,
       password,
-      tokenNavigator: sessionStorage.getItem("currentToken")
+      tokenNavigator: sessionStorage.getItem("currentToken"),
     });
 
     if (status === 200) {
@@ -40,19 +37,16 @@ export const login: (
       Api.defaults.headers.authorization = `Bearer ${accessToken}`;
 
       if (isPwa) {
-
         if (!user?.roles.includes("ROLE_RESTAURANT_ADMIN")) {
           return Promise.reject(data);
         }
-
       }
 
       return { user, accessToken, refreshToken };
-
     }
 
-    return Promise.reject(data);
 
+    return Promise.reject(data);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -60,10 +54,10 @@ export const login: (
 
 export const logout: () => Promise<any> = async () => {
   if (Api.defaults.headers) delete Api.defaults.headers.authorization;
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  sessionStorage.removeItem('accessToken');
-  sessionStorage.removeItem('refreshToken');
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
 };
 
 export const register: (data: {
@@ -76,7 +70,7 @@ export const register: (data: {
   password: string;
 }) => Promise<any> = async (data) => {
   try {
-    const reponse = await Api.post('/users/register', data);
+    const reponse = await Api.post("/users/register", data);
     if (reponse.status === 200) {
       return reponse.data;
     } else {
@@ -88,10 +82,10 @@ export const register: (data: {
 };
 
 export const resendConfirmationCode: (token: string) => Promise<any> = async (
-  token,
+  token
 ) => {
   try {
-    const response = await Api.post('/users/resend-confirmation-code', {
+    const response = await Api.post("/users/resend-confirmation-code", {
       token,
     });
     if (response.status === 200) {
@@ -106,7 +100,7 @@ export const resendConfirmationCode: (token: string) => Promise<any> = async (
 
 export const confirm_account: (data: {}) => Promise<any> = async (data) => {
   try {
-    const reponse = await Api.post('/users/confirm-account', data);
+    const reponse = await Api.post("/users/confirm-account", data);
     if (reponse.status === 200) {
       return true;
     } else {
@@ -122,9 +116,9 @@ export const reset_password: (data: {}) => Promise<any> = async (data) => {
     const reponse = await axios(
       `${process.env.REACT_APP_API_URL}/users/reset-password`,
       {
-        method: 'POST',
+        method: "POST",
         data: data,
-      },
+      }
     );
     if (reponse.status === 200) {
       return reponse;
@@ -137,10 +131,10 @@ export const reset_password: (data: {}) => Promise<any> = async (data) => {
 };
 
 export const confirm_reset_password: (data: {}) => Promise<any> = async (
-  data,
+  data
 ) => {
   try {
-    const reponse = await Api.post('/users/confirm-reset-password', data);
+    const reponse = await Api.post("/users/confirm-reset-password", data);
     if (reponse.status === 200) {
       return true;
     } else {
@@ -149,16 +143,15 @@ export const confirm_reset_password: (data: {}) => Promise<any> = async (
   } catch {
     return false;
   }
-
 };
 
 export const checkToken: (
   accessToken: string,
-  refreshToken: string,
+  refreshToken: string
 ) => Promise<TokenValidity | null> = async (accessToken, refreshToken) => {
   try {
     const response = await Api.get<TokenValidity>(
-      `/check-token?access_token=${accessToken}&refresh_token=${refreshToken}`,
+      `/check-token?access_token=${accessToken}&refresh_token=${refreshToken}`
     );
     if (response.status === 200) {
       return response.data;

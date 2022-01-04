@@ -1,26 +1,32 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { makeStyles, Paper, TableCell } from '@material-ui/core';
-import PageHeader from '../components/Admin/PageHeader';
-import { List as ListIcon } from '@material-ui/icons';
-import RestoRecommander from '../models/RestoRecommander.model';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  makeStyles,
+  Paper,
+  TableCell,
+  useMediaQuery,
+  Theme,
+} from "@material-ui/core";
+import PageHeader from "../components/Admin/PageHeader";
+import { List as ListIcon } from "@material-ui/icons";
+import RestoRecommander from "../models/RestoRecommander.model";
 import {
   addRestoRecommander,
   deleteRestoRecommander,
   getRestoRecommandeds,
   updateRestoRecommander,
-} from '../services/restoRecommander';
-import { useSnackbar } from 'notistack';
-import EventEmitter from '../services/EventEmitter';
-import useDeleteSelection from '../hooks/useDeleteSelection';
-import FormDialog from '../components/Common/FormDialog';
+} from "../services/restoRecommander";
+import { useSnackbar } from "notistack";
+import EventEmitter from "../services/EventEmitter";
+import useDeleteSelection from "../hooks/useDeleteSelection";
+import FormDialog from "../components/Common/FormDialog";
 import RestoRecommanderForm, {
   RestoRecommandedFormType,
-} from '../components/Forms/RestoRecommanderForm';
-import DeleteButton from '../components/Common/DeleteButton';
-import useDelete from '../hooks/useDelete';
-import TableContainer, { HeadCell } from '../components/Table/TableContainer';
-import { Loading } from '../components/Common';
-import { useAuth } from '../providers/authentication';
+} from "../components/Forms/RestoRecommanderForm";
+import DeleteButton from "../components/Common/DeleteButton";
+import useDelete from "../hooks/useDelete";
+import TableContainer, { HeadCell } from "../components/Table/TableContainer";
+import { Loading } from "../components/Common";
+import { useAuth } from "../providers/authentication";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,14 +36,13 @@ const useStyles = makeStyles((theme) => ({
 
 const headCells: HeadCell<RestoRecommander>[] = [
   {
-    id: 'restaurant',
-    label: 'Restaurant',
+    id: "restaurant",
+    label: "Restaurant",
     disableSorting: true,
   },
 ];
 
 const RestoRecommanderListPage: React.FC = () => {
-
   const classes = useStyles();
 
   const { isAdmin, isRestaurantAdmin, restaurant } = useAuth();
@@ -48,7 +53,7 @@ const RestoRecommanderListPage: React.FC = () => {
   const [saving, setSaving] = useState<boolean>(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
-  
+
   const modif = useRef<RestoRecommandedFormType>();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -58,20 +63,23 @@ const RestoRecommanderListPage: React.FC = () => {
     {
       onDeleteRecord: (id) =>
         setRecords((v) => v.filter(({ _id }) => _id !== id)),
-    },
+    }
   );
   const { handleDelete } = useDelete(deleteRestoRecommander);
 
   const fetch = useCallback(() => {
     setLoading(true);
     setRecords([]);
-    const filter = (isRestaurantAdmin && restaurant) ? { restaurant: restaurant._id } : undefined
+    const filter =
+      isRestaurantAdmin && restaurant
+        ? { restaurant: restaurant._id }
+        : undefined;
     getRestoRecommandeds(filter)
       .then((data) => {
         setRecords(data);
       })
       .catch(() => {
-        enqueueSnackbar('Erreur lors du chargement...', { variant: 'error' });
+        enqueueSnackbar("Erreur lors du chargement...", { variant: "error" });
       })
       .finally(() => {
         setLoading(false);
@@ -84,15 +92,15 @@ const RestoRecommanderListPage: React.FC = () => {
       if (modif.current && data._id)
         updateRestoRecommander(data._id, data)
           .then(async () => {
-            enqueueSnackbar('Type modifié avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Type modifié avec succès", {
+              variant: "success",
             });
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
-            enqueueSnackbar('Erreur lors de la modification', {
-              variant: 'error',
+            enqueueSnackbar("Erreur lors de la modification", {
+              variant: "error",
             });
           })
           .finally(() => {
@@ -102,15 +110,15 @@ const RestoRecommanderListPage: React.FC = () => {
       else
         addRestoRecommander(data)
           .then(async (res) => {
-            enqueueSnackbar('Type ajouté avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Type ajouté avec succès", {
+              variant: "success",
             });
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
             enqueueSnackbar("Erreur lors de l'ajout", {
-              variant: 'error',
+              variant: "error",
             });
           })
           .finally(() => {
@@ -118,12 +126,11 @@ const RestoRecommanderListPage: React.FC = () => {
             setSaving(false);
           });
     },
-    [enqueueSnackbar],
+    [enqueueSnackbar]
   );
 
-
   const showModification = useCallback((foodType: RestoRecommander) => {
-    return
+    return;
     // const {
     //   _id,
     //   priority,
@@ -143,10 +150,10 @@ const RestoRecommanderListPage: React.FC = () => {
       fetch();
     };
 
-    EventEmitter.on('REFRESH', onRefresh);
+    EventEmitter.on("REFRESH", onRefresh);
 
     return () => {
-      EventEmitter.removeListener('REFRESH', onRefresh);
+      EventEmitter.removeListener("REFRESH", onRefresh);
     };
   }, [fetch]);
 
@@ -154,9 +161,15 @@ const RestoRecommanderListPage: React.FC = () => {
     fetch();
   }, [fetch]);
 
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
+
   return (
     <>
-      <PageHeader title="Recommander un restaurant" subTitle="Liste des restaurant recommander" icon={ListIcon} />
+      <PageHeader
+        title="Recommander un restaurant"
+        subTitle="Liste des restaurant recommander"
+        icon={ListIcon}
+      />
       <Paper className={classes.root}>
         <TableContainer
           headCells={headCells}
@@ -173,15 +186,15 @@ const RestoRecommanderListPage: React.FC = () => {
           emptyPlaceholder="Aucune recommandation"
           options={{
             selectableRows: isAdmin,
-            orderBy: 'priority',
-            order: 'asc',
+            orderBy: "priority",
+            order: "asc",
             enableDragAndDrop: true,
             hasActionsColumn: true,
             filters: [
               {
-                id: 'restaurant',
-                label: 'Restaurant',
-                type: 'RESTAURANT',
+                id: "restaurant",
+                label: "Restaurant",
+                type: "RESTAURANT",
               },
             ],
             onDragEnd: (source, destination) =>
@@ -216,36 +229,35 @@ const RestoRecommanderListPage: React.FC = () => {
           }}
         >
           {(foodType) => {
-            const {
-              _id,
-              restaurant,
-            } = foodType;
+            const { _id, restaurant } = foodType;
 
             return (
               <React.Fragment key={_id}>
                 <TableCell>{restaurant?.name_resto_code}</TableCell>
-                <TableCell>
-                  <DeleteButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setUpdating(true);
-                      handleDelete(_id)
-                        .then(() =>
-                          setRecords((v) =>
-                            v.filter(({ _id: id }) => _id !== id),
-                          ),
-                        )
-                        .finally(() => setUpdating(false));
-                    }}
-                  />
-                </TableCell>
+                {mdUp && (
+                  <TableCell>
+                    <DeleteButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setUpdating(true);
+                        handleDelete(_id)
+                          .then(() =>
+                            setRecords((v) =>
+                              v.filter(({ _id: id }) => _id !== id)
+                            )
+                          )
+                          .finally(() => setUpdating(false));
+                      }}
+                    />
+                  </TableCell>
+                )}
               </React.Fragment>
             );
           }}
         </TableContainer>
       </Paper>
       <FormDialog
-        title={modif.current ? 'Modifier un type' : 'Ajouter un type'}
+        title={modif.current ? "Modifier un type" : "Ajouter un type"}
         onClose={() => {
           setOpenForm(false);
           if (modif) modif.current = undefined;

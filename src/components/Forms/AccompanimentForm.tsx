@@ -110,6 +110,15 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
       })
   }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
 
+  useEffect(() => {
+
+    const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
+
+    setValues((old) => ({ ...old, restaurant: object.restaurant }));
+
+  }, [setValues, sessionStorage.getItem("filterSelected")]);
+  
+  
   return (
     <form
       noValidate

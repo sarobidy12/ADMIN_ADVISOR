@@ -1,27 +1,43 @@
 import {
-  makeStyles, Paper, TableCell, Dialog, DialogActions,
-  DialogContent, DialogTitle, Button,
-  useMediaQuery, Theme
-} from '@material-ui/core';
-import { People as PeopleIcon } from '@material-ui/icons';
-import { useSnackbar } from 'notistack';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PageHeader from '../components/Admin/PageHeader';
-import User from '../models/User.model';
-import { addUser, deleteUser, getUsers, updateUser } from '../services/user';
-import DateFormatter from '../utils/DateFormatter';
-import moment from 'moment';
-import RoleFormatter from '../utils/RoleFormatter';
-import EventEmitter from '../services/EventEmitter';
-import useDeleteSelection from '../hooks/useDeleteSelection';
-import FormDialog from '../components/Common/FormDialog';
-import UserForm, { UserFormType } from '../components/Forms/UserForm';
-import useDelete from '../hooks/useDelete';
-import EditButton from '../components/Common/EditButton';
-import DeleteButton from '../components/Common/DeleteButton';
-import TableContainer, { HeadCell } from '../components/Table/TableContainer';
-import { Loading } from '../components/Common';
-import { deleteRestaurantByName } from '../services/restaurant';
+  makeStyles,
+  Paper,
+  TableCell,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  useMediaQuery,
+  Theme,
+  Tooltip,
+} from "@material-ui/core";
+import { People as PeopleIcon } from "@material-ui/icons";
+import { useSnackbar } from "notistack";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import PageHeader from "../components/Admin/PageHeader";
+import User from "../models/User.model";
+import {
+  addUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+  actionUserValidated,
+} from "../services/user";
+import DateFormatter from "../utils/DateFormatter";
+import moment from "moment";
+import RoleFormatter from "../utils/RoleFormatter";
+import EventEmitter from "../services/EventEmitter";
+import useDeleteSelection from "../hooks/useDeleteSelection";
+import FormDialog from "../components/Common/FormDialog";
+import UserForm, { UserFormType } from "../components/Forms/UserForm";
+import useDelete from "../hooks/useDelete";
+import EditButton from "../components/Common/EditButton";
+import DeleteButton from "../components/Common/DeleteButton";
+import TableContainer, { HeadCell } from "../components/Table/TableContainer";
+import { Loading } from "../components/Common";
+import { deleteRestaurantByName } from "../services/restaurant";
+import EventAvailableIcon from "@material-ui/icons/EventAvailable";
+import NewReleasesIcon from "@material-ui/icons/NewReleases";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,40 +47,39 @@ const useStyles = makeStyles((theme) => ({
 
 const headCells: HeadCell<User>[] = [
   {
-    id: 'name',
-    label: 'Nom complet',
+    id: "name",
+    label: "Nom complet",
   },
   {
-    id: 'email',
-    label: 'Email',
+    id: "email",
+    label: "Email",
   },
   {
-    id: 'phoneNumber',
-    label: 'Téléphone',
+    id: "phoneNumber",
+    label: "Téléphone",
   },
   {
-    id: 'roles',
-    label: 'Rôle',
+    id: "roles",
+    label: "Rôle",
   },
   {
-    id: 'resto',
-    label: 'Restaurant',
+    id: "resto",
+    label: "Restaurant",
   },
   {
-    id: 'createdAt',
+    id: "createdAt",
     label: "Date d'inscription",
   },
 ];
 
-
 const headCellsMobil: HeadCell<User>[] = [
   {
-    id: 'name',
-    label: 'Nom complet',
+    id: "name",
+    label: "Nom complet",
   },
   {
-    id: 'roles',
-    label: 'Rôle',
+    id: "roles",
+    label: "Rôle",
   },
 ];
 
@@ -95,8 +110,8 @@ const UserListPage: React.FC = () => {
         setRecords(data);
       })
       .catch(() => {
-        enqueueSnackbar('Erreur lors du chargement des données...', {
-          variant: 'error',
+        enqueueSnackbar("Erreur lors du chargement des données...", {
+          variant: "error",
         });
       })
       .finally(() => {
@@ -111,15 +126,15 @@ const UserListPage: React.FC = () => {
       if (modif.current && data._id)
         updateUser(data._id, data)
           .then(() => {
-            enqueueSnackbar('Utilisateur modifié avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Utilisateur modifié avec succès", {
+              variant: "success",
             });
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
-            enqueueSnackbar('Erreur lors de la modification', {
-              variant: 'error',
+            enqueueSnackbar("Erreur lors de la modification", {
+              variant: "error",
             });
           })
           .finally(() => {
@@ -129,24 +144,23 @@ const UserListPage: React.FC = () => {
       else
         addUser(data)
           .then(() => {
-            enqueueSnackbar('Utilisateur ajouté avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Utilisateur ajouté avec succès", {
+              variant: "success",
             });
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
-            enqueueSnackbar("Erreur lors de l'ajout", { variant: 'error' });
+            enqueueSnackbar("Erreur lors de l'ajout", { variant: "error" });
           })
           .finally(() => {
             setSaving(false);
           });
     },
-    [enqueueSnackbar],
+    [enqueueSnackbar]
   );
 
   const showModification = useCallback((user: User) => {
-
     const { _id, name, email, phoneNumber, roles, validated } = user;
 
     modif.current = {
@@ -154,49 +168,48 @@ const UserListPage: React.FC = () => {
       email,
       validated,
       phoneNumber,
-      role: roles[0] || '',
+      role: roles[0] || "",
       firstname: name.first,
       lastname: name.last,
-      password: '',
-      confirmPassword: '',
+      password: "",
+      confirmPassword: "",
     };
     setOpenForm(true);
   }, []);
 
   const [showRemoveResto, setShowRemoveResto] = useState({
     show: false,
-    id: '',
-    resto: '',
+    id: "",
+    resto: "",
     loading: false,
   });
 
-  const removeRestoAndUser = useCallback(
-    () => {
-      if (showRemoveResto.id) {
-        setShowRemoveResto((s) => ({ ...s, loading: true }))
-        deleteRestaurantByName(showRemoveResto.resto)
-          .then(() => {
-            handleDelete(showRemoveResto.id)
-              .then(() =>
-                setRecords((v) =>
-                  v.filter(({ _id: id }) => showRemoveResto.id !== id),
-                ),
-              )
-          })
-          .finally(() => setShowRemoveResto({ show: false, id: '', resto: '', loading: false }))
-      }
-    }, [handleDelete, showRemoveResto.id, showRemoveResto.resto]
-  )
+  const removeRestoAndUser = useCallback(() => {
+    if (showRemoveResto.id) {
+      setShowRemoveResto((s) => ({ ...s, loading: true }));
+      deleteRestaurantByName(showRemoveResto.resto)
+        .then(() => {
+          handleDelete(showRemoveResto.id).then(() =>
+            setRecords((v) =>
+              v.filter(({ _id: id }) => showRemoveResto.id !== id)
+            )
+          );
+        })
+        .finally(() =>
+          setShowRemoveResto({ show: false, id: "", resto: "", loading: false })
+        );
+    }
+  }, [handleDelete, showRemoveResto.id, showRemoveResto.resto]);
 
   useEffect(() => {
     const onRefresh = () => {
       fetch();
     };
 
-    EventEmitter.on('REFRESH', onRefresh);
+    EventEmitter.on("REFRESH", onRefresh);
 
     return () => {
-      EventEmitter.removeListener('REFRESH', onRefresh);
+      EventEmitter.removeListener("REFRESH", onRefresh);
     };
   }, [fetch]);
 
@@ -204,7 +217,17 @@ const UserListPage: React.FC = () => {
     fetch();
   }, [fetch]);
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
+
+  const actionUser = (value: boolean, id: string) => (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    actionUserValidated(id, !value).then((item: any) => {
+      setRecords([]);
+      fetch();
+    });
+  };
 
   return (
     <>
@@ -228,40 +251,40 @@ const UserListPage: React.FC = () => {
           selected={selected}
           onSelectedChange={(selected) => setSelected(selected)}
           options={{
-            orderBy: 'name',
+            orderBy: "name",
             hasActionsColumn: true,
             customResolvers: {
               name: (u) => `${u.name.last} ${u.name.first}`,
             },
             filters: [
               {
-                id: 'roles',
-                label: 'Rôle',
-                type: 'STRING',
+                id: "roles",
+                label: "Rôle",
+                type: "STRING",
               },
               {
-                id: 'email',
-                label: 'Email',
-                type: 'STRING',
+                id: "email",
+                label: "Email",
+                type: "STRING",
               },
               {
-                id: 'name',
-                label: 'Nom',
-                type: 'STRING',
+                id: "name",
+                label: "Nom",
+                type: "STRING",
               },
               {
-                id: 'phoneNumber',
-                label: 'Numéro téléphone',
-                type: 'STRING',
+                id: "phoneNumber",
+                label: "Numéro téléphone",
+                type: "STRING",
               },
             ],
             customComparators: {
               name: (a, b) =>
                 `${b.name.last} ${b.name.first}`.localeCompare(
-                  `${a.name.last} ${a.name.first}`,
+                  `${a.name.last} ${a.name.first}`
                 ),
               createdAt: (a, b) =>
-                moment(a.createdAt).diff(b.createdAt, 'days'),
+                moment(a.createdAt).diff(b.createdAt, "days"),
               roles: (a, b) => RoleFormatter.compare(a.roles, b.roles),
             },
             selectOnClick: false,
@@ -269,7 +292,16 @@ const UserListPage: React.FC = () => {
           }}
         >
           {(user) => {
-            const { _id, name, email, phoneNumber, roles, createdAt, resto } = user;
+            const {
+              _id,
+              name,
+              email,
+              phoneNumber,
+              roles,
+              createdAt,
+              resto,
+              validated,
+            } = user;
 
             return (
               <React.Fragment key={_id}>
@@ -281,50 +313,103 @@ const UserListPage: React.FC = () => {
                   )}
                 </TableCell>
 
-                {mdUp && (<><TableCell>{email}</TableCell>
-                  <TableCell>{phoneNumber}</TableCell></>)}
+                {mdUp && (
+                  <>
+                    <TableCell>{email}</TableCell>
+                    <TableCell>{phoneNumber}</TableCell>
+                  </>
+                )}
 
                 <TableCell>{RoleFormatter.format(roles)}</TableCell>
 
-                {mdUp && (<> <TableCell>{resto}</TableCell>
-                  <TableCell>{DateFormatter.format(createdAt)}</TableCell>
-                  <TableCell>
-                    <EditButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        showModification(user);
-                      }}
-                    />
-                    <DeleteButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setUpdating(true);
-                        deleteUser(_id)
-                          .then(() =>
-                            setRecords((v) =>
-                              v.filter(({ _id: id }) => _id !== id),
-                            ),
-                          )
-                          .finally(() => setUpdating(false));
-                      }
-                      }
-                    />
-                  </TableCell></>)}
+                {mdUp && (
+                  <>
+                    {" "}
+                    <TableCell>{resto}</TableCell>
+                    <TableCell>{DateFormatter.format(createdAt)}</TableCell>
+                    <TableCell>
+                      <EditButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          showModification(user);
+                        }}
+                      />
+                      <DeleteButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUpdating(true);
+                          deleteUser(_id)
+                            .then(() =>
+                              setRecords((v) =>
+                                v.filter(({ _id: id }) => _id !== id)
+                              )
+                            )
+                            .finally(() => setUpdating(false));
+                        }}
+                      />
+
+                      <Tooltip title={validated ? "Refuser " : "Valider"}>
+                        <Button
+                          onClick={actionUser(validated, _id)}
+                          style={{
+                            backgroundColor: validated ? "green" : "red",
+                            color: "white",
+                            minWidth: 'fit-content',
+                            borderRadius: 4,
+                            padding: 6,
+                            margin: 4,
+                          }}
+                        >
+                          {validated ? (
+                            <EventAvailableIcon />
+                          ) : (
+                            <NewReleasesIcon />
+                          )}
+                        </Button>
+                      </Tooltip>
+                    </TableCell>
+                  </>
+                )}
               </React.Fragment>
             );
           }}
         </TableContainer>
       </Paper>
-      <Dialog onClose={() => setShowRemoveResto((s) => ({ ...s, show: false, id: '', resto: '' }))} aria-labelledby="simple-dialog-title" open={showRemoveResto.show}>
+      <Dialog
+        onClose={() =>
+          setShowRemoveResto((s) => ({ ...s, show: false, id: "", resto: "" }))
+        }
+        aria-labelledby="simple-dialog-title"
+        open={showRemoveResto.show}
+      >
         <DialogTitle id="simple-dialog-title">Attention</DialogTitle>
         <DialogContent>
-          Cet utilisateur est rattaché à un Restaurant
-          Voulez-vous supprimer le restaurant et l'utilisateur ?
+          Cet utilisateur est rattaché à un Restaurant Voulez-vous supprimer le
+          restaurant et l'utilisateur ?
         </DialogContent>
 
         <DialogActions>
-          <Button variant="text" onClick={() => setShowRemoveResto((s) => ({ ...s, show: false, id: '', resto: '' }))}>Annuler</Button>
-          <Button variant="contained" color={'primary'} disabled={showRemoveResto.loading} onClick={() => removeRestoAndUser()}>Supprimer</Button>
+          <Button
+            variant="text"
+            onClick={() =>
+              setShowRemoveResto((s) => ({
+                ...s,
+                show: false,
+                id: "",
+                resto: "",
+              }))
+            }
+          >
+            Annuler
+          </Button>
+          <Button
+            variant="contained"
+            color={"primary"}
+            disabled={showRemoveResto.loading}
+            onClick={() => removeRestoAndUser()}
+          >
+            Supprimer
+          </Button>
         </DialogActions>
       </Dialog>
       <FormDialog
@@ -334,7 +419,7 @@ const UserListPage: React.FC = () => {
           setOpenForm(false);
         }}
         title={
-          modif.current ? 'Modifier un utilisateur' : 'Ajouter un utilisateur'
+          modif.current ? "Modifier un utilisateur" : "Ajouter un utilisateur"
         }
       >
         <UserForm

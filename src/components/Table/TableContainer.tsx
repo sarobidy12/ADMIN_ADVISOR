@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Checkbox,
   CircularProgress,
@@ -12,47 +12,53 @@ import {
   TableSortLabel,
   useMediaQuery,
   Theme,
-} from '@material-ui/core';
-import { grey } from '@material-ui/core/colors';
-import { DropResult, ResponderProvided } from 'react-beautiful-dnd';
+} from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
+import { DropResult, ResponderProvided } from "react-beautiful-dnd";
 import TableToolbar, {
   Filters,
   FilterValue,
   FilterValues,
-} from './TableToolbar';
-import { useAuth } from '../../providers/authentication';
-import DroppableTableBody from './DroppableTableBody';
-import DraggableRow from './DraggableRow';
-import CustomScrollbar from 'react-custom-scrollbars';
-import moment from 'moment';
+} from "./TableToolbar";
+import { useAuth } from "../../providers/authentication";
+import DroppableTableBody from "./DroppableTableBody";
+import DraggableRow from "./DraggableRow";
+import CustomScrollbar from "react-custom-scrollbars";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   table: {
     marginTop: theme.spacing(3),
-    '& thead th': {
-      fontWeight: '600',
+    "& thead th": {
+      fontWeight: "600",
       color: theme.palette.primary.main,
       backgroundColor: theme.palette.primary.light,
     },
-    '& thead th:not(.MuiTableCell-paddingCheckbox)': {
+    "& thead th:not(.MuiTableCell-paddingCheckbox)": {
       minWidth: 90,
     },
-    '& tbody td': {
-      fontWeight: '300',
+    "& tbody td": {
+      fontWeight: "300",
     },
-    '& tbody tr:nth-child(2n + 1)': {
-      backgroundColor: 'white',
+    "& tbody tr:nth-child(2n + 1)": {
+      backgroundColor: "white",
     },
-    '& tbody tr:not(.empty):hover': {
-      backgroundColor: '#fffbf2',
-      cursor: 'pointer',
+    "& tbody tr:not(.empty):hover": {
+      backgroundColor: "#fffbf2",
+      cursor: "pointer",
     },
-    '& tbody tr.empty td': {
-      textAlign: 'center',
+    "& tbody tr.empty td": {
+      textAlign: "center",
       fontWeight: 600,
     },
-    '& tbody tr:not(.empty):not(.Mui-selected):nth-child(2n)': {
+    "& tbody tr:not(.empty):not(.Mui-selected):nth-child(2n)": {
       backgroundColor: grey[50],
+    },
+  },
+  textHead: {
+    fontSize: "1.25vh",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1vh",
     },
   },
 }));
@@ -61,14 +67,14 @@ export interface HeadCell<T> {
   id: keyof T;
   label: string;
   disableSorting?: boolean;
-  alignment?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
+  alignment?: "left" | "center" | "right" | "justify" | "inherit";
   hideOnAdmin?: boolean;
   hideOnRestaurantAdmin?: boolean;
 }
 
 type RowPerPageOption = number | { value: number; label: string };
 
-const pages: RowPerPageOption[] = [5, 10, 25, { value: -1, label: 'Tous' }];
+const pages: RowPerPageOption[] = [5, 10, 25, { value: -1, label: "Tous" }];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,7 +86,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
 type CustomComparators<T extends { [key: string]: any }> = {
   [key in keyof T]?: (a: T, b: T) => number;
@@ -93,7 +99,7 @@ type CustomResolvers<T extends { [key: string]: any }> = {
 function applyFilters<T extends { [key: string]: any }>(
   array: T[],
   filters: FilterValues<T>,
-  customResolvers?: CustomResolvers<T>,
+  customResolvers?: CustomResolvers<T>
 ) {
   return array.filter((value) => {
     return Object.keys(filters).reduce<boolean>((p, k) => {
@@ -103,14 +109,14 @@ function applyFilters<T extends { [key: string]: any }>(
         customResolver = customResolvers?.[k],
         valueToBeCompared = customResolver ? customResolver(value) : value[k];
       if (filter) {
-        if (typeof filter.value === 'string')
-          return p && new RegExp(filter.value, 'i').test(valueToBeCompared);
+        if (typeof filter.value === "string")
+          return p && new RegExp(filter.value, "i").test(valueToBeCompared);
         else if (
-          typeof filter.value === 'boolean' ||
-          typeof filter.value === 'number'
+          typeof filter.value === "boolean" ||
+          typeof filter.value === "number"
         )
           return p && valueToBeCompared === filter.value;
-        else if (typeof filter.min === 'number')
+        else if (typeof filter.min === "number")
           return (
             p &&
             valueToBeCompared >= filter.min &&
@@ -120,24 +126,30 @@ function applyFilters<T extends { [key: string]: any }>(
           return (
             p &&
             moment(valueToBeCompared).diff(filter.startDate) >= 0 &&
-            moment(valueToBeCompared).diff(filter.endDate, 'days') <= 0
+            moment(valueToBeCompared).diff(filter.endDate, "days") <= 0
           );
-        else if (Object.keys(filter).includes('category')) {
-          const newComparedValue = valueToBeCompared.map((k: any) => k.name.fr)
-          return p && new RegExp(filter.category || '', 'i').test(newComparedValue);
-        }
-        else if (Object.keys(filter).includes('restaurant')) {
-
-
-          return p && new RegExp(filter.restaurant || '', 'i').test(valueToBeCompared?.name);
-        }
-        else if (Object.keys(filter).includes('attributes')) {
-          const newComparedValue = valueToBeCompared.map((k: any) => k.tag)
-          return p && new RegExp(filter.attributes || '', 'i').test(newComparedValue);
-        }
-        else if (Object.keys(filter).includes('allergene')) {
-          const newComparedValue = valueToBeCompared.map((k: any) => k.tag)
-          return p && new RegExp(filter.allergene || '', 'i').test(newComparedValue);
+        else if (Object.keys(filter).includes("category")) {
+          const newComparedValue = valueToBeCompared.map((k: any) => k.name.fr);
+          return (
+            p && new RegExp(filter.category || "", "i").test(newComparedValue)
+          );
+        } else if (Object.keys(filter).includes("restaurant")) {
+          return (
+            p &&
+            new RegExp(filter.restaurant || "", "i").test(
+              valueToBeCompared?.name
+            )
+          );
+        } else if (Object.keys(filter).includes("attributes")) {
+          const newComparedValue = valueToBeCompared.map((k: any) => k.tag);
+          return (
+            p && new RegExp(filter.attributes || "", "i").test(newComparedValue)
+          );
+        } else if (Object.keys(filter).includes("allergene")) {
+          const newComparedValue = valueToBeCompared.map((k: any) => k.tag);
+          return (
+            p && new RegExp(filter.allergene || "", "i").test(newComparedValue)
+          );
         }
       }
 
@@ -149,21 +161,21 @@ function applyFilters<T extends { [key: string]: any }>(
 function getComparator<T extends { [key: string]: any }>(
   order: Order,
   orderBy: keyof T,
-  customComparators?: CustomComparators<T>,
+  customComparators?: CustomComparators<T>
 ): (a: T, b: T) => number {
   if (customComparators && customComparators[orderBy])
-    return order === 'desc'
+    return order === "desc"
       ? (a, b) => (customComparators[orderBy] as (a: T, b: T) => number)(a, b)
       : (a, b) => -(customComparators[orderBy] as (a: T, b: T) => number)(a, b);
 
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator<T>(a, b, orderBy)
     : (a, b) => -descendingComparator<T>(a, b, orderBy);
 }
 
 function stableSort<T>(
   array: T[],
-  comparator: (a: T, b: T) => number,
+  comparator: (a: T, b: T) => number
 ): Promise<T[]> {
   return new Promise<T[]>((resolve, reject) => {
     const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
@@ -215,7 +227,7 @@ interface TableContainerProps<T> {
 }
 
 export default function TableContainer<T extends { _id: string }>(
-  props: TableContainerProps<T>,
+  props: TableContainerProps<T>
 ) {
   const {
     children,
@@ -236,7 +248,7 @@ export default function TableContainer<T extends { _id: string }>(
     setArraySelected,
     toValidateAll,
     toRefuseAll,
-    toReadAll
+    toReadAll,
   } = props;
 
   const classes = useStyles();
@@ -244,7 +256,7 @@ export default function TableContainer<T extends { _id: string }>(
 
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(pages[1] as number);
-  const [order, setOrder] = useState<Order>(options.order || 'asc');
+  const [order, setOrder] = useState<Order>(options.order || "asc");
   const [orderBy, setOrderBy] = useState<keyof T>(options.orderBy);
   const [activatedFilters, setActivatedFilters] = useState<string[]>([]);
   const [filterValues, setFilterValues] = useState<FilterValues<T>>({});
@@ -254,7 +266,7 @@ export default function TableContainer<T extends { _id: string }>(
   useEffect(() => {
     stableSort<T>(
       applyFilters<T>(records, filterValues, options.customResolvers),
-      getComparator<T>(order, orderBy, options.customComparators),
+      getComparator<T>(order, orderBy, options.customComparators)
     ).then((data) => {
       setRows(data);
     });
@@ -273,12 +285,12 @@ export default function TableContainer<T extends { _id: string }>(
   }, [rows, rowsPerPage, page]);
 
   const size = useMemo(
-    () => (rowsPerPage > 0 ? rowsPerPage : (pages[0] as number)),
-    [rowsPerPage],
-  ),
+      () => (rowsPerPage > 0 ? rowsPerPage : (pages[0] as number)),
+      [rowsPerPage]
+    ),
     emptyRows = useMemo(
       () => size - Math.min(size, rows.length - page * size),
-      [page, rows, size],
+      [page, rows, size]
     );
 
   options.selectableRows =
@@ -288,19 +300,17 @@ export default function TableContainer<T extends { _id: string }>(
 
   const handleSelectAllClick: (
     event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
+    checked: boolean
   ) => void = useCallback(
     (_, checked) => {
-
       if (checked) {
         const newSelecteds = records.map((n) => n._id);
         return onSelectedChange(newSelecteds);
       }
 
       onSelectedChange([]);
-
     },
-    [onSelectedChange, records],
+    [onSelectedChange, records]
   );
 
   const handleClick: (id: string) => void = useCallback(
@@ -317,33 +327,30 @@ export default function TableContainer<T extends { _id: string }>(
       } else if (selectedIndex > 0) {
         newSelected = newSelected.concat(
           selected.slice(0, selectedIndex),
-          selected.slice(selectedIndex + 1),
+          selected.slice(selectedIndex + 1)
         );
       }
 
       onSelectedChange(newSelected);
-
     },
 
-    [onSelectedChange, selected],
+    [onSelectedChange, selected]
   );
 
   const isSelected: (id: string) => boolean = useCallback(
     (id) => selected.indexOf(id) !== -1,
-    [selected],
+    [selected]
   );
 
   const onFilterValuesChange: (id: string, value: FilterValue | any) => void = (
     id,
-    value,
+    value
   ) => {
-
     if (setArraySelected) {
       setArraySelected(value as any);
     }
 
     setFilterValues((v) => ({ ...v, [id]: value }));
-
   };
 
   const onDragEnd = useCallback<
@@ -357,16 +364,15 @@ export default function TableContainer<T extends { _id: string }>(
 
       options.onDragEnd?.(r1, r2);
     },
-    [options, rows],
+    [options, rows]
   );
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const tableHead: React.ReactNode = useMemo(() => {
-
     const handleSortRequest = (id: string) => {
-      const isAsc = orderBy === id && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
+      const isAsc = orderBy === id && order === "asc";
+      setOrder(isAsc ? "desc" : "asc");
       setOrderBy(id as keyof T);
       onOrderByChange?.(id as keyof T);
     };
@@ -376,7 +382,6 @@ export default function TableContainer<T extends { _id: string }>(
     return (
       <TableHead>
         <TableRow>
-
           {options.selectableRows && (
             <TableCell padding="checkbox">
               <Checkbox
@@ -384,7 +389,7 @@ export default function TableContainer<T extends { _id: string }>(
                 indeterminate={numSelected > 0 && numSelected < rowCount}
                 checked={rowCount > 0 && numSelected === rowCount}
                 onChange={handleSelectAllClick}
-                inputProps={{ 'aria-label': 'select all' }}
+                inputProps={{ "aria-label": "select all" }}
               />
             </TableCell>
           )}
@@ -400,31 +405,29 @@ export default function TableContainer<T extends { _id: string }>(
             }) =>
               (!hideOnAdmin || isRestaurantAdmin) &&
               (!hideOnRestaurantAdmin || isAdmin) && (
-                <TableCell align={alignment || 'left'} key={id as string}>
+                <TableCell
+                  align={alignment || "left"}
+                  key={id as string}
+                  className={classes.textHead}
+                >
                   {disableSorting ? (
                     label
                   ) : (
                     <TableSortLabel
                       active={orderBy === id}
-                      direction={orderBy === id ? order : 'asc'}
+                      direction={orderBy === id ? order : "asc"}
                       onClick={() => handleSortRequest(id as string)}
                     >
                       {label}
                     </TableSortLabel>
                   )}
                 </TableCell>
-              ),
+              )
           )}
 
-          {
-            mdUp && (
-              <>
-                {options.hasActionsColumn && <TableCell>Actions</TableCell>}
-
-              </>
-            )
-          }
-
+          {mdUp && (
+            <>{options.hasActionsColumn && <TableCell>Actions</TableCell>}</>
+          )}
         </TableRow>
       </TableHead>
     );
@@ -441,7 +444,6 @@ export default function TableContainer<T extends { _id: string }>(
     orderBy,
     records,
   ]);
-
 
   const emptyRow =
     emptyRows > 0 ? (
@@ -461,7 +463,7 @@ export default function TableContainer<T extends { _id: string }>(
           {loading ? (
             <CircularProgress />
           ) : (
-            !rows.length && (emptyPlaceholder || 'Aucune donnée')
+            !rows.length && (emptyPlaceholder || "Aucune donnée")
           )}
         </TableCell>
       </TableRow>
@@ -490,22 +492,22 @@ export default function TableContainer<T extends { _id: string }>(
           setFilterValues((values) => ({
             ...values,
             [id]:
-              type === 'STRING'
-                ? { value: '' }
-                : type === 'CATEGORY'
-                  ? { category: '' }
-                  : type === 'BOOLEAN'
-                    ? { value: false }
-                    : type === 'NUMBER'
-                      ? { min: 0, max: 0 }
-                      : type === 'DATE'
-                        ? {
-                          startDate: moment().subtract(6, 'days').toDate(),
-                          endDate: new Date(),
-                        }
-                        : type === 'COMMAND_TYPE'
-                          ? { value: '' }
-                          : undefined,
+              type === "STRING"
+                ? { value: "" }
+                : type === "CATEGORY"
+                ? { category: "" }
+                : type === "BOOLEAN"
+                ? { value: false }
+                : type === "NUMBER"
+                ? { min: 0, max: 0 }
+                : type === "DATE"
+                ? {
+                    startDate: moment().subtract(6, "days").toDate(),
+                    endDate: new Date(),
+                  }
+                : type === "COMMAND_TYPE"
+                ? { value: "" }
+                : undefined,
           }));
         }}
         onDeactivateFilter={(id) => {
@@ -516,11 +518,11 @@ export default function TableContainer<T extends { _id: string }>(
       <CustomScrollbar
         autoHeight
         autoHide
-        style={{ maxHeight: 'none' }}
+        style={{ maxHeight: "none" }}
         renderView={(props) => (
           <div
             {...props}
-            style={{ ...props.style, maxHeight: 'none', overflowY: 'hidden' }}
+            style={{ ...props.style, maxHeight: "none", overflowY: "hidden" }}
           />
         )}
       >
@@ -530,7 +532,7 @@ export default function TableContainer<T extends { _id: string }>(
             component={
               options.enableDragAndDrop
                 ? DroppableTableBody(onDragEnd)
-                : 'tbody'
+                : "tbody"
             }
           >
             {(rowsPerPage === -1
@@ -543,7 +545,7 @@ export default function TableContainer<T extends { _id: string }>(
               return (
                 <TableRow
                   component={
-                    options.enableDragAndDrop ? DraggableRow(row._id, i) : 'tr'
+                    options.enableDragAndDrop ? DraggableRow(row._id, i) : "tr"
                   }
                   hover
                   key={row._id}
@@ -561,7 +563,7 @@ export default function TableContainer<T extends { _id: string }>(
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{ 'aria-labelledby': labelId }}
+                        inputProps={{ "aria-labelledby": labelId }}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e, c) => handleClick(row._id)}
                       />
@@ -582,11 +584,13 @@ export default function TableContainer<T extends { _id: string }>(
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={(newPage: any, page: number) => {
-          setPage(page)
+          setPage(page);
         }}
         onChangeRowsPerPage={(e: any) => setRowsPerPage(Number(e.target.value))}
-        labelRowsPerPage={'Lignes par page'}
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} of ${count !== -1 ? count : `Aucune donnée`}`}
+        labelRowsPerPage={"Lignes par page"}
+        labelDisplayedRows={({ from, to, count }) =>
+          `${from}-${to} of ${count !== -1 ? count : `Aucune donnée`}`
+        }
         nextIconButtonText="Page suivante"
         backIconButtonText="Page précédente"
       />

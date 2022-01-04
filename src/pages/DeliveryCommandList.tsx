@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   makeStyles,
   Paper,
@@ -6,109 +6,124 @@ import {
   Button,
   Tooltip,
   useMediaQuery,
-  Theme
-} from '@material-ui/core';
+  Theme,
+} from "@material-ui/core";
 import {
   Check,
   Close,
   LocalShipping as LocalShippingIcon,
   Remove,
-} from '@material-ui/icons';
-import { deleteCommand, toValidate, toRefuseAll, CommandLivre, CommandAllLivre } from '../services/commands';
-import PageHeader from '../components/Admin/PageHeader';
-import Command from '../models/Command.model';
-import { useSnackbar } from 'notistack';
-import EventEmitter from '../services/EventEmitter';
-import useDeleteSelection from '../hooks/useDeleteSelection';
-import NumberFormatter from '../utils/NumberFormatter';
-import DateFormatter from '../utils/DateFormatter';
-import PriceFormatter from '../utils/PriceFormatter';
-import moment from 'moment';
-import { useAuth } from '../providers/authentication';
-import PDFButton from '../components/Common/PDFButton';
-import ShowButton from '../components/Common/ShowButton';
-import { useHistory } from 'react-router';
-import CommandDetailsDialog from '../components/Common/CommandDetailsDialog';
-import TableContainer, { HeadCell } from '../components/Table/TableContainer';
-import { Loading } from '../components/Common';
-import { useDispatch, useSelector } from '../utils/redux';
-import { revokeCommand, validateCommand } from '../services/commands';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import DirectionsBikeIcon from '@material-ui/icons/DirectionsBike';
-import SendNotification from '../services/SendNotification';
-import { getAllCommands } from '../actions/commandes.action';
-
+} from "@material-ui/icons";
+import {
+  deleteCommand,
+  toValidate,
+  toRefuseAll,
+  CommandLivre,
+  CommandAllLivre,
+} from "../services/commands";
+import PageHeader from "../components/Admin/PageHeader";
+import Command from "../models/Command.model";
+import { useSnackbar } from "notistack";
+import EventEmitter from "../services/EventEmitter";
+import useDeleteSelection from "../hooks/useDeleteSelection";
+import NumberFormatter from "../utils/NumberFormatter";
+import DateFormatter from "../utils/DateFormatter";
+import PriceFormatter from "../utils/PriceFormatter";
+import moment from "moment";
+import { useAuth } from "../providers/authentication";
+import PDFButton from "../components/Common/PDFButton";
+import ShowButton from "../components/Common/ShowButton";
+import { useHistory } from "react-router";
+import CommandDetailsDialog from "../components/Common/CommandDetailsDialog";
+import TableContainer, { HeadCell } from "../components/Table/TableContainer";
+import { Loading } from "../components/Common";
+import { useDispatch, useSelector } from "../utils/redux";
+import { revokeCommand, validateCommand } from "../services/commands";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
+import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
+import SendNotification from "../services/SendNotification";
+import { getAllCommands } from "../actions/commandes.action";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
   },
+  textHead: {
+    fontSize: "1.25vh",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1vh",
+    },
+  },
 }));
 
 const headCells: HeadCell<Command>[] = [
   {
-    id: 'code',
-    label: 'Numéro de commande',
+    id: "code",
+    label: "Numéro de commande",
   },
   {
-    id: 'restaurant',
-    label: 'Restaurant',
+    id: "restaurant",
+    label: "Restaurant",
   },
   {
-    id: 'shippingTime',
-    label: 'Date de livraison',
+    id: "shippingTime",
+    label: "Date de livraison",
   },
   {
-    id: 'totalPrice',
-    label: 'Montant total',
+    id: "totalPrice",
+    label: "Montant total",
   },
   {
-    id: 'validated',
-    label: 'Validation',
+    id: "validated",
+    label: "Validation",
   },
   {
-    id: 'payed',
-    label: 'Payé',
+    id: "payed",
+    label: "Payé",
   },
   {
-    id: 'hasDelivery',
-    label: 'Livré',
+    id: "hasDelivery",
+    label: "Livré",
   },
   {
-    id: 'optionLivraison',
-    label: 'Option de livraison',
+    id: "optionLivraison",
+    label: "Option de livraison",
   },
 ];
 
 const headCellsMobil: HeadCell<Command>[] = [
   {
-    id: 'code',
-    label: 'Numéro de commande',
+    id: "code",
+    label: "Numéro de commande",
   },
   {
-    id: 'totalPrice',
-    label: 'Montant total',
+    id: "shippingTime",
+    label: "Date de livraison",
+  },
+
+  {
+    id: "totalPrice",
+    label: "Montant total",
   },
 ];
 
 const headCellsMobilIsAdmin: HeadCell<Command>[] = [
   {
-    id: 'code',
-    label: 'Numéro de commande',
+    id: "code",
+    label: "Numéro de commande",
   },
   {
-    id: 'totalPrice',
-    label: 'Montant total',
+    id: "totalPrice",
+    label: "Montant total",
   },
   {
-    id: 'shippingTime',
-    label: 'Date de livraison',
+    id: "shippingTime",
+    label: "Date de livraison",
   },
 ];
 
 const DeliveryCommandList: React.FC = () => {
-
   const classes = useStyles();
 
   const { isRestaurantAdmin, restaurant } = useAuth();
@@ -117,7 +132,7 @@ const DeliveryCommandList: React.FC = () => {
 
   const { data, isLoaded }: any = useSelector(({ commands }: any) => ({
     data: commands.delivery,
-    isLoaded: commands.isLoaded
+    isLoaded: commands.isLoaded,
   }));
 
   const [records, setRecords] = useState<Command[]>([]);
@@ -133,24 +148,23 @@ const DeliveryCommandList: React.FC = () => {
     {
       onDeleteRecord: (id) =>
         setRecords((v) => v.filter(({ _id }) => _id !== id)),
-    },
+    }
   );
 
-  useEffect(
-    () => {
-      setRecords(data);
-    },
-    [data]
-  );
+  useEffect(() => {
+    setRecords(data);
+  }, [data]);
 
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || '' : undefined));
+      await dispatch(
+        getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
+      );
       setLoading(false);
     } catch (e) {
-      enqueueSnackbar('Erreur lors du chargement...', {
-        variant: 'error',
+      enqueueSnackbar("Erreur lors du chargement...", {
+        variant: "error",
       });
     }
   }, [enqueueSnackbar, isRestaurantAdmin, restaurant, dispatch]);
@@ -161,21 +175,19 @@ const DeliveryCommandList: React.FC = () => {
     (id: string) => {
       history.push(`/pdf-command/${id}`);
     },
-    [history],
+    [history]
   );
 
   useEffect(() => {
-
     const onRefresh = () => {
       fetch();
     };
 
-    EventEmitter.on('REFRESH', onRefresh);
+    EventEmitter.on("REFRESH", onRefresh);
 
     return () => {
-      EventEmitter.removeListener('REFRESH', onRefresh);
+      EventEmitter.removeListener("REFRESH", onRefresh);
     };
-
   }, [fetch]);
 
   useEffect(() => {
@@ -185,113 +197,124 @@ const DeliveryCommandList: React.FC = () => {
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {
-
     setUpdating(true);
 
     toValidate(selected)
       .then((res: any) => {
-        SendNotification({
-          title: "Commande validée",
-          body: "Votre commande a été validée",
-          isRedirectAdmin: false,
-          to: res.tokenNavigator
-        })
+        for (let i = 0; i <= res.length; i++) {
+
+          let { name, code, totalPrice, tokenNavigator } = res[i];
+
+          SendNotification({
+            title: `Commande ${`${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} `}`,
+            body: `${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} - ${name} - votre commande de ${PriceFormatter.format({
+              amount: +totalPrice / 100,
+              currency: "eur",
+            })} a été validée `,
+            isRedirectAdmin: false,
+            to: new Array(tokenNavigator),
+          });
+          
+        }
       })
       .finally(() => {
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
       });
-
-  }
+  };
 
   const toRefuseAllSelected = () => {
-
     setUpdating(true);
 
     toRefuseAll(selected)
       .then((res: any) => {
+       for (let i = 0; i <= res.length; i++) {
 
-        SendNotification({
-          title: "Commande refusée",
-          body: "Votre commande a été refusée ",
-          isRedirectAdmin: false,
-          to: res.tokenNavigator
-        })
+          let { name, code, totalPrice, tokenNavigator } = res[i];
+
+          SendNotification({
+            title: `Commande ${`${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} `}`,
+            body: `${NumberFormatter.format(code, {
+              minimumIntegerDigits: 5,
+            })} - ${name} - votre commande de ${PriceFormatter.format({
+              amount: +totalPrice / 100,
+              currency: "eur",
+            })} a été refusée  `,
+            isRedirectAdmin: false,
+            to: new Array(tokenNavigator),
+          });
+          
+        }
       })
       .finally(() => {
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
       });
-
-  }
+  };
 
   const Emporter = (_id: any) => {
-
     CommandLivre(_id)
       .then((res: any) => {
-
-        enqueueSnackbar('Commande Livrée', {
-          variant: 'success',
+        enqueueSnackbar("Commande Livrée", {
+          variant: "success",
         });
-
-        if (res.data.commandType === "delivery") {
 
           SendNotification({
             title: "Commande livrée",
             body: "Votre commande est livrée",
             isRedirectAdmin: false,
-            to: new Array(res.data.tokenNavigator)
-          })
+            to: new Array(res.data.tokenNavigator),
+          });
 
-        }
-
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
-
       })
       .catch(() => {
-        enqueueSnackbar('Erreur lors de la validation', {
-          variant: 'error',
+        enqueueSnackbar("Erreur lors de la validation", {
+          variant: "error",
         });
       });
-  }
+  };
 
   const livreAll = () => {
-
     CommandAllLivre(selected)
       .then((res: any) => {
-
-        enqueueSnackbar('Commande livrée', {
-          variant: 'success',
+        enqueueSnackbar("Commande livrée", {
+          variant: "success",
         });
 
         SendNotification({
           title: "Commande livrée",
           body: "Votre commande est livrée",
           isRedirectAdmin: false,
-          to: res.data.tokenNavigator
-        })
+          to: res.data.tokenNavigator,
+        });
 
-        EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+        EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
-        setSelected([])
+        setSelected([]);
         fetch();
-
       })
       .catch(() => {
-        enqueueSnackbar('Erreur lors de la validation', {
-          variant: 'error',
+        enqueueSnackbar("Erreur lors de la validation", {
+          variant: "error",
         });
       });
-  }
+  };
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   return (
     <>
@@ -313,43 +336,43 @@ const DeliveryCommandList: React.FC = () => {
           onDeleteClick={() => {
             setUpdating(true);
             handleDeleteSelection().finally(() => {
-              EventEmitter.emit('REFRESH_NAVIGATION_BAR');
+              EventEmitter.emit("REFRESH_NAVIGATION_BAR");
               setUpdating(false);
             });
           }}
           loading={loading}
           emptyPlaceholder="Aucune commande"
           options={{
-            order: 'desc',
-            orderBy: 'code',
+            order: "desc",
+            orderBy: "code",
             hasActionsColumn: true,
             filters: [
               {
-                id: 'code',
-                label: 'Numero de commande',
-                type: 'NUMBER',
+                id: "code",
+                label: "Numero de commande",
+                type: "NUMBER",
               },
               {
-                id: 'restaurant',
-                label: 'Restaurant',
-                type: 'RESTAURANT',
+                id: "restaurant",
+                label: "Restaurant",
+                type: "RESTAURANT",
                 alwaysOn: isRestaurantAdmin ? false : true,
               },
               {
-                id: 'createdAt',
-                label: 'Date',
-                type: 'DATE',
+                id: "createdAt",
+                label: "Date",
+                type: "DATE",
                 alwaysOn: true,
               },
               {
-                id: 'validated',
-                label: 'Validé',
-                type: 'BOOLEAN',
+                id: "validated",
+                label: "Validé",
+                type: "BOOLEAN",
               },
               {
-                id: 'commandType',
-                label: 'Type',
-                type: 'COMMAND_TYPE',
+                id: "commandType",
+                label: "Type",
+                type: "COMMAND_TYPE",
               },
             ],
             selectOnClick: false,
@@ -358,13 +381,13 @@ const DeliveryCommandList: React.FC = () => {
               restaurant: (a, b) =>
                 b.restaurant.name.localeCompare(a.restaurant.name),
               createdAt: (a, b) =>
-                moment(a.createdAt).diff(b.createdAt, 'days'),
+                moment(a.createdAt).diff(b.createdAt, "days"),
               payed: (a, b) =>
                 b.payed.status > a.payed.status
                   ? 1
                   : b.payed.status === a.payed.status
-                    ? 0
-                    : -1,
+                  ? 0
+                  : -1,
             },
           }}
         >
@@ -378,133 +401,131 @@ const DeliveryCommandList: React.FC = () => {
               revoked,
               payed: { status: payed },
               optionLivraison,
-              hasDelivery
+              hasDelivery,
             } = command;
 
             return (
               <>
                 <TableCell
+                  className={classes.textHead}
                   style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
+                    fontWeight: !validated && !revoked ? "bold" : undefined,
                   }}
                 >
-                  {`${NumberFormatter.format(code, { minimumIntegerDigits: 5 })} `}
-
-                  {!mdUp && !isRestaurantAdmin && (<span
-                    style={{
-                      margin: "0 1vh",
-                    }}
-                  >
-                    {restaurant.name}
-                  </span>)}
+                  {`${NumberFormatter.format(code, {
+                    minimumIntegerDigits: 5,
+                  })} `}
                 </TableCell>
 
-                {mdUp && (<>
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {restaurant.name}
-                  </TableCell>
-
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {DateFormatter.format(shippingTime, true)}
-                  </TableCell>
-                </>
+                {mdUp && (
+                  <>
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
+                      }}
+                    >
+                      {restaurant.name}
+                    </TableCell>
+                  </>
                 )}
+                <TableCell
+                  className={classes.textHead}
+                  style={{
+                    fontWeight: !validated && !revoked ? "bold" : undefined,
+                  }}
+                >
+                  {DateFormatter.format(shippingTime, true)}
+                </TableCell>
 
                 <TableCell
+                  className={classes.textHead}
                   style={{
-                    fontWeight: !validated && !revoked ? 'bold' : undefined,
+                    fontWeight: !validated && !revoked ? "bold" : undefined,
                   }}
                 >
                   {PriceFormatter.format({
                     amount: command.totalPrice,
-                    currency: 'eur',
+                    currency: "eur",
                   })}
                 </TableCell>
 
-                {mdUp && (<>
-
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {validated ? (
-                      <Check htmlColor="green" />
-                    ) : revoked ? (
-                      <Close htmlColor="red" />
-                    ) : (
-                      <Remove />
-                    )}
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {payed ? (
-                      <Check htmlColor="green" />
-                    ) : (
-                      <Close htmlColor="red" />
-                    )}
-                  </TableCell>
-
-                  <TableCell
-                    style={{
-                      fontWeight: !hasDelivery ? 'bold' : undefined,
-                    }}
-                  >
-                    {hasDelivery ? (
-                      <Check htmlColor="green" />
-                    ) : (
-                      <Close htmlColor="red" />
-                    )}
-                  </TableCell>
-
-                  <TableCell
-                    style={{
-                      fontWeight: !validated && !revoked ? 'bold' : undefined,
-                    }}
-                  >
-                    {optionLivraison === 'behind_the_door'
-                      ? 'Derrière la porte'
-                      : optionLivraison === 'on_the_door'
-                        ? 'Devant la porte'
-                        : "À l'extérieur"}
-                  </TableCell>
-
-
-                  <TableCell>
-                    <ShowButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedCommand(command);
+                {mdUp && (
+                  <>
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
                       }}
-                    />
+                    >
+                      {validated ? (
+                        <Check htmlColor="green" />
+                      ) : revoked ? (
+                        <Close htmlColor="red" />
+                      ) : (
+                        <Remove />
+                      )}
+                    </TableCell>
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
+                      }}
+                    >
+                      {payed ? (
+                        <Check htmlColor="green" />
+                      ) : (
+                        <Close htmlColor="red" />
+                      )}
+                    </TableCell>
 
-                    {
-                      !hasDelivery && (
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !hasDelivery ? "bold" : undefined,
+                      }}
+                    >
+                      {hasDelivery ? (
+                        <Check htmlColor="green" />
+                      ) : (
+                        <Close htmlColor="red" />
+                      )}
+                    </TableCell>
+
+                    <TableCell
+                      className={classes.textHead}
+                      style={{
+                        fontWeight: !validated && !revoked ? "bold" : undefined,
+                      }}
+                    >
+                      {optionLivraison === "behind_the_door"
+                        ? "Derrière la porte"
+                        : optionLivraison === "on_the_door"
+                        ? "Devant la porte"
+                        : "À l'extérieur"}
+                    </TableCell>
+
+                    <TableCell>
+                      <ShowButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCommand(command);
+                        }}
+                      />
+
+                      {!hasDelivery && (
                         <Tooltip title="Livré">
-
                           <Button
                             variant="contained"
                             style={{
-                              minWidth: 'fit-content',
+                              minWidth: "fit-content",
                               borderRadius: 4,
                               padding: 6,
                               margin: 4,
-                              backgroundColor: 'orange',
-                              color: 'white'
+                              backgroundColor: "orange",
+                              color: "white",
                             }}
                             onClick={(e: any) => {
-
                               e.stopPropagation();
                               e.preventDefault();
 
@@ -512,140 +533,154 @@ const DeliveryCommandList: React.FC = () => {
                             }}
                           >
                             <DirectionsBikeIcon />
-
                           </Button>
                         </Tooltip>
-                      )
-                    }
+                      )}
 
-                    {!command.validated &&
-                      (<>
-                        <Tooltip title="Valider">
+                      {!command.validated && (
+                        <>
+                          <Tooltip title="Valider">
+                            <Button
+                              variant="contained"
+                              style={{
+                                minWidth: "fit-content",
+                                borderRadius: 4,
+                                padding: 6,
+                                margin: 4,
+                                backgroundColor: "green",
+                                color: "white",
+                              }}
+                              onClick={(e: any) => {
+                                e.stopPropagation();
+                                e.preventDefault();
 
-                          <Button
-                            variant="contained"
-                            style={{
-                              minWidth: 'fit-content',
-                              borderRadius: 4,
-                              padding: 6,
-                              margin: 4,
-                              backgroundColor: 'green',
-                              color: 'white'
-                            }}
-                            onClick={(e: any) => {
+                                command &&
+                                  validateCommand(command._id)
+                                    .then((res: any) => {
+                                      enqueueSnackbar("Commande validée", {
+                                        variant: "success",
+                                      });
+                                      
+                                      SendNotification({
+                                        title: `Commande ${`${NumberFormatter.format(code, {
+                                          minimumIntegerDigits: 5,
+                                        })} `}`,
+                                        body: `${NumberFormatter.format(code, {
+                                          minimumIntegerDigits: 5,
+                                        })} - ${restaurant.name} - votre commande de ${PriceFormatter.format({
+                                          amount: (+command.totalPrice /100),
+                                          currency: "eur",
+                                        })} a été validée `,
+                                        isRedirectAdmin: false,
+                                        to: new Array(res.data.tokenNavigator),
+                                      });
 
-                              e.stopPropagation();
-                              e.preventDefault();
+                                      setRecords(
+                                        records.map((item: any) => {
+                                          if (command._id === item._id) {
+                                            return {
+                                              ...item,
+                                              validated: true,
+                                            };
+                                          }
 
-                              command &&
-                                validateCommand(command._id)
-                                  .then((res: any) => {
-                                    enqueueSnackbar('Commande validée', {
-                                      variant: 'success',
-                                    });
-
-                                    SendNotification({
-                                      title: "Commande validée",
-                                      body: "Votre commande a été validée",
-                                      isRedirectAdmin: false,
-                                      to: new Array(res.data.tokenNavigator)
+                                          return item;
+                                        })
+                                      );
+                                      EventEmitter.emit(
+                                        "REFRESH_NAVIGATION_BAR"
+                                      );
                                     })
-
-                                    setRecords(records.map((item: any) => {
-
-                                      if (command._id === item._id) {
-                                        return {
-                                          ...item,
-                                          validated: true
+                                    .catch(() => {
+                                      enqueueSnackbar(
+                                        "Erreur lors de la validation",
+                                        {
+                                          variant: "error",
                                         }
-
-                                      }
-
-                                      return item
-
-                                    }))
-                                    EventEmitter.emit('REFRESH_NAVIGATION_BAR');
-                                  })
-                                  .catch(() => {
-                                    enqueueSnackbar('Erreur lors de la validation', {
-                                      variant: 'error',
+                                      );
                                     });
-                                  });
-                            }}
-                          >
-                            <CheckIcon />
+                              }}
+                            >
+                              <CheckIcon />
+                            </Button>
+                          </Tooltip>
+                          {!revoked && (
+                            <Tooltip title="Refuser">
+                              <Button
+                                color="primary"
+                                variant="contained"
+                                style={{
+                                  minWidth: "fit-content",
+                                  borderRadius: 4,
+                                  padding: 6,
+                                  margin: 4,
+                                }}
+                                onClick={(e: any) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
 
-                          </Button>
-                        </Tooltip>
-                        {!revoked && (<Tooltip title="Refuser">
+                                  command &&
+                                    revokeCommand(command._id)
+                                      .then((res: any) => {
+                                        enqueueSnackbar("Commande refusée", {
+                                          variant: "info",
+                                        });
 
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            style={{
-                              minWidth: 'fit-content',
-                              borderRadius: 4,
-                              padding: 6,
-                              margin: 4,
-                            }}
-                            onClick={(e: any) => {
+                                        SendNotification({
+                                          title: `Commande ${`${NumberFormatter.format(code, {
+                                            minimumIntegerDigits: 5,
+                                          })} `}`,
+                                          body: `${NumberFormatter.format(code, {
+                                            minimumIntegerDigits: 5,
+                                          })} - ${restaurant.name} - votre commande de ${PriceFormatter.format({
+                                            amount: (+command.totalPrice /100),
+                                            currency: "eur",
+                                          })} a été refusée `,
+                                          isRedirectAdmin: false,
+                                          to: new Array(res.data.tokenNavigator),
+                                        });
 
-                              e.stopPropagation();
-                              e.preventDefault();
+                                        setRecords(
+                                          records.map((item: any) => {
+                                            if (command._id === item._id) {
+                                              return {
+                                                ...item,
+                                                revoked: true,
+                                              };
+                                            }
 
-                              command &&
-                                revokeCommand(command._id)
-                                  .then((res: any) => {
-
-                                    enqueueSnackbar('Commande refusée', {
-                                      variant: 'info',
-                                    });
-
-                                    SendNotification({
-                                      title: "Commande refusée",
-                                      body: "Votre commande a été refusée",
-                                      isRedirectAdmin: false,
-                                      to: new Array(res.data.tokenNavigator)
-                                    })
-
-                                    setRecords(records.map((item: any) => {
-
-                                      if (command._id === item._id) {
-                                        return {
-                                          ...item,
-                                          revoked: true
-                                        }
-
-                                      }
-
-                                      return item
-
-                                    }))
-                                    EventEmitter.emit('REFRESH_NAVIGATION_BAR');
-                                  })
-                                  .catch(() => {
-                                    enqueueSnackbar(
-                                      'Erreur lors du refus de la commande',
-                                      {
-                                        variant: 'error',
-                                      },
-                                    );
-                                  });
-                            }}
-                          >
-                            <ClearIcon />
-
-                          </Button>
-                        </Tooltip>
-                        )}
-                      </>)}
-                    <PDFButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        downloadPDF(_id);
-                      }}
-                    />
-                  </TableCell></>)}
+                                            return item;
+                                          })
+                                        );
+                                        EventEmitter.emit(
+                                          "REFRESH_NAVIGATION_BAR"
+                                        );
+                                      })
+                                      .catch(() => {
+                                        enqueueSnackbar(
+                                          "Erreur lors du refus de la commande",
+                                          {
+                                            variant: "error",
+                                          }
+                                        );
+                                      });
+                                }}
+                              >
+                                <ClearIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </>
+                      )}
+                      <PDFButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          downloadPDF(_id);
+                        }}
+                      />
+                    </TableCell>
+                  </>
+                )}
               </>
             );
           }}
