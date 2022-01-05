@@ -18,7 +18,6 @@ import { onBackgroundMessage } from "firebase/messaging/sw";
 import firebase from "firebase/compat/app";
 
 const App: FC = () => {
-
   const messaging = getMessaging();
 
   onMessage(messaging, (payload: any) => {
@@ -41,9 +40,33 @@ const App: FC = () => {
         });
     }
   });
- 
+
+  onBackgroundMessage(messaging, (payload: any) => {
+    console.log(
+      "[firebase-messaging-sw.js] Received background message ",
+      payload
+    );
+    // Customize notification here
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then(function (registration) {
+          if (Notification.permission == "granted") {
+            navigator.serviceWorker.getRegistration().then(function (reg: any) {
+              reg.showNotification(payload.notification.title, {
+                body: payload.notification.body,
+                icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+              });
+            });
+          }
+        })
+        .catch(function (err) {
+          console.log("Service worker registration failed, error:", err);
+        });
+    }
+  });
+
   useEffect(() => {
-    
     if (!firebase.messaging.isSupported()) {
       alert(
         "vous ne recevez pas de notification par ce que votre navigateur est incompatible"
