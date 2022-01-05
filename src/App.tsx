@@ -1,5 +1,5 @@
 import { hot } from "react-hot-loader";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState ,useRef} from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { defaultTheme } from "./theme";
@@ -14,33 +14,46 @@ import MomentUtils from "@date-io/moment";
 import { ImageViewerProvider } from "./components/Common/ImageViewer";
 import { onMessageListener } from "./Firebase/Firebase";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { onBackgroundMessage } from "firebase/messaging/sw";
 import firebase from "firebase/compat/app";
 
 const App: FC = () => {
 
   const messaging = getMessaging();
 
-  // onMessage(messaging, (payload: any) => {
-  //   console.log("Message received. ", payload);
-  //   if ("serviceWorker" in navigator) {
-  //     navigator.serviceWorker
-  //       .register("./firebase-messaging-sw.js")
-  //       .then(function (registration) {
-  //         if (Notification.permission == "granted") {
-  //           navigator.serviceWorker.getRegistration().then(function (reg: any) {
-  //             reg.showNotification(payload.notification.title, {
-  //               body: payload.notification.body,
-  //               icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-  //             });
-  //           });
-  //         }
-  //       })
-  //       .catch(function (err) {
-  //         console.log("Service worker registration failed, error:", err);
-  //       });
-  //   }
-  // });
+  const interval = useRef<number>();
+
+  useEffect(() => {
+    interval.current = window.setInterval(() => {
+      
+      console.log("stared");
+
+      onMessage(messaging, (payload: any) => {
+        console.log("Message received. ", payload);
+
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker
+            .register("./firebase-messaging-sw.js")
+            .then(function (registration) {
+              if (Notification.permission == "granted") {
+                navigator.serviceWorker
+                  .getRegistration()
+                  .then(function (reg: any) {
+                    reg.showNotification(payload.notification.title, {
+                      body: payload.notification.body,
+                      icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+                    });
+                  });
+              }
+            })
+            .catch(function (err) {
+              console.log("Service worker registration failed, error:", err);
+            });
+        }
+      });
+    }, 15000);
+
+    return () => window.clearInterval(interval.current);
+  }, []);
 
   useEffect(() => {
     if (!firebase.messaging.isSupported()) {
