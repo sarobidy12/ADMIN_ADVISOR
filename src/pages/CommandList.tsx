@@ -11,6 +11,7 @@ import {
 import {
   Check,
   Close,
+  ContactSupport,
   LocalShipping as LocalShippingIcon,
   Remove,
 } from "@material-ui/icons";
@@ -477,6 +478,7 @@ const CommandList: React.FC = () => {
                                   margin: 4,
                                 }}
                                 onClick={(e: any) => {
+                                  
                                   e.stopPropagation();
                                   e.preventDefault();
 
@@ -486,6 +488,8 @@ const CommandList: React.FC = () => {
                                         enqueueSnackbar("Commande refusée", {
                                           variant: "info",
                                         });
+
+                                        console.log("res.data.tokenNavigator",res.data.tokenNavigator);
 
                                         SendNotification({
                                           title: `Commande ${`${NumberFormatter.format(

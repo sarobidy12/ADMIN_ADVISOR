@@ -22,40 +22,41 @@ const App: FC = () => {
 
   const interval = useRef<number>();
 
-  useEffect(() => {
-    interval.current = window.setInterval(() => {
+  // useEffect(() => {
+  //   interval.current = window.setInterval(() => {
       
-      console.log("stared");
+  //     console.log("stared");
 
-      onMessage(messaging, (payload: any) => {
-        console.log("Message received. ", payload);
+  //     onMessage(messaging, (payload: any) => {
+  //       console.log("Message received. ", payload);
 
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker
-            .register("./firebase-messaging-sw.js")
-            .then(function (registration) {
-              if (Notification.permission == "granted") {
-                navigator.serviceWorker
-                  .getRegistration()
-                  .then(function (reg: any) {
-                    reg.showNotification(payload.notification.title, {
-                      body: payload.notification.body,
-                      icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
-                    });
-                  });
-              }
-            })
-            .catch(function (err) {
-              console.log("Service worker registration failed, error:", err);
-            });
-        }
-      });
-    }, 15000);
+  //       if ("serviceWorker" in navigator) {
+  //         navigator.serviceWorker
+  //           .register("./firebase-messaging-sw.js")
+  //           .then(function (registration) {
+  //             if (Notification.permission == "granted") {
+  //               navigator.serviceWorker
+  //                 .getRegistration()
+  //                 .then(function (reg: any) {
+  //                   reg.showNotification(payload.notification.title, {
+  //                     body: payload.notification.body,
+  //                     icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
+  //                   });
+  //                 });
+  //             }
+  //           })
+  //           .catch(function (err) {
+  //             console.log("Service worker registration failed, error:", err);
+  //           });
+  //       }
+  //     });
+  //   }, 15000);
 
-    return () => window.clearInterval(interval.current);
-  }, []);
+  //   return () => window.clearInterval(interval.current);
+  // }, []);
 
   useEffect(() => {
+    
     if (!firebase.messaging.isSupported()) {
       alert(
         "vous ne recevez pas de notification par ce que votre navigateur est incompatible"
