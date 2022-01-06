@@ -478,18 +478,17 @@ const CommandList: React.FC = () => {
                                   margin: 4,
                                 }}
                                 onClick={(e: any) => {
-                                  
+
                                   e.stopPropagation();
                                   e.preventDefault();
 
                                   command &&
                                     revokeCommand(command._id)
                                       .then((res: any) => {
+
                                         enqueueSnackbar("Commande refusée", {
                                           variant: "info",
                                         });
-
-                                        console.log("res.data.tokenNavigator",res.data.tokenNavigator);
 
                                         SendNotification({
                                           title: `Commande ${`${NumberFormatter.format(
