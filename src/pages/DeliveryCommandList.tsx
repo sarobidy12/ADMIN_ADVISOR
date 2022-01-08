@@ -140,7 +140,6 @@ const DeliveryCommandList: React.FC = () => {
   const [selectedCommand, setSelectedCommand] = useState<Command>();
   const [selected, setSelected] = useState<string[]>([]);
   const [updating, setUpdating] = useState<boolean>(false);
-
   const { enqueueSnackbar } = useSnackbar();
   const { handleDeleteSelection } = useDeleteSelection(
     deleteCommand,
@@ -182,9 +181,7 @@ const DeliveryCommandList: React.FC = () => {
     const onRefresh = () => {
       fetch();
     };
-
     EventEmitter.on("REFRESH", onRefresh);
-
     return () => {
       EventEmitter.removeListener("REFRESH", onRefresh);
     };
@@ -197,29 +194,16 @@ const DeliveryCommandList: React.FC = () => {
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {
+    
     setUpdating(true);
 
     toValidate(selected)
       .then((res: any) => {
-        for (let i = 0; i <= res.length; i++) {
 
-          let { name, code, totalPrice, tokenNavigator } = res[i];
-
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été validée `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-          
-        }
+        enqueueSnackbar("Commande validée", {
+          variant: "success",
+        });
+     
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -234,25 +218,11 @@ const DeliveryCommandList: React.FC = () => {
 
     toRefuseAll(selected)
       .then((res: any) => {
-       for (let i = 0; i <= res.length; i++) {
 
-          let { name, code, totalPrice, tokenNavigator } = res[i];
+        enqueueSnackbar("Commande refusée", {
+          variant: "success",
+        });
 
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été refusée  `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-          
-        }
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -269,12 +239,7 @@ const DeliveryCommandList: React.FC = () => {
           variant: "success",
         });
 
-          SendNotification({
-            title: "Commande livrée",
-            body: "Votre commande est livrée",
-            isRedirectAdmin: false,
-            to: new Array(res.data.tokenNavigator),
-          });
+        
 
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
@@ -294,14 +259,6 @@ const DeliveryCommandList: React.FC = () => {
         enqueueSnackbar("Commande livrée", {
           variant: "success",
         });
-
-        SendNotification({
-          title: "Commande livrée",
-          body: "Votre commande est livrée",
-          isRedirectAdmin: false,
-          to: res.data.tokenNavigator,
-        });
-
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
         setSelected([]);
@@ -560,20 +517,6 @@ const DeliveryCommandList: React.FC = () => {
                                       enqueueSnackbar("Commande validée", {
                                         variant: "success",
                                       });
-                                      
-                                      SendNotification({
-                                        title: `Commande ${`${NumberFormatter.format(code, {
-                                          minimumIntegerDigits: 5,
-                                        })} `}`,
-                                        body: `${NumberFormatter.format(code, {
-                                          minimumIntegerDigits: 5,
-                                        })} - ${restaurant.name} - votre commande de ${PriceFormatter.format({
-                                          amount: (+command.totalPrice /100),
-                                          currency: "eur",
-                                        })} a été validée `,
-                                        isRedirectAdmin: false,
-                                        to: new Array(res.data.tokenNavigator),
-                                      });
 
                                       setRecords(
                                         records.map((item: any) => {
@@ -622,22 +565,9 @@ const DeliveryCommandList: React.FC = () => {
                                   command &&
                                     revokeCommand(command._id)
                                       .then((res: any) => {
+                                        
                                         enqueueSnackbar("Commande refusée", {
                                           variant: "info",
-                                        });
-
-                                        SendNotification({
-                                          title: `Commande ${`${NumberFormatter.format(code, {
-                                            minimumIntegerDigits: 5,
-                                          })} `}`,
-                                          body: `${NumberFormatter.format(code, {
-                                            minimumIntegerDigits: 5,
-                                          })} - ${restaurant.name} - votre commande de ${PriceFormatter.format({
-                                            amount: (+command.totalPrice /100),
-                                            currency: "eur",
-                                          })} a été refusée `,
-                                          isRedirectAdmin: false,
-                                          to: new Array(res.data.tokenNavigator),
                                         });
 
                                         setRecords(

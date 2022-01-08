@@ -2,13 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import serviceWorker from "./serviceWorker";
+import * as serviceWorker from './serviceWorker';
 import reportWebVitals from "./reportWebVitals";
 import store from "./config/store";
 import { Provider } from "react-redux";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
-import { InitialiseFirebase } from "./Firebase/Firebase";
+import { initializeFirebase } from "./Firebase/Firebase";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,8 +19,8 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-serviceWorker();
+serviceWorker.register();
 
-InitialiseFirebase();
+initializeFirebase();
 
 reportWebVitals(console.log);

@@ -1,23 +1,23 @@
-import { useSnackbar } from 'notistack';
+import { useSnackbar } from "notistack";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
-} from 'react';
-import { useLocation } from 'react-router';
-import Api from '../Api';
-import Restaurant from '../models/Restaurant.model';
-import User from '../models/User.model';
+} from "react";
+import { useLocation } from "react-router";
+import Api from "../Api";
+import Restaurant from "../models/Restaurant.model";
+import User from "../models/User.model";
 import {
   checkToken,
   login as signin,
   logout as signout,
-} from '../services/auth';
-import { getOneRestaurant } from '../services/restaurant';
-import { getMe } from '../services/user';
-import RoleFormatter from '../utils/RoleFormatter';
+} from "../services/auth";
+import { getOneRestaurant } from "../services/restaurant";
+import { getMe } from "../services/user";
+import RoleFormatter from "../utils/RoleFormatter";
 
 export type AuthContext = {
   initialized: boolean;
@@ -31,7 +31,8 @@ export type AuthContext = {
   login: (
     username: string,
     password: string,
-    rememberMe?: boolean,
+    tokenNavigator: string,
+    rememberMe?: boolean
   ) => Promise<void>;
   logout: () => Promise<void>;
   refreshRestaurant: () => Promise<void>;
@@ -51,15 +52,15 @@ const authContext = createContext<AuthContext>({
 export const AuthProvider: React.FC = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | undefined>(() => {
     return (
-      localStorage.getItem('accessToken') ||
-      sessionStorage.getItem('accessToken') ||
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken") ||
       undefined
     );
   });
   const [refreshToken, setRefreshToken] = useState<string | undefined>(() => {
     return (
-      localStorage.getItem('refreshToken') ||
-      sessionStorage.getItem('refreshToken') ||
+      localStorage.getItem("refreshToken") ||
+      sessionStorage.getItem("refreshToken") ||
       undefined
     );
   });
@@ -70,10 +71,16 @@ export const AuthProvider: React.FC = ({ children }) => {
   const location = useLocation();
 
   const login = useCallback(
-    async (username: string, password: string, rememberMe?: boolean) => {
+    async (
+      username: string,
+      password: string,
+      tokenNavigator: string,
+      rememberMe?: boolean
+    ) => {
       const { user, accessToken, refreshToken } = await signin(
         username,
         password,
+        tokenNavigator
       );
       if (RoleFormatter.hasRestaurantAdminRole(user.roles)) {
         setRestaurant(await getOneRestaurant({ admin: user._id }));
@@ -81,15 +88,15 @@ export const AuthProvider: React.FC = ({ children }) => {
       setUser(user);
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      sessionStorage.setItem('accessToken', accessToken);
-      sessionStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
 
       if (rememberMe) {
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
       }
     },
-    [],
+    []
   );
 
   const refreshRestaurant = useCallback(async () => {
@@ -108,25 +115,21 @@ export const AuthProvider: React.FC = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    
     (async () => {
-
-      console.log("accessToken",accessToken);
-      console.log("refreshToken",refreshToken);
-      
       if (accessToken && refreshToken) {
         try {
           const tokenValidity = await checkToken(accessToken, refreshToken);
           let at: string = accessToken;
-          if (tokenValidity?.validity === 'expired') {
+          if (tokenValidity?.validity === "expired") {
             const { access_token, refresh_token } = tokenValidity;
             setAccessToken(access_token);
             setRefreshToken(refresh_token);
             at = access_token;
-          } else if (tokenValidity?.validity === 'invalid') {
-            throw new Error('Invalid token');
+          } else if (tokenValidity?.validity === "invalid") {
+            throw new Error("Invalid token");
           }
           if (!Api.defaults.headers) Api.defaults.headers = {};
+
           Api.defaults.headers.authorization = `Bearer ${at}`;
 
           const user = await getMe();
@@ -135,8 +138,8 @@ export const AuthProvider: React.FC = ({ children }) => {
             setRestaurant(await getOneRestaurant({ admin: user._id }));
           }
         } catch {
-          enqueueSnackbar('Session expirée. Veuillez vous reconnecter', {
-            variant: 'warning',
+          enqueueSnackbar("Session expirée. Veuillez vous reconnecter", {
+            variant: "warning",
           });
           logout();
         } finally {

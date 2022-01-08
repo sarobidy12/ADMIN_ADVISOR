@@ -111,10 +111,12 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
   }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
 
   useEffect(() => {
-
+    
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    setValues((old) => ({ ...old, restaurant: object.restaurant }));
+    if(object){
+      setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
+    }
 
   }, [setValues, sessionStorage.getItem("filterSelected")]);
   
@@ -138,6 +140,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
           <Typography variant="h5" gutterBottom>
             Nom
           </Typography>
+          
           <TextField
             name="name"
             placeholder="Nom"
@@ -152,6 +155,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
           <Typography variant="h5" gutterBottom>
             Prix
           </Typography>
+
           <TextField
             name="price"
             placeholder="Prix"
@@ -197,6 +201,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
               />
             </>
           )}
+
           <Box height={theme.spacing(2)} />
           {/* <Grid item>
             <FormControlLabel

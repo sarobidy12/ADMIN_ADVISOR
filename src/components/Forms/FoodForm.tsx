@@ -321,10 +321,11 @@ const FoodForm: React.FC<FoodFormProps> = ({
   );
 
   useEffect(() => {
-
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    setValues((old) => ({ ...old, restaurant: object.restaurant }));
+    if(object){
+      setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
+    }
 
   }, [setValues, sessionStorage.getItem("filterSelected")]);
 

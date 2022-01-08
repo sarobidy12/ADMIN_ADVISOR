@@ -10,34 +10,35 @@ import {
   TextField,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import { grey } from '@material-ui/core/colors';
-import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import logo from '../assets/img/logo.png';
-import { useAuth } from '../providers/authentication';
-import FormValidation from '../utils/FormValidation';
-import querystring from 'querystring';
-import background from '../assets/img/gradient_background_with_geometric_elements.jpg';
-import { motion } from 'framer-motion';
-import { Loading } from '../components/Common';
-import { Link } from 'react-router-dom';
-import { useDispatch } from '../utils/redux';
-import { setLoged } from '../actions/event.action';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-
+} from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
+import { useSnackbar } from "notistack";
+import React, { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import logo from "../assets/img/logo.png";
+import { useAuth } from "../providers/authentication";
+import FormValidation from "../utils/FormValidation";
+import querystring from "querystring";
+import background from "../assets/img/gradient_background_with_geometric_elements.jpg";
+import { motion } from "framer-motion";
+import { Loading } from "../components/Common";
+import { Link } from "react-router-dom";
+import { useDispatch } from "../utils/redux";
+import { setLoged } from "../actions/event.action";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import firebase from "firebase/compat/app";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100vw',
-    height: '100vh',
+    width: "100vw",
+    height: "100vh",
     backgroundColor: grey[300],
     backgroundImage: `url(${background})`,
-    backgroundSize: 'cover',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundSize: "cover",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     height: 40,
@@ -48,40 +49,35 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
   },
   input: {
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
   },
   error: {
     border: `1px solid ${theme.palette.primary.main}`,
-    '& MuiFormHelperText-root': {
+    "& MuiFormHelperText-root": {
       color: theme.palette.primary.main,
     },
   },
   forgotPassword: {
     color: theme.palette.primary.main,
-    marginTop: '25px'
+    marginTop: "25px",
   },
   loginButton: {
-    textTransform: 'none',
+    textTransform: "none",
   },
 }));
 
 const LoginPage: React.FC = () => {
-
   const classes = useStyles();
-
+  const messaging = getMessaging();
   const dispatch = useDispatch();
-
   const theme = useTheme();
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [logingIn, setLogingIn] = useState(false);
   const [formValidation, setFormValidation] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const [error, setError] = useState<any>({})
-
+  const [error, setError] = useState<any>({});
   const { login } = useAuth();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -89,6 +85,28 @@ const LoginPage: React.FC = () => {
   const history = useHistory();
 
   const location = useLocation();
+
+  const sendLogin = async (tokenNavigator: string) => {
+    try {
+      await login(username, password, tokenNavigator, rememberMe);
+
+      enqueueSnackbar("Succès de la connexion", { variant: "success" });
+
+      await dispatch(setLoged(true));
+
+      const redirectTo: string = querystring.parse(location.search.slice(1))
+        .redirectTo as string;
+      if (redirectTo) history.push(redirectTo);
+      else history.push("/");
+      setError({});
+    } catch (e) {
+      setError(e);
+
+      enqueueSnackbar("Erreur lors de la connexion", { variant: "error" });
+    } finally {
+      setLogingIn(false);
+    }
+  };
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -101,58 +119,73 @@ const LoginPage: React.FC = () => {
     )
       return;
 
-    if (!logingIn) {
+    if (!firebase.messaging.isSupported()) {
 
+      sendLogin("");
+      enqueueSnackbar("Vous ne recevez pas de notification", { variant: "error" });
+
+    }
+
+    if (!logingIn) {
       setLogingIn(true);
 
-      try {
+      getToken(messaging, {
+        vapidKey:
+          "BKp2V7yB5SASi2jkEw4446MOY-8w7djP4UNPUjzP-x_T3OCQAVhtNb6LWh_5WAqZG1Cga4OgnP3Tu4_gntr_ZTo",
+      })
+        .then((currentToken: any) => {
+          
+          if (currentToken) {
+            
+            console.log("currentToken-->", currentToken);
 
-        await login(username, password, rememberMe);
+            sendLogin(currentToken);
 
-        enqueueSnackbar('Succès de la connexion', { variant: 'success' });
+          } else {
+            // Show permission request UI
+            console.log(
+              "No registration token available. Request permission to generate one."
+            );
+            // ...
+          }
+        })
+        .catch((err) => {
 
-        await dispatch(setLoged(true));
+          console.log("err-->",err);
 
-        const redirectTo: string = querystring.parse(location.search.slice(1))
-          .redirectTo as string;
-        if (redirectTo) history.push(redirectTo);
-        else history.push('/');
-        setError({});
+          enqueueSnackbar("Erreur lors de la connexion", { variant: "error" });
 
+          setLogingIn(false);
 
-      } catch (e) {
-        setError(e);
-
-        enqueueSnackbar('Erreur lors de la connexion', { variant: 'error' });
-      } finally {
-        setLogingIn(false);
-      }
+        });
     }
   };
 
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <>
       <Loading open={loading} />
+
       <img
         onLoad={() => setLoading(false)}
         alt="placeholder"
         src={background}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
+
       <div className={classes.root}>
         <motion.div
           initial={{ opacity: 0, y: -100 }}
           animate={
             !loading
               ? {
-                opacity: 1,
-                y: 0,
-                transition: {
-                  duration: 0.8,
-                },
-              }
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    duration: 0.8,
+                  },
+                }
               : undefined
           }
         >
@@ -177,15 +210,13 @@ const LoginPage: React.FC = () => {
                 helperText={
                   formValidation && !FormValidation.isEmail(username)
                     ? "Nom d'utilisateur invalide"
-                    : ''
+                    : ""
                 }
                 value={username}
                 onChange={({ target: { value } }) => setUsername(value)}
-                style={
-                  {
-                    minWidth: fullScreen ? '100%' : 420,
-                  }
-                }
+                style={{
+                  minWidth: fullScreen ? "100%" : 420,
+                }}
                 fullWidth
                 className={classes.input}
                 variant="outlined"
@@ -196,18 +227,16 @@ const LoginPage: React.FC = () => {
                 error={formValidation && !FormValidation.isNotEmpty(password)}
                 helperText={
                   formValidation && !FormValidation.isNotEmpty(password)
-                    ? 'Le mot de passe ne doit pas être vide'
-                    : ''
+                    ? "Le mot de passe ne doit pas être vide"
+                    : ""
                 }
                 value={password}
                 onChange={({ target: { value } }) => setPassword(value)}
                 fullWidth
                 className={classes.input}
-                style={
-                  {
-                    minWidth: fullScreen ? '100%' : 420,
-                  }
-                }
+                style={{
+                  minWidth: fullScreen ? "100%" : 420,
+                }}
                 variant="outlined"
                 type="password"
                 placeholder="Mot de passe"
@@ -227,7 +256,6 @@ const LoginPage: React.FC = () => {
                     label="Se souvenir de moi"
                   />
                 </Grid>
-
               </Grid>
               <Box height={theme.spacing(2)} />
               <Button
@@ -239,7 +267,7 @@ const LoginPage: React.FC = () => {
                 fullWidth
               >
                 {!logingIn ? (
-                  'Se connecter'
+                  "Se connecter"
                 ) : (
                   <CircularProgress color="inherit" size="25.45px" />
                 )}

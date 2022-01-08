@@ -40,8 +40,7 @@ import {
   toValidate,
   toRefuseAll,
 } from "../services/commands";
-import CheckIcon from "@material-ui/icons/Check";
-import SendNotification from "../services/SendNotification";
+import CheckIcon from "@material-ui/icons/Check"; 
 import ClearIcon from "@material-ui/icons/Clear";
 
 const useStyles = makeStyles((theme) => ({
@@ -120,13 +119,11 @@ const OnSiteCommandList: React.FC = () => {
 
     if (!data.validated) {
       validateCommand(data._id).then((res: any) => {
-        SendNotification({
-          title: "Commande commande",
-          body: "Votre Commande a été validé ",
-          isRedirectAdmin: false,
-          to: new Array(res.tokenNavigator),
-        });
 
+        enqueueSnackbar("Commande Livrée", {
+          variant: "success",
+        });
+        
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
 
         setRecords((records) => {
@@ -220,23 +217,11 @@ const OnSiteCommandList: React.FC = () => {
 
     toValidate(selected)
       .then((res: any) => {
-        for (let i = 0; i <= res.length; i++) {
-          let { name, code, totalPrice, tokenNavigator } = res[i];
 
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été validée `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-        }
+        enqueueSnackbar("Commande validée", {
+          variant: "success",
+        });
+
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -251,25 +236,11 @@ const OnSiteCommandList: React.FC = () => {
 
     toRefuseAll(selected)
       .then((res: any) => {
-        for (let i = 0; i <= res.length; i++) {
 
-          let { name, code, totalPrice, tokenNavigator } = res[i];
-
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été refusée  `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-          
-        }
+        enqueueSnackbar("Commande refusée", {
+          variant: "success",
+        });
+      
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -459,29 +430,9 @@ const OnSiteCommandList: React.FC = () => {
                                 command &&
                                   validateCommand(command._id)
                                     .then((res: any) => {
+
                                       enqueueSnackbar("Commande validée", {
                                         variant: "success",
-                                      });
-
-                                      SendNotification({
-                                        title: `Commande ${`${NumberFormatter.format(
-                                          code,
-                                          {
-                                            minimumIntegerDigits: 5,
-                                          }
-                                        )} `}`,
-                                        body: `${NumberFormatter.format(code, {
-                                          minimumIntegerDigits: 5,
-                                        })} - ${
-                                          restaurant.name
-                                        } - votre commande de ${PriceFormatter.format(
-                                          {
-                                            amount: +command.totalPrice / 100,
-                                            currency: "eur",
-                                          }
-                                        )} a été validée `,
-                                        isRedirectAdmin: false,
-                                        to: new Array(res.data.tokenNavigator),
                                       });
 
                                       setRecords(
@@ -531,34 +482,9 @@ const OnSiteCommandList: React.FC = () => {
                                   command &&
                                     revokeCommand(command._id)
                                       .then((res: any) => {
+                                        
                                         enqueueSnackbar("Commande refusée", {
                                           variant: "info",
-                                        });
-
-                                        SendNotification({
-                                          title: `Commande ${`${NumberFormatter.format(
-                                            code,
-                                            {
-                                              minimumIntegerDigits: 5,
-                                            }
-                                          )} `}`,
-                                          body: `${NumberFormatter.format(
-                                            code,
-                                            {
-                                              minimumIntegerDigits: 5,
-                                            }
-                                          )} - ${
-                                            restaurant.name
-                                          } - votre commande de ${PriceFormatter.format(
-                                            {
-                                              amount: +command.totalPrice / 100,
-                                              currency: "eur",
-                                            }
-                                          )} a été refusée `,
-                                          isRedirectAdmin: false,
-                                          to: new Array(
-                                            res.data.tokenNavigator
-                                          ),
                                         });
 
                                         setRecords(

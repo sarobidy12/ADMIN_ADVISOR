@@ -45,7 +45,6 @@ import {
 import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import DirectionsRunIcon from "@material-ui/icons/DirectionsRun";
-import SendNotification from "../services/SendNotification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -179,27 +178,16 @@ const TakeawayCommandList: React.FC = () => {
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {
+    
     setUpdating(true);
 
     toValidate(selected)
       .then((res: any) => {
-        for (let i = 0; i <= res.length; i++) {
-          let { name, code, totalPrice, tokenNavigator } = res[i];
 
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été validée `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-        }
+        enqueueSnackbar("Commande validée", {
+          variant: "success",
+        });
+
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -214,23 +202,11 @@ const TakeawayCommandList: React.FC = () => {
 
     toRefuseAll(selected)
       .then((res: any) => {
-        for (let i = 0; i <= res.length; i++) {
-          let { name, code, totalPrice, tokenNavigator } = res[i];
 
-          SendNotification({
-            title: `Commande ${`${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} `}`,
-            body: `${NumberFormatter.format(code, {
-              minimumIntegerDigits: 5,
-            })} - ${name} - votre commande de ${PriceFormatter.format({
-              amount: +totalPrice / 100,
-              currency: "eur",
-            })} a été refusée  `,
-            isRedirectAdmin: false,
-            to: new Array(tokenNavigator),
-          });
-        }
+        enqueueSnackbar("Commande refusée", {
+          variant: "success",
+        });
+
       })
       .finally(() => {
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
@@ -498,29 +474,9 @@ const TakeawayCommandList: React.FC = () => {
                                 command &&
                                   validateCommand(command._id)
                                     .then((res: any) => {
+
                                       enqueueSnackbar("Commande validée", {
                                         variant: "success",
-                                      });
-
-                                      SendNotification({
-                                        title: `Commande ${`${NumberFormatter.format(
-                                          code,
-                                          {
-                                            minimumIntegerDigits: 5,
-                                          }
-                                        )} `}`,
-                                        body: `${NumberFormatter.format(code, {
-                                          minimumIntegerDigits: 5,
-                                        })} - ${
-                                          restaurant.name
-                                        } - votre commande de ${PriceFormatter.format(
-                                          {
-                                            amount: +command.totalPrice / 100,
-                                            currency: "eur",
-                                          }
-                                        )} a été validée `,
-                                        isRedirectAdmin: false,
-                                        to: new Array(res.data.tokenNavigator),
                                       });
 
                                       setRecords(
@@ -571,34 +527,9 @@ const TakeawayCommandList: React.FC = () => {
                                   command &&
                                     revokeCommand(command._id)
                                       .then((res: any) => {
+
                                         enqueueSnackbar("Commande refusée", {
                                           variant: "info",
-                                        });
-
-                                        SendNotification({
-                                          title: `Commande ${`${NumberFormatter.format(
-                                            code,
-                                            {
-                                              minimumIntegerDigits: 5,
-                                            }
-                                          )} `}`,
-                                          body: `${NumberFormatter.format(
-                                            code,
-                                            {
-                                              minimumIntegerDigits: 5,
-                                            }
-                                          )} - ${
-                                            restaurant.name
-                                          } - votre commande de ${PriceFormatter.format(
-                                            {
-                                              amount: +command.totalPrice / 100,
-                                              currency: "eur",
-                                            }
-                                          )} a été refusée `,
-                                          isRedirectAdmin: false,
-                                          to: new Array(
-                                            res.data.tokenNavigator
-                                          ),
                                         });
 
                                         setRecords(

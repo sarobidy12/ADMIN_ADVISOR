@@ -12,20 +12,19 @@ export type LoginResult = {
 
 export const login: (
   login: string,
-  password: string
-) => Promise<LoginResult> = async (login, password) => {
+  password: string,
+  tokenNavigator: string
+) => Promise<LoginResult> = async (login, password,tokenNavigator) => {
   const isPwa = checkIsPwa();
 
   try {
-
     const { data, status } = await Api.post("/login", {
       login,
       password,
-      tokenNavigator: sessionStorage.getItem("currentToken"),
+      tokenNavigator: tokenNavigator
     });
 
     if (status === 200) {
-
       const {
         user,
         access_token: accessToken,
@@ -44,7 +43,6 @@ export const login: (
 
       return { user, accessToken, refreshToken };
     }
-
 
     return Promise.reject(data);
   } catch (error) {
