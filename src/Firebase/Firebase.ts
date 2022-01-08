@@ -44,6 +44,7 @@ export const onMessageListener = () =>
 
   
 export const initializeFirebase = () => {
+
   firebase.initializeApp({
     apiKey: "AIzaSyAdrpwqbREnk2raUqm9YGDtMD_qf2oZt8k",
     authDomain: "advisor-b7d65.firebaseapp.com",
@@ -83,4 +84,5 @@ export const initializeFirebase = () => {
     }
 
   });
+  
 };
