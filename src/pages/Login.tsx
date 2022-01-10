@@ -131,7 +131,7 @@ const LoginPage: React.FC = () => {
 
       getToken(messaging, {
         vapidKey:
-          "BKp2V7yB5SASi2jkEw4446MOY-8w7djP4UNPUjzP-x_T3OCQAVhtNb6LWh_5WAqZG1Cga4OgnP3Tu4_gntr_ZTo",
+          "BJmO7UXc0phrIYym8zDuP2Hs3hhigy9J_r_Yq6Vn7BW6UQbBq-QnAH-SpbAuKOBQsQieIsk-aigPrI6lmsUOR9g",
       })
         .then((currentToken: any) => {
           
