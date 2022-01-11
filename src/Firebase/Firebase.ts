@@ -2,14 +2,14 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBt5xCXINLzU4B2r9C9KdISVlqNeLnbMH8",
-  authDomain: "menuadvisor-f06d2.firebaseapp.com",
-  databaseURL: "https://menuadvisor-f06d2.firebaseio.com",
-  projectId: "menuadvisor-f06d2",
-  storageBucket: "menuadvisor-f06d2.appspot.com",
-  messagingSenderId: "886054910744",
-  appId: "1:886054910744:web:78aa961c8e157fec3e7c6d",
-  measurementId: "G-FB5SQB4ZFY"
+  apiKey: "AIzaSyAdrpwqbREnk2raUqm9YGDtMD_qf2oZt8k",
+  authDomain: "advisor-b7d65.firebaseapp.com",
+  databaseURL: "https://advisor-b7d65-default-rtdb.firebaseio.com",
+  projectId: "advisor-b7d65",
+  storageBucket: "advisor-b7d65.appspot.com",
+  messagingSenderId: "1042310334359",
+  appId: "1:1042310334359:web:063c67719a4eb1a15c26d2",
+  measurementId: "G-NTZE8BX507"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -47,21 +47,21 @@ export const onMessageListener = () =>
 export const initializeFirebase = () => {
 
   firebase.initializeApp({
-    apiKey: "AIzaSyBt5xCXINLzU4B2r9C9KdISVlqNeLnbMH8",
-    authDomain: "menuadvisor-f06d2.firebaseapp.com",
-    databaseURL: "https://menuadvisor-f06d2.firebaseio.com",
-    projectId: "menuadvisor-f06d2",
-    storageBucket: "menuadvisor-f06d2.appspot.com",
-    messagingSenderId: "886054910744",
-    appId: "1:886054910744:web:78aa961c8e157fec3e7c6d",
-    measurementId: "G-FB5SQB4ZFY"
+    apiKey: "AIzaSyAdrpwqbREnk2raUqm9YGDtMD_qf2oZt8k",
+    authDomain: "advisor-b7d65.firebaseapp.com",
+    databaseURL: "https://advisor-b7d65-default-rtdb.firebaseio.com",
+    projectId: "advisor-b7d65",
+    storageBucket: "advisor-b7d65.appspot.com",
+    messagingSenderId: "1042310334359",
+    appId: "1:1042310334359:web:063c67719a4eb1a15c26d2",
+    measurementId: "G-NTZE8BX507"
   });
 
   const messaging = firebase.messaging();
 
   messaging.onMessage((payload) => {
     
-    //For showing firebase notification in app (not background)
+    // For showing firebase notification in app (not background)
 
     console.log("onMessage");
 
@@ -73,7 +73,7 @@ export const initializeFirebase = () => {
           if (Notification.permission == "granted") {
             navigator.serviceWorker.getRegistration().then(function (reg: any) {
               reg.showNotification(payload.notification.title, {
-                body: "payload.notification.body",
+                body: payload.notification.body,
                 icon: "https://admin-advisor.voirlemenu.fr/static/media/logo.8da5d5e8.png",
               });
             });

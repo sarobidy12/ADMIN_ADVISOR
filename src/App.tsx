@@ -19,6 +19,7 @@ import {onMessageListener} from "./Firebase/Firebase";
 const App: FC = () => {
 
   const [show, setShow] = useState(false);
+  
   const [notification, setNotification] = useState({ title: "", body: "" });
 
   console.log(show, notification);
