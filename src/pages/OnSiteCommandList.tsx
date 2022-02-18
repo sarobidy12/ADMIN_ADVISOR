@@ -94,6 +94,7 @@ const headCellsMobil: HeadCell<Command>[] = [
 ];
 
 const OnSiteCommandList: React.FC = () => {
+  
   const classes = useStyles();
   const { isRestaurantAdmin, restaurant } = useAuth();
 
@@ -130,6 +131,7 @@ const OnSiteCommandList: React.FC = () => {
           data.validated = true;
           return [...records];
         });
+        
       });
     }
   };
@@ -149,7 +151,11 @@ const OnSiteCommandList: React.FC = () => {
   }, [data]);
 
   const fetch = useCallback(async () => {
+    
     setLoading(true);
+    
+    setRecords([]);
+
     try {
       await dispatch(
         getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
@@ -185,9 +191,7 @@ const OnSiteCommandList: React.FC = () => {
   }, [fetch]);
 
   useEffect(() => {
-    if (!isLoaded) {
       fetch();
-    }
   }, [fetch, isLoaded]);
 
   // useEffect(() => {

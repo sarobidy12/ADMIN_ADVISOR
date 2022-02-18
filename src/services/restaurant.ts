@@ -63,6 +63,7 @@ export const getRestaurantWithId: (
 export const getOneRestaurant: (filter?: {
   [key: string]: any;
 }) => Promise<Restaurant | null> = async (filter = {}) => {
+
   const res = await search({
     lang: 'fr',
     query: '',
@@ -73,9 +74,40 @@ export const getOneRestaurant: (filter?: {
   if (res.length && res[0].type === 'restaurant') return res[0].content;
 
   return null;
+  
+};
+
+export const getByIdAdminRestaurant: (id:string) => Promise<Restaurant | null> = async (id) => {
+
+  try {
+
+    const res = await Api.get(`/getByIdAdminRestaurant/${id}`, {
+      method: 'GET',
+    });
+
+    if (res.status === 200) {
+      
+      return res.data;
+
+    } else {
+    
+      const error = {
+        status: res.status,
+        message: 'Erreur',
+      };
+    
+      return Promise.reject(error);
+    
+    }
+
+  } catch (e) {
+    return Promise.reject(e);
+  }
+  
 };
 
 const getFormData: (data: Partial<RestaurantFormType>) => FormData = (data) => {
+  
   const formData = new FormData();
 
   data.name && formData.append('name', data.name);

@@ -337,6 +337,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 className={classes.restoImg}
                 src={restaurant?.logo}
                 alt={restaurant?.name}
+                crossOrigin="anonymous"
               />
             </Grid>
           ) : (
@@ -347,6 +348,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   <img
                     className={classes.restoImg}
                     src={restaurant?.logo}
+                    crossOrigin="anonymous"
                     alt={restaurant?.name}
                   />
                 ) : (

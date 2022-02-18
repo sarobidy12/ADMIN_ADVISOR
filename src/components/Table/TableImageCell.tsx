@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import { useImageViewer } from '../Common/ImageViewer';
 
+
 const useStyles = makeStyles<Theme, { noHoverEffect?: boolean }>((theme) => ({
   container: {
     padding: theme.spacing(1),
@@ -77,6 +78,7 @@ const TableImageCell: React.FC<TableImageCellProps> = ({
             height,
             position: 'relative',
           }}
+          crossOrigin="anonymous"
           cover
           loading={<CircularProgress size={20} />}
           onClick={(e) => {

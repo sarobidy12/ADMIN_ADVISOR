@@ -93,7 +93,9 @@ const headCellsMobil: HeadCell<Command>[] = [
 ];
 
 const CommandList: React.FC = () => {
+
   const classes = useStyles();
+  
   const { isRestaurantAdmin, restaurant } = useAuth();
   const dispatch = useDispatch();
 
@@ -123,18 +125,28 @@ const CommandList: React.FC = () => {
   }, [data]);
 
   const fetch = useCallback(async () => {
+
     setLoading(true);
+    setRecords([]);
+
+    console.log("restaurant?._id",restaurant);
+
     try {
-      await dispatch(
-        getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
-      );
+      
+      await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined));
+
     } catch (e) {
+      
       enqueueSnackbar("Erreur lors du chargement...", {
         variant: "error",
       });
+
     } finally {
+
       setLoading(false);
+      
     }
+
   }, [enqueueSnackbar, isRestaurantAdmin, restaurant, dispatch]);
 
   const history = useHistory();
@@ -147,6 +159,7 @@ const CommandList: React.FC = () => {
   );
 
   useEffect(() => {
+
     const onRefresh = () => {
       fetch();
     };
@@ -156,12 +169,11 @@ const CommandList: React.FC = () => {
     return () => {
       EventEmitter.removeListener("REFRESH", onRefresh);
     };
+
   }, [fetch]);
 
   useEffect(() => {
-    if (!isLoaded) {
       fetch();
-    }
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {

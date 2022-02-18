@@ -59,6 +59,7 @@ const Logo: React.FC<LogoProps> = ({ className, classes: cls }) => {
                 className={clsx(classes.logo, cls?.image)}
                 src={logo}
                 alt="menu-advisor"
+                crossOrigin="anonymous"
               />
             </span>
             <Typography variant="h6" component="span" align="center">

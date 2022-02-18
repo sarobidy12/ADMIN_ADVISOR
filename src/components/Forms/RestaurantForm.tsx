@@ -292,6 +292,13 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         });
       }
 
+      if (data.delivery && !data.DistanceMax) {
+        errors.DistanceMax = 'Ce champ ne doit pas être vide'
+        enqueueSnackbar('Clé stripe ne doit pas être vide', {
+          variant: 'error',
+        });
+      }
+
       if (data.delivery && data.paiementCB && !data.cbDirectToAdvisor && !data.customerSectretStripeKey.length) {
         errors.customerSectretStripeKey = 'Ce champ ne doit pas être vide';
         enqueueSnackbar('Client clé stripe ne doit pas être vide', {

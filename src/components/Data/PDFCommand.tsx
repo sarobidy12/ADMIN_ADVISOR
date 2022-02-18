@@ -383,9 +383,10 @@ const PDFCommand: React.FC<PDFCommandProps> = ({ command }) => {
                       },
                       options,
                     }) => {
-                      const foodInMenu = foodsInMenu.find(
+                      
+                      const foodInMenu =  foodsInMenu ? foodsInMenu.find(
                         ({ food: f }) => f._id === _id,
-                      );
+                      ) : null ;
 
                       return (
                         <View key={_id} style={styles.itemContainer}>
@@ -406,9 +407,9 @@ const PDFCommand: React.FC<PDFCommandProps> = ({ command }) => {
                                 : ''
                                 }${fixedPrice &&
                                   !!foodInMenu &&
-                                  !!foodInMenu.additionalPrice.amount
+                                  !!foodInMenu?.additionalPrice?.amount
                                   ? ` + ${PriceFormatter.format(
-                                    foodInMenu.additionalPrice,
+                                    foodInMenu?.additionalPrice,
                                   )}`
                                   : ''
                                 }`}</Text>

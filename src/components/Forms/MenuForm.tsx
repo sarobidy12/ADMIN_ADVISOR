@@ -229,7 +229,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
 
     options.push({
       title: '',
-      maxOptions: '0',
+      maxOptions: '1',
       items: [],
       isObligatory: false
     });
@@ -397,9 +397,11 @@ const MenuForm: React.FC<MenuFormProps> = ({
           )}
           {!isRestaurantAdmin && (
             <Grid item xs={12}>
+
               <Typography variant="h5" gutterBottom>
                 Restaurant
               </Typography>
+              
               <Autocomplete
                 loadingText="Chargement"
                 noOptionsText="Aucun restaurant disponible"
@@ -432,51 +434,12 @@ const MenuForm: React.FC<MenuFormProps> = ({
                   />
                 )}
               />
+
             </Grid>
           )}
+
           <Grid item xs={12}>
 
-            {/* <Autocomplete
-            loadingText="Chargement"
-            noOptionsText="Aucun plat disponible"
-            loading={loadingFoods}
-            options={foodOptions}
-            multiple
-            filterSelectedOptions
-            disabled={!selectedResto && disableAll}
-            getOptionLabel={(option) => option.name}
-            value={foodOptions.filter(({ _id }) =>
-              values.foods.find((d) => _id === d),
-            )}
-            onChange={(_, v) => {
-              setFoods(v);
-              setValues((old) => {
-
-                if (v.length > old.prices.length) old.prices.push('0');
-                else if (v.length < old.prices.length) old.prices.pop();
-
-                return { ...old, foods: v.map(({ _id }) => _id) };
-              });
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder="Plats"
-                error={!!errors.foods}
-                helperText={errors.foods}
-              />
-            )}
-          />  */}
-
-            {/* <InputMenu
-            listMenu={foodOptions}
-            disabled={!selectedResto && disableAll}
-            setMenu={setAccompagnement}
-            value={priority(foodOptions, values.foods).filter((item: any) =>
-              values.foods.find((d) => item._id === d),
-            )}
-          /> */}
             <Grid
               container
               justify="flex-end"
@@ -492,11 +455,12 @@ const MenuForm: React.FC<MenuFormProps> = ({
                 color="secondary"
                 onClick={addNewAccompaniment}
               >
-                Ajouter des plats
+                Ajouter des titres
               </Button>
             </Grid>
 
             <Grid item xs={12}>
+              
               <InputMenu
                 updateList={(value: any) => {
                   setOption(value);
@@ -512,6 +476,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
                 selectedResto={selectedResto}
                 disableAll={disableAll}
               />
+
             </Grid>
 
           </Grid>
@@ -637,6 +602,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
         <AddEditMenu
           isPriceFix={values.type === 'fixed_price' || false}
           initialValues={initValue}
+          type={initialValues.type}
           listMenu={foodOptions}
           updateList={(value: any) => {
             setOption(value);

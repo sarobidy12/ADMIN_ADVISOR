@@ -34,8 +34,8 @@ interface CommandPDFViewerProps {
 }
 
 const CommandPDFViewer: React.FC<CommandPDFViewerProps> = ({ commandId }) => {
-  const classes = useStyles();
 
+  const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [command, setCommand] = useState<Command>();
 

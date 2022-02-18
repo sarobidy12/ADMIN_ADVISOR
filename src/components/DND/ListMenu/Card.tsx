@@ -211,18 +211,20 @@ export const Card: FC<CardProps> = ({
               <TextField
                 {...params}
                 variant="outlined"
-                placeholder="Accompagnement"
+                placeholder="Plat"
               />
             )}
           />
 
           <div style={{ marginLeft: theme.spacing(1) }}>
+
             <IconButton key={index} onClick={(e: any) => {
               e.stopPropagation();
               removeAccompaniment(id)
             }}>
               <Close />
             </IconButton>
+            
           </div>
         </Grid>
       </Grid>

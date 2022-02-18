@@ -156,6 +156,7 @@ const DeliveryCommandList: React.FC = () => {
 
   const fetch = useCallback(async () => {
     setLoading(true);
+    setRecords([])
     try {
       await dispatch(
         getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
@@ -188,10 +189,8 @@ const DeliveryCommandList: React.FC = () => {
   }, [fetch]);
 
   useEffect(() => {
-    if (!isLoaded) {
       fetch();
-    }
-  }, [fetch, isLoaded]);
+  }, [fetch]);
 
   const toValidateAll = () => {
     
@@ -235,11 +234,11 @@ const DeliveryCommandList: React.FC = () => {
   const Emporter = (_id: any) => {
     CommandLivre(_id)
       .then((res: any) => {
+        
         enqueueSnackbar("Commande Livrée", {
           variant: "success",
         });
 
-        
 
         EventEmitter.emit("REFRESH_NAVIGATION_BAR");
         setUpdating(false);
@@ -247,7 +246,7 @@ const DeliveryCommandList: React.FC = () => {
         fetch();
       })
       .catch(() => {
-        enqueueSnackbar("Erreur lors de la validation", {
+        enqueueSnackbar("Erreur lors de la livraison", {
           variant: "error",
         });
       });
@@ -265,7 +264,7 @@ const DeliveryCommandList: React.FC = () => {
         fetch();
       })
       .catch(() => {
-        enqueueSnackbar("Erreur lors de la validation", {
+        enqueueSnackbar("Erreur lors de la livraison", {
           variant: "error",
         });
       });

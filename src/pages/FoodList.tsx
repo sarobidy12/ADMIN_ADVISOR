@@ -282,7 +282,7 @@ const FoodListPage: React.FC = () => {
             order: 'asc',
             selectableRows: false,
             hasActionsColumn: true,
-            enableDragAndDrop: activeOndragDrop,
+            enableDragAndDrop:isRestaurantAdmin ? true : activeOndragDrop,
             filters: [
               {
                 id: 'restaurant',

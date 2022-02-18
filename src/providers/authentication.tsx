@@ -15,7 +15,7 @@ import {
   login as signin,
   logout as signout,
 } from "../services/auth";
-import { getOneRestaurant } from "../services/restaurant";
+import { getOneRestaurant,getByIdAdminRestaurant } from "../services/restaurant";
 import { getMe } from "../services/user";
 import RoleFormatter from "../utils/RoleFormatter";
 
@@ -64,12 +64,11 @@ export const AuthProvider: React.FC = ({ children }) => {
       undefined
     );
   });
+
   const [user, setUser] = useState<User | undefined>();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-
   const location = useLocation();
-
   const login = useCallback(
     async (
       username: string,
@@ -77,14 +76,23 @@ export const AuthProvider: React.FC = ({ children }) => {
       tokenNavigator: string,
       rememberMe?: boolean
     ) => {
+      
       const { user, accessToken, refreshToken } = await signin(
         username,
         password,
         tokenNavigator
       );
+
       if (RoleFormatter.hasRestaurantAdminRole(user.roles)) {
-        setRestaurant(await getOneRestaurant({ admin: user._id }));
+
+        const getRestaurant= await getByIdAdminRestaurant(user._id);
+
+        console.log("getRestaurant",getRestaurant);
+
+        setRestaurant(getRestaurant);
+
       }
+
       setUser(user);
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);

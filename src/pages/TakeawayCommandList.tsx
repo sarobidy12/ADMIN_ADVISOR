@@ -105,6 +105,7 @@ const headCellsMobil: HeadCell<Command>[] = [
 ];
 
 const TakeawayCommandList: React.FC = () => {
+  
   const classes = useStyles();
 
   const { isRestaurantAdmin, restaurant } = useAuth();
@@ -137,7 +138,11 @@ const TakeawayCommandList: React.FC = () => {
   }, [data]);
 
   const fetch = useCallback(async () => {
+    
     setLoading(true);
+    
+    setRecords([]);
+
     try {
       await dispatch(
         getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined)
@@ -172,9 +177,7 @@ const TakeawayCommandList: React.FC = () => {
   }, [fetch]);
 
   useEffect(() => {
-    if (!isLoaded) {
       fetch();
-    }
   }, [fetch, isLoaded]);
 
   const toValidateAll = () => {
@@ -229,7 +232,7 @@ const TakeawayCommandList: React.FC = () => {
         fetch();
       })
       .catch(() => {
-        enqueueSnackbar("Erreur lors de la validation", {
+        enqueueSnackbar("Erreur lors de la validation emportée", {
           variant: "error",
         });
       });
@@ -248,7 +251,7 @@ const TakeawayCommandList: React.FC = () => {
         fetch();
       })
       .catch(() => {
-        enqueueSnackbar("Erreur lors de la validation", {
+        enqueueSnackbar("Erreur lors de la validation emportée", {
           variant: "error",
         });
       });
