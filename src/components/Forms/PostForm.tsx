@@ -11,6 +11,8 @@ import {
 } from '@material-ui/core';
 import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
 import { DropzoneArea } from 'material-ui-dropzone';
+import convertToBase64 from '../../services/convertToBase64';
+
 
 export type PostFormType = {
   _id?: string;
@@ -70,6 +72,21 @@ const PostForm: React.FC<PostFormProps> = ({
 
   const classes = useStyles();
   const theme = useTheme();
+
+  const uploadImage = (name: string) => async (files: any) => {
+
+    const file = files[0];
+
+    if (file) {
+
+      const base64 = await convertToBase64(file);
+
+      setValues((v) => ({ ...v, [name]: base64 }))
+
+    }
+
+  }
+
 
   return (
     <form
@@ -183,9 +200,7 @@ const PostForm: React.FC<PostFormProps> = ({
             classes={{ root: classes.dropzone }}
             getFileAddedMessage={() => 'Fichier ajouté'}
             getFileRemovedMessage={() => 'Fichier enlevé'}
-            onChange={(files) => {
-              if (files.length) setValues((v) => ({ ...v, imageMobile: files[0] }));
-            }}
+            onChange={uploadImage("imageMobile")}
             initialFiles={[initialValues.imageMobile ?? ""]}
           />
         </Grid>
@@ -220,9 +235,7 @@ const PostForm: React.FC<PostFormProps> = ({
             classes={{ root: classes.dropzone }}
             getFileAddedMessage={() => 'Fichier ajouté'}
             getFileRemovedMessage={() => 'Fichier enlevé'}
-            onChange={(files) => {
-              if (files.length) setValues((v) => ({ ...v, imageWeb: files[0] }));
-            }}
+            onChange={uploadImage("imageWeb")}
             initialFiles={[initialValues.imageWeb ?? ""]}
           />
         </Grid>

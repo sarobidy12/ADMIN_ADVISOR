@@ -13,6 +13,8 @@ import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
 import { DropzoneArea } from 'material-ui-dropzone';
 import IOSSwitch from '../Common/IOSSwitch';
 import { useSnackbar } from 'notistack';
+import convertToBase64 from '../../services/convertToBase64';
+
 
 export type AttributeFormType = {
   _id?: string;
@@ -46,8 +48,8 @@ const AttributeForm: React.FC<AttributeFormProps> = ({
 
       if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
 
-      if (!modification && !data.image)
-        errors.image = 'Ce champ ne doit pas être vide';
+      if (!modification && !data.imageURL)
+        errors.imageURL = 'Ce champ ne doit pas être vide';
 
       return errors;
     },
@@ -66,12 +68,26 @@ const AttributeForm: React.FC<AttributeFormProps> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (errors.image) {
+    if (errors.imageURL) {
       enqueueSnackbar('Veuillez ajouter une image', {
         variant: 'warning',
       });
     }
   }, [enqueueSnackbar, errors]);
+
+  const uploadImage = (name: string) => async (files: any) => {
+
+    const file = files[0];
+
+    if (file) {
+
+      const base64 = await convertToBase64(file);
+
+      setValues((v) => ({ ...v, [name]: base64 }))
+
+    }
+
+  }
 
   return (
     <form
@@ -126,9 +142,7 @@ const AttributeForm: React.FC<AttributeFormProps> = ({
             filesLimit={1}
             getFileAddedMessage={() => 'Fichier ajouté'}
             getFileRemovedMessage={() => 'Fichier enlevé'}
-            onChange={(files) => {
-              if (files.length) setValues((v) => ({ ...v, image: files[0] }));
-            }}
+            onChange={uploadImage("imageURL")}
             initialFiles={[initialValues.imageURL ?? ""]}
           />
         </Grid>

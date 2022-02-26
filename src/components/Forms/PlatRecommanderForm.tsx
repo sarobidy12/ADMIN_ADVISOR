@@ -99,13 +99,15 @@ const PlatRecommanderForm: React.FC<PlatRecommandedFormProps> = ({
   useEffect(() => {
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    if(object){
+    if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
 
   }, [setValues, sessionStorage.getItem("filterSelected")]);
-  
-  
+
+
+
+
   return (
     <form
       noValidate

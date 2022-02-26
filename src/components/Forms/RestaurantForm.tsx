@@ -51,7 +51,9 @@ import AddressInput from '../Common/AddressInput';
 import { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete';
 import { useAuth } from '../../providers/authentication';
 import OptionRestaurant from './OptionRestaurant';
+import ExportJson from "./ExportJson/Dialog";
 import PhoneInput from 'react-phone-input-2';
+import convertToBase64 from '../../services/convertToBase64';
 import 'react-phone-input-2/lib/material.css';
 
 moment.locale('fr');
@@ -151,7 +153,8 @@ export type RestaurantFormType = {
   discountAEmporter: boolean;
   discountDelivery: boolean;
   logo?: File;
-  name_resto_code?: string;
+  name_resto_code: string;
+
 };
 
 interface RestaurantFormProps {
@@ -195,6 +198,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   initialValues = {
     deliveryFixed: false,
     priceByMiles: '0',
+    name_resto_code: '',
     name: '',
     address: '',
     phoneNumber: '',
@@ -261,6 +265,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   modification,
   onSave,
   onCancel,
+
 }) => {
   const { isAdmin, isRestaurantAdmin, user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -346,6 +351,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   const [hasCodePromo, setHasCodePromo] = useState<boolean>(values.hasCodePromo);
 
   const [existAdmin, setExistAdmin] = useState<any>(null);
+
+  const [openExport, setOpenExport] = useState(false);
 
   const isDayActivated = useCallback(
     (day: string) => !!openingTimes.get(day)?.activated,
@@ -533,6 +540,24 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
   }
 
+  const handleOpenExport = () => {
+    setOpenExport(!openExport)
+  }
+
+  const uploadImage = (name: string) => async (files: any) => {
+
+    const file = files[0];
+
+    if (file) {
+
+      const base64 = await convertToBase64(file);
+
+      setValues((v) => ({ ...v, [name]: base64 }))
+
+    }
+
+  }
+
   return (
     <form
       noValidate
@@ -665,7 +690,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
               <DropzoneArea
                 inputProps={{
-                  name: '',
+                  name: 'Logo',
                 }}
                 previewGridProps={{
                   container: { spacing: 2, justify: 'center' },
@@ -676,9 +701,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                 classes={{ root: classes.dropzone }}
                 getFileAddedMessage={() => 'Fichier ajouté'}
                 getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={(files) => {
-                  if (files.length) setValues((v) => ({ ...v, logo: files[0] }));
-                }}
+                onChange={uploadImage('logo')}
                 initialFiles={[initialValues.logo ?? ""]}
               />
             </Grid>
@@ -713,9 +736,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                 classes={{ root: classes.dropzone }}
                 getFileAddedMessage={() => 'Fichier ajouté'}
                 getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={(files) => {
-                  if (files.length) setValues((v) => ({ ...v, couvertureWeb: files[0] }));
-                }}
+                onChange={uploadImage('couvertureWeb')}
                 initialFiles={[initialValues.couvertureWeb ?? ""]}
               />
 
@@ -749,9 +770,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                 classes={{ root: classes.dropzone }}
                 getFileAddedMessage={() => 'Fichier ajouté'}
                 getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={(files) => {
-                  if (files.length) setValues((v) => ({ ...v, couvertureMobile: files[0] }));
-                }}
+                onChange={uploadImage('couvertureMobile')}
                 initialFiles={[initialValues.couvertureMobile ?? ""]}
               />
             </Grid>
@@ -1523,7 +1542,26 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           code={hasCodePromo}
         />
 
+        <ExportJson
+          open={openExport}
+          setOpen={setOpenExport}
+          idRetaurant={initialValues._id || ""}
+          name={initialValues.name_resto_code}
+        />
+
         <Grid item container justify="flex-end" alignItems="center" xs={12}>
+
+          <Button
+            variant="contained"
+            color="default"
+            disabled={saving}
+            size="large"
+            onClick={handleOpenExport}
+          >
+            Export
+          </Button>
+          <Box width={theme.spacing(2)} />
+
           <Button
             variant="contained"
             color="default"

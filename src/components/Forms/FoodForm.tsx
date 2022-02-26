@@ -41,6 +41,8 @@ import { useSnackbar } from "notistack";
 import FormDialog from "../Common/FormDialog";
 import DnDList from "../../components/DND/List";
 import AddEditAccompagnement from "../../components/Forms/AddEditAccompagnement";
+import convertToBase64 from '../../services/convertToBase64';
+
 
 export type FoodFormType = {
   _id?: string;
@@ -323,11 +325,26 @@ const FoodForm: React.FC<FoodFormProps> = ({
   useEffect(() => {
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    if(object){
+    if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
 
   }, [setValues, sessionStorage.getItem("filterSelected")]);
+
+
+  const uploadImage = (name: string) => async (files: any) => {
+
+    const file = files[0];
+
+    if (file) {
+
+      const base64 = await convertToBase64(file);
+
+      setValues((v) => ({ ...v, [name]: base64 }))
+
+    }
+
+  }
 
   return (
     <div>
@@ -469,9 +486,7 @@ const FoodForm: React.FC<FoodFormProps> = ({
               filesLimit={1}
               getFileAddedMessage={() => "Fichier ajouté"}
               getFileRemovedMessage={() => "Fichier enlevé"}
-              onChange={(files) => {
-                if (files.length) setValues((v) => ({ ...v, image: files[0] }));
-              }}
+              onChange={uploadImage("imageURL")}
               initialFiles={[initialValues.imageURL ?? ""]}
             />
           </Grid>

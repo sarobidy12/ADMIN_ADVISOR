@@ -37,6 +37,9 @@ import {
   getRestaurants,
   updateRestaurant,
 } from '../services/restaurant';
+import DialogExportJson from "./ExportJson/Dialog";
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -119,6 +122,7 @@ const RestaurantListPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [records, setRecords] = useState<Restaurant[]>([]);
   const [openForm, setOpenForm] = useState<boolean>(false);
+  const [openUpload, setOpenUpload] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
   const [updating, setUpdating] = useState<boolean>(false);
   const [selected, setSelected] = useState<string[]>([]);
@@ -247,10 +251,12 @@ const RestaurantListPage: React.FC = () => {
       hasCodePromo,
       discountAEmporter,
       discountDelivery,
+      name_resto_code,
     } = restaurant;
 
     modif.current = {
       _id,
+      name_resto_code,
       deliveryFixed,
       delivery,
       DistanceMax,
@@ -339,6 +345,10 @@ const RestaurantListPage: React.FC = () => {
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
 
+  const handleImport = () => {
+    setOpenUpload(!openUpload)
+  }
+
   return (
     <>
       <PageHeader
@@ -359,7 +369,9 @@ const RestaurantListPage: React.FC = () => {
               .finally(() => setUpdating(false));
           }}
           showAddButton={isAdmin || !restaurant}
+          showImportButton={isAdmin || !restaurant}
           selected={selected}
+          handleImport={handleImport}
           onSelectedChange={setSelected}
           addButtonLabel="Ajouter un restaurant"
           onAddClick={() => setOpenForm(true)}
@@ -531,6 +543,14 @@ const RestaurantListPage: React.FC = () => {
         open={updating}
         semiTransparent
         backgroundColor="rgba(0, 0, 0, .7)"
+      />
+
+      <DialogExportJson
+        open={openUpload}
+        setOpen={setOpenUpload}
+        retaurant={records as any[]}
+        setLoading={setLoading}
+        fetch={fetch}
       />
     </>
   );

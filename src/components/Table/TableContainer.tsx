@@ -224,6 +224,8 @@ interface TableContainerProps<T> {
   toReadAll?: () => void;
   EmporteAll?: () => void;
   livreAll?: () => void;
+  showImportButton?: boolean;
+  handleImport?: () => void;
 }
 
 export default function TableContainer<T extends { _id: string }>(
@@ -249,6 +251,8 @@ export default function TableContainer<T extends { _id: string }>(
     toValidateAll,
     toRefuseAll,
     toReadAll,
+    showImportButton,
+    handleImport
   } = props;
 
   const classes = useStyles();
@@ -285,9 +289,9 @@ export default function TableContainer<T extends { _id: string }>(
   }, [rows, rowsPerPage, page]);
 
   const size = useMemo(
-      () => (rowsPerPage > 0 ? rowsPerPage : (pages[0] as number)),
-      [rowsPerPage]
-    ),
+    () => (rowsPerPage > 0 ? rowsPerPage : (pages[0] as number)),
+    [rowsPerPage]
+  ),
     emptyRows = useMemo(
       () => size - Math.min(size, rows.length - page * size),
       [page, rows, size]
@@ -474,6 +478,7 @@ export default function TableContainer<T extends { _id: string }>(
       <TableToolbar
         numSelected={selected.length}
         addButtonLabel={addButtonLabel}
+        showImportButton={showImportButton}
         showAddButton={showAddButton}
         onAddClick={onAddClick}
         setFilterValues={setFilterValues}
@@ -487,6 +492,7 @@ export default function TableContainer<T extends { _id: string }>(
         filterValues={filterValues}
         onFilterValuesChange={onFilterValuesChange}
         activatedFilters={activatedFilters}
+        handleImport={handleImport}
         onActivateFilter={(id, type) => {
           setActivatedFilters((old) => [...old, id]);
           setFilterValues((values) => ({
@@ -495,19 +501,19 @@ export default function TableContainer<T extends { _id: string }>(
               type === "STRING"
                 ? { value: "" }
                 : type === "CATEGORY"
-                ? { category: "" }
-                : type === "BOOLEAN"
-                ? { value: false }
-                : type === "NUMBER"
-                ? { min: 0, max: 0 }
-                : type === "DATE"
-                ? {
-                    startDate: moment().subtract(6, "days").toDate(),
-                    endDate: new Date(),
-                  }
-                : type === "COMMAND_TYPE"
-                ? { value: "" }
-                : undefined,
+                  ? { category: "" }
+                  : type === "BOOLEAN"
+                    ? { value: false }
+                    : type === "NUMBER"
+                      ? { min: 0, max: 0 }
+                      : type === "DATE"
+                        ? {
+                          startDate: moment().subtract(6, "days").toDate(),
+                          endDate: new Date(),
+                        }
+                        : type === "COMMAND_TYPE"
+                          ? { value: "" }
+                          : undefined,
           }));
         }}
         onDeactivateFilter={(id) => {

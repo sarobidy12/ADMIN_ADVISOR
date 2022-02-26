@@ -23,7 +23,7 @@ const getFormData: (data: Partial<AccompanimentFormType>) => FormData = (
         currency: 'eur',
       }),
     );
-  data.image && formData.append('image', data.image);
+  data.imageURL && formData.append('imageURL', data.imageURL);
   data.priority && formData.append('priority', JSON.stringify(data.priority));
 
   return formData;

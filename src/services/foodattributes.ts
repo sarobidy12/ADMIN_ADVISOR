@@ -30,7 +30,7 @@ const getFormData: (data: Partial<AttributeFormType>) => FormData = (data) => {
   const formData: FormData = new FormData();
   data.name && formData.append('locales', JSON.stringify({ fr: data.name }));
   data.isAllergen && formData.append('isAllergen', String(data.isAllergen));
-  data.image && formData.append('image', data.image);
+  data.imageURL && formData.append('imageURL', data.imageURL);
 
   return formData;
 };

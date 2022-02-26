@@ -16,13 +16,15 @@ import Restaurant from '../../models/Restaurant.model';
 import { useAuth } from '../../providers/authentication';
 import { getRestaurants } from '../../services/restaurant';
 import { Autocomplete } from '@material-ui/lab';
+import convertToBase64 from '../../services/convertToBase64';
+
 
 export type AccompanimentFormType = {
   _id?: string;
   name: string;
   price?: string;
-  image?: File;
   imageURL?: string;
+  image?: File;
   isObligatory?: boolean;
   priority?: number;
   preventDefault?: any;
@@ -61,8 +63,8 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
 
       if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
       if (!data.restaurant) errors.restaurant = 'Ce champ ne doit pas être vide';
-      if (!modification && !data.image)
-        errors.image = 'Ce champ ne doit pas être vide';
+      // if (!modification && !data.image)
+      //   errors.image = 'Ce champ ne doit pas être vide';
 
       return errors;
     },
@@ -84,13 +86,13 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
   const [loadingRestaurants, setLoadingRestaurants] = useState<boolean>(false);
   const [restoOptions, setRestoOptions] = useState<Restaurant[]>([]);
 
-  useEffect(() => {
-    if (errors.image) {
-      enqueueSnackbar('Veuillez ajouter une image', {
-        variant: 'warning',
-      });
-    }
-  }, [enqueueSnackbar, errors]);
+  // useEffect(() => {
+  //   if (errors.image) {
+  //     enqueueSnackbar('Veuillez ajouter une image', {
+  //       variant: 'warning',
+  //     });
+  //   }
+  // }, [enqueueSnackbar, errors]);
 
   useEffect(() => {
     if (isRestaurantAdmin) {
@@ -111,16 +113,29 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
   }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
 
   useEffect(() => {
-    
+
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    if(object){
+    if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
 
   }, [setValues, sessionStorage.getItem("filterSelected")]);
-  
-  
+
+  const uploadImage = (name: string) => async (files: any) => {
+
+    const file = files[0];
+
+    if (file) {
+
+      const base64 = await convertToBase64(file);
+
+      setValues((v) => ({ ...v, [name]: base64 }))
+
+    }
+
+  }
+
   return (
     <form
       noValidate
@@ -140,7 +155,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
           <Typography variant="h5" gutterBottom>
             Nom
           </Typography>
-          
+
           <TextField
             name="name"
             placeholder="Nom"
@@ -242,9 +257,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
             classes={{ root: classes.dropzone }}
             getFileAddedMessage={() => 'Fichier ajouté'}
             getFileRemovedMessage={() => 'Fichier enlevé'}
-            onChange={(files) => {
-              if (files.length) setValues((v) => ({ ...v, image: files[0] }));
-            }}
+            onChange={uploadImage("imageURL")}
             initialFiles={[initialValues.imageURL ?? ""]}
           />
         </Grid>

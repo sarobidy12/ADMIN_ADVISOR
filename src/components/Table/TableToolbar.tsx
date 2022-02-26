@@ -36,6 +36,8 @@ import ClearIcon from "@material-ui/icons/Clear";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
 import DirectionsRunIcon from "@material-ui/icons/DirectionsRun";
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -45,16 +47,16 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === "light"
       ? {
-          [theme.breakpoints.down("sm")]: {
-            padding: "5vh 2vh",
-          },
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
+        [theme.breakpoints.down("sm")]: {
+          padding: "5vh 2vh",
         },
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
+      : {
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: "1 1 100%",
     [theme.breakpoints.down("sm")]: {
@@ -63,7 +65,6 @@ const useToolbarStyles = makeStyles((theme) => ({
     },
   },
   addBtn: {
-    flexShrink: 0,
     marginRight: theme.spacing(2),
     textTransform: "none",
     [theme.breakpoints.down("sm")]: {
@@ -175,6 +176,8 @@ interface TableToolbarProps<T> {
   onDeactivateFilter?: (id: string) => void;
   filterValues: FilterValues<T> | any;
   setFilterValues: (e: any) => void;
+  showImportButton?: boolean;
+  handleImport?: () => void;
 }
 
 function TableToolbar<T>(props: TableToolbarProps<T>) {
@@ -196,6 +199,8 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
     setFilterValues,
     EmporteAll,
     livreAll,
+    showImportButton,
+    handleImport
   } = props;
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
@@ -252,7 +257,7 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
       .forEach(({ id, type }) => {
         onActivateFilter?.(id as string, type);
       });
-      
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setRestaurantSelected]);
 
@@ -336,8 +341,8 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
                         filter.type === "STRING"
                           ? onFilterValuesChange?.(id as string, { value })
                           : onFilterValuesChange?.(id as string, {
-                              category: value,
-                            });
+                            category: value,
+                          });
                       }}
                     />
                     {!alwaysOn && (
@@ -725,7 +730,7 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
                         ) || null
                       }
                       onChange={(e: any, value: any) => {
-                        
+
                         onFilterValuesChange?.(id as string, {
                           restaurant: (value.value || "") as string,
                         });
@@ -837,9 +842,8 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
           >
             <Grid item>
               <Typography className={classes.title} color="primary">
-                {`${numSelected} ligne${
-                  numSelected > 1 ? "s" : ""
-                } sélectionnée${numSelected > 1 ? "s" : ""}`}
+                {`${numSelected} ligne${numSelected > 1 ? "s" : ""
+                  } sélectionnée${numSelected > 1 ? "s" : ""}`}
               </Typography>
             </Grid>
 
@@ -988,19 +992,48 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
               margin: "1vh 0",
             }}
           >
-            <Box flex={1} />
 
-            {showAddButton && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddCircleIcon />}
-                className={classes.addBtn}
-                onClick={onAddClick}
-              >
-                {addButtonLabel}
-              </Button>
-            )}
+            <Grid container={true}>
+
+              <Grid item={true}>
+
+                {
+                  showImportButton && (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<CloudUploadIcon />}
+                      className={classes.addBtn}
+                      onClick={handleImport}
+                    >
+                      Importer vos Donnes
+                    </Button>
+                  )
+                }
+
+              </Grid>
+
+              <Grid item={true}>
+
+
+                {showAddButton && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddCircleIcon />}
+                    className={classes.addBtn}
+                    onClick={onAddClick}
+                  >
+                    {addButtonLabel}
+                  </Button>
+                )}
+
+              </Grid>
+
+            </Grid>
+
+
+            <Box flex={1} />
 
             {Object.keys(filterValues).length > 0 &&
               !!filterValues?.restaurant && (
@@ -1011,8 +1044,8 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
                   className={classes.addBtn}
                   onClick={() => {
                     setFilterValues({})
-                      sessionStorage.removeItem("filterSelected");
-                    }
+                    sessionStorage.removeItem("filterSelected");
+                  }
                   }
                 >
                   Reset
