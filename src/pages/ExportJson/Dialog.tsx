@@ -45,6 +45,10 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, retaurant, setLoadin
 
     const handleUpload = async (e: any) => {
 
+        setLoading(true);
+
+        setOpen(false);
+
         const upload = e.target.files[0];
 
         const fileReader: any = new FileReader();
@@ -94,7 +98,8 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, retaurant, setLoadin
                     <Grid item={true} xs={6} onClick={handleClick}>
                         <Paper style={{
                             padding: "5vh",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            textAlign: 'center'
                         }}>
                             <BackupIcon />
                             <Typography>
@@ -116,7 +121,8 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, retaurant, setLoadin
                         <Paper
                             style={{
                                 padding: "5vh",
-                                cursor: "pointer"
+                                cursor: "pointer",
+                                textAlign: 'center'
                             }}
                         >
                             <CloudDownloadIcon />

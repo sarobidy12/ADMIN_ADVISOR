@@ -9,7 +9,7 @@ import Accordion from '@material-ui/core/Accordion';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import List from '@material-ui/core/List';
@@ -44,6 +44,7 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
         Restaurant: true
     });
 
+    const [isLoading, setisLoading] = useState(false);
 
     const [uploaded, setUploaded] = useState<any>({})
 
@@ -78,6 +79,8 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
 
     const exporterLesDonnes = async () => {
 
+        setisLoading(true);
+
         await exportPdf({
             id: idRetaurant,
             filter: { ...value }
@@ -97,6 +100,8 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
             enqueueSnackbar("une erreur est survenue . ", {
                 variant: 'error',
             });
+        }).finally(() => {
+            setisLoading(false);
         });
 
     }
@@ -127,21 +132,29 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
 
     const submitImport = async (e: any) => {
 
+        setisLoading(true);
+
         await importJSON({
             ...uploaded,
             idRetaurant: idRetaurant
         }).then((res: any) => {
-
-            console.log("test", res.data);
-
-        });
+            enqueueSnackbar("**Fichier import", {
+                variant: 'success',
+            });
+        }).catch((err: any) => {
+            enqueueSnackbar("une erreur est survenue . ", {
+                variant: 'error',
+            });
+        }).finally(() => {
+            setisLoading(false);
+        })
 
     }
 
     return (
         <div>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Vos donnee</DialogTitle>
+                <DialogTitle id="form-dialog-title">{name}</DialogTitle>
                 <DialogContent>
                     <Accordion>
                         <AccordionSummary
@@ -149,7 +162,12 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                         >
-                            <Typography className={classes.heading}> <CloudDownloadIcon /> Exporter vos donnee</Typography>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <CloudDownloadIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Exporter les données" />
+                            </ListItem>
                         </AccordionSummary>
                         <AccordionDetails>
                             <List className={classes.root}>
@@ -173,15 +191,18 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
 
                         </AccordionDetails>
 
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.button}
-                            endIcon={<CloudDownloadIcon />}
-                            onClick={exporterLesDonnes}
-                        >
-                            Exporter
-                        </Button>
+                        {isLoading ? (<CircularProgress />) : (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                                endIcon={<CloudDownloadIcon />}
+                                onClick={exporterLesDonnes}
+                            >
+                                Exporter
+                            </Button>
+                        )}
+
                     </Accordion>
                     <Accordion>
                         <AccordionSummary
@@ -190,7 +211,12 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                             id="panel2a-header"
 
                         >
-                            <Typography className={classes.heading}><OpenInBrowserIcon /> Importer vos donnee</Typography>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <OpenInBrowserIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Importer les données" />
+                            </ListItem>
                         </AccordionSummary>
                         <AccordionDetails>
 
@@ -221,19 +247,20 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                                     </Grid>
                                 )}
                                 <br />
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.button}
-                                    endIcon={<BackupIcon />}
-                                    onClick={submitImport}
-                                >
-                                    Importer
-                                </Button>
+
+                                {isLoading ? (<CircularProgress />) : (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.button}
+                                        endIcon={<BackupIcon />}
+                                        onClick={submitImport}
+                                    >
+                                        Importer
+                                    </Button>
+                                )}
 
                             </div>
-
-
 
                         </AccordionDetails>
                     </Accordion>
@@ -244,6 +271,7 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                         onClick={handleClose}
                         color="primary"
                         variant="contained"
+                        disabled={isLoading}
                     >
                         Fermer
                     </Button>

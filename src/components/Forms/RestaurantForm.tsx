@@ -1551,7 +1551,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
         <Grid item container justify="flex-end" alignItems="center" xs={12}>
 
-          <Button
+          {modification && (<Button
             variant="contained"
             color="default"
             disabled={saving}
@@ -1559,7 +1559,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             onClick={handleOpenExport}
           >
             Export
-          </Button>
+          </Button>)}
+
           <Box width={theme.spacing(2)} />
 
           <Button
