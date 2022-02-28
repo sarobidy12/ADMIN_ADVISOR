@@ -112,7 +112,6 @@ const Foods: React.FC<{ food: any[] }> = (props: any) => {
                                                     className={clsx(classes.itemPrice)}
                                                 >
                                                     <span>Prix : </span>
-                                                    {console.log("---->", food)}
                                                     <span>
                                                         {`€${(estimateFoodPriceOnly(food) / 100).toLocaleString(undefined, {
                                                             minimumFractionDigits: 1,

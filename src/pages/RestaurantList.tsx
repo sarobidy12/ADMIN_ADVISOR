@@ -254,6 +254,8 @@ const RestaurantListPage: React.FC = () => {
       name_resto_code,
     } = restaurant;
 
+    console.log("restaurant",restaurant);
+
     modif.current = {
       _id,
       name_resto_code,
