@@ -119,44 +119,39 @@ const LoginPage: React.FC = () => {
     )
       return;
 
-    //    if (!firebase.messaging.isSupported()) {
+    if (!firebase.messaging.isSupported()) {
+      sendLogin("");
+      enqueueSnackbar("Vous ne recevez pas de notification", {
+        variant: "error",
+      });
+    }
 
-    sendLogin("");
-    // enqueueSnackbar("Vous ne recevez pas de notification", { variant: "error" });
-    //
-    //  }
+    if (!logingIn) {
+      setLogingIn(true);
 
-    // if (!logingIn) {
-    //   setLogingIn(true);
+      getToken(messaging, {
+        vapidKey:
+          "BKp2V7yB5SASi2jkEw4446MOY-8w7djP4UNPUjzP-x_T3OCQAVhtNb6LWh_5WAqZG1Cga4OgnP3Tu4_gntr_ZTo",
+      })
+        .then((currentToken: any) => {
+          if (currentToken) {
+            sendLogin(currentToken);
+          } else {
+            // Show permission request UI
+            console.log(
+              "No registration token available. Request permission to generate one."
+            );
+            // ...
+          }
+        })
+        .catch((err) => {
+          console.log("err-->", err);
 
-    //   getToken(messaging, {
-    //     vapidKey:
-    //       "BKp2V7yB5SASi2jkEw4446MOY-8w7djP4UNPUjzP-x_T3OCQAVhtNb6LWh_5WAqZG1Cga4OgnP3Tu4_gntr_ZTo",
-    //   })
-    //     .then((currentToken: any) => {
+          enqueueSnackbar("Erreur lors de la connexion", { variant: "error" });
 
-    //       if (currentToken) {
-
-    //         sendLogin(currentToken);
-
-    //       } else {
-    //         // Show permission request UI
-    //         console.log(
-    //           "No registration token available. Request permission to generate one."
-    //         );
-    //         // ...
-    //       }
-    //     })
-    //     .catch((err) => {
-
-    //       console.log("err-->",err);
-
-    //       enqueueSnackbar("Erreur lors de la connexion", { variant: "error" });
-
-    //       setLogingIn(false);
-
-    //     });
-    // }
+          setLogingIn(false);
+        });
+    }
   };
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -178,12 +173,12 @@ const LoginPage: React.FC = () => {
           animate={
             !loading
               ? {
-                opacity: 1,
-                y: 0,
-                transition: {
-                  duration: 0.8,
-                },
-              }
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    duration: 0.8,
+                  },
+                }
               : undefined
           }
         >

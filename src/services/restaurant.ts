@@ -298,7 +298,6 @@ export const updateRestaurant: (
   data: Partial<RestaurantFormType>,
 ) => Promise<void> = async (id, data) => {
 
-  console.log("data",data);
   
   const formData = getFormData(data);
 
