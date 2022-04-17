@@ -3,13 +3,12 @@ import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import { useSnackbar } from 'notistack';
 import useStyles from './Style';
-import { importJSONRestaurant } from "../../services/ImportExportPDF";
+import { importJSONRestaurant, exportJsonRestaurant } from "../../services/ImportExportPDF";
 import exportJSON from "../../services/exportJSON";
 import BackupIcon from '@material-ui/icons/Backup';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
-
 
 
 interface IDialogJson {
@@ -39,7 +38,11 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, retaurant, setLoadin
 
     const exporterLesDonnes = async () => {
 
-        exportJSON("Retaurants", retaurant)
+        await exportJsonRestaurant().then((res: any) => {
+
+            exportJSON("Retaurants", res.data);
+
+        });
 
     }
 

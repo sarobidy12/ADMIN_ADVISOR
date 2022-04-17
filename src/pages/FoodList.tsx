@@ -200,7 +200,8 @@ const FoodListPage: React.FC = () => {
       imageURL,
       imageNotContractual,
       allergene,
-      isAvailable
+      isAvailable,
+      field,valueField 
     } = food;
 
     modif.current = {
@@ -222,7 +223,8 @@ const FoodListPage: React.FC = () => {
       type: type._id,
       imageURL,
       imageNotContractual,
-      isAvailable
+      isAvailable,
+      field,valueField 
     };
     setOpenForm(true);
   }, []);

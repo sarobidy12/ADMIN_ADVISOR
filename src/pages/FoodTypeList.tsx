@@ -135,7 +135,8 @@ const FoodTypeListPage: React.FC = () => {
       _id,
       priority,
       name: { fr: name },
-      restaurant
+      restaurant,
+      field,valueField 
     } = foodType;
 
     modif.current = {
@@ -143,6 +144,7 @@ const FoodTypeListPage: React.FC = () => {
       name,
       priority,
       restaurant,
+      field,valueField 
     };
     setOpenForm(true);
   }, []);

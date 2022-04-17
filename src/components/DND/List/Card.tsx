@@ -1,23 +1,16 @@
-import { FC, useRef } from 'react'
-import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
-import { ItemTypes } from './ItemTypes'
-import { XYCoord } from 'dnd-core'
-import {
-  Grid,
-  IconButton,
-  TextField,
-  useTheme,
-} from '@material-ui/core';
-import {
-  Close,
-} from '@material-ui/icons';
-import { Autocomplete } from '@material-ui/lab';
+import { FC, useRef } from "react";
+import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { ItemTypes } from "./ItemTypes";
+import { XYCoord } from "dnd-core";
+import { Grid, IconButton, TextField, useTheme } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
+import { Autocomplete } from "@material-ui/lab";
 
 const style = {
-  marginBottom: '.5rem',
-  backgroundColor: 'white',
-  cursor: 'move',
-}
+  marginBottom: ".5rem",
+  backgroundColor: "white",
+  cursor: "move",
+};
 
 export interface CardProps {
   id: any;
@@ -52,41 +45,41 @@ export const Card: FC<CardProps> = ({
   setUpdatePrice,
   setCurrentOption,
   setAccompagnement,
-  updatePrice
+  updatePrice,
 }) => {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const [{ handlerId }, drop] = useDrop({
     accept: ItemTypes.CARD,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
-      }
+      };
     },
     hover(item: DragItem, monitor: DropTargetMonitor) {
       if (!ref.current) {
-        return
+        return;
       }
-      const dragIndex = item.index
-      const hoverIndex = index
+      const dragIndex = item.index;
+      const hoverIndex = index;
 
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
-        return
+        return;
       }
 
       // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect()
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
       // Get vertical middle
       const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
       // Determine mouse position
-      const clientOffset = monitor.getClientOffset()
+      const clientOffset = monitor.getClientOffset();
 
       // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
       // Only perform the move when the mouse has crossed half of the items height
       // When dragging downwards, only move when the cursor is below 50%
@@ -94,64 +87,60 @@ export const Card: FC<CardProps> = ({
 
       // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return
+        return;
       }
 
       // Dragging upwards
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return
+        return;
       }
 
       // Time to actually perform the action
 
-
-      moveCard(dragIndex, hoverIndex)
+      moveCard(dragIndex, hoverIndex);
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
-      item.index = hoverIndex
+      item.index = hoverIndex;
     },
-  })
+  });
 
   const priority = (a: any[], b: any[]) => {
-
     const array = [];
 
     if (b.length > 0) {
-
       for (let i = 0; i < b.length; i++) {
-        array.push(a.filter((items: any) => items._id === b[i])[0])
+        array.push(a.filter((items: any) => items._id === b[i])[0]);
       }
-      const priority = [...array].concat(a.filter((items: any) => !b.includes(items._id)));
+      const priority = [...array].concat(
+        a.filter((items: any) => !b.includes(items._id))
+      );
 
       if (priority.filter((item: any) => item).length) {
         return priority;
       }
-
     }
 
     return a;
-
-  }
+  };
 
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
-      return { id, index }
+      return { id, index };
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-  })
+  });
 
-  const opacity = isDragging ? 0 : 1
-  drag(drop(ref))
+  const opacity = isDragging ? 0 : 1;
+  drag(drop(ref));
   return (
     <div ref={ref} style={{ ...style, opacity }} data-handler-id={handlerId}>
-
-      <Grid container={true} key={index}  >
+      <Grid container={true} key={index}>
         <Grid item xs={3}>
           <TextField
             fullWidth
@@ -165,8 +154,8 @@ export const Card: FC<CardProps> = ({
               onchange({
                 value: e.target.value,
                 name: e.target.name,
-                index: index
-              })
+                index: index,
+              });
             }}
           />
         </Grid>
@@ -184,13 +173,17 @@ export const Card: FC<CardProps> = ({
               onchange({
                 value: e.target.value,
                 name: e.target.name,
-                index: index
-              })
+                index: index,
+              });
             }}
           />
         </Grid>
 
-        <Grid item xs={6} style={{ display: 'flex' }}>
+        <Grid item xs={6} style={{ display: "flex" }}>
+          {console.log(
+            "----priority--->",
+            html?.items.map((item: any) => item._id)
+          )}
 
           <Autocomplete
             fullWidth
@@ -202,9 +195,14 @@ export const Card: FC<CardProps> = ({
             options={accompanimentOptions}
             disabled={true}
             getOptionLabel={(option: any) => option.name}
-            value={priority(accompanimentOptions, html?.items.map((item: any) => item._id)).filter(({ _id }) =>
-              html?.items.find((d: any) => d._id === _id),
-            )}
+            value={priority(
+              accompanimentOptions,
+              html?.items.map((item: any) => item._id)
+            )
+              .filter((item: any) => item)
+              .filter((itemFilter: any) =>
+                html?.items.find((d: any) => d._id === itemFilter._id)
+              )}
             renderInput={(params: any) => (
               <TextField
                 {...params}
@@ -215,15 +213,18 @@ export const Card: FC<CardProps> = ({
           />
 
           <div style={{ marginLeft: theme.spacing(1) }}>
-            <IconButton key={index} onClick={(e: any) => {
-              e.stopPropagation();
-              removeAccompaniment(id)
-            }}>
+            <IconButton
+              key={index}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                removeAccompaniment(id);
+              }}
+            >
               <Close />
             </IconButton>
           </div>
         </Grid>
       </Grid>
     </div>
-  )
-}
+  );
+};

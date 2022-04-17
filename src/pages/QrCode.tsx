@@ -31,6 +31,7 @@ import { useSnackbar } from 'notistack';
 import Image from 'material-ui-image';
 import { useAuth } from '../providers/authentication';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3),
@@ -107,8 +108,7 @@ const QRCodePage: React.FC = () => {
 
   const [restaurantOptions, setRestaurantOptions] = useState<Restaurant[]>([]);
   const [loadingRestaurants, setLoadingRestaurants] = useState<boolean>(false);
-
-  const [qrcode, setQrcode] = useState<Blob>();
+  const [qrcode, setQrcode] = useState<string>();
   const [generatingQrcode, setGeneratingQrcode] = useState<boolean>(false);
 
   const theme = useTheme();
@@ -123,9 +123,6 @@ const QRCodePage: React.FC = () => {
         priceless: JSON.stringify(values.priceless),
         multipleLanguage: JSON.stringify(values.multipleLangue)
       })}`,
-      {
-        responseType: 'blob',
-      },
     )
       .then(({ data }) => {
         setQrcode(data);
@@ -282,7 +279,7 @@ const QRCodePage: React.FC = () => {
             >
               {qrcode ? (
                 <Image
-                  src={URL.createObjectURL(qrcode)}
+                  src={qrcode || ""}
                   alt="qrcode preview"
                   style={{ padding: 0, width: 200, height: 200 }}
                 />

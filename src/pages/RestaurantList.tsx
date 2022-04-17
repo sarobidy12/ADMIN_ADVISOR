@@ -5,41 +5,37 @@ import {
   Paper,
   TableCell,
   useMediaQuery,
-  Theme
-} from '@material-ui/core';
-import {
-  Restaurant as RestaurantIcon
-} from '@material-ui/icons';
-import { useSnackbar } from 'notistack';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PageHeader from '../components/Admin/PageHeader';
-import { Loading } from '../components/Common';
-import DeleteButton from '../components/Common/DeleteButton';
-import EditButton from '../components/Common/EditButton';
-import ViewButton from '../components/Common/ViewBtn';
-import FormDialog from '../components/Common/FormDialog';
-import IOSSwitch from '../components/Common/IOSSwitch';
+  Theme,
+} from "@material-ui/core";
+import { Restaurant as RestaurantIcon } from "@material-ui/icons";
+import { useSnackbar } from "notistack";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import PageHeader from "../components/Admin/PageHeader";
+import { Loading } from "../components/Common";
+import DeleteButton from "../components/Common/DeleteButton";
+import EditButton from "../components/Common/EditButton";
+import ViewButton from "../components/Common/ViewBtn";
+import FormDialog from "../components/Common/FormDialog";
+import IOSSwitch from "../components/Common/IOSSwitch";
 import RestaurantForm, {
   RestaurantFormType,
-} from '../components/Forms/RestaurantForm';
-import TableContainer, { HeadCell } from '../components/Table/TableContainer';
-import TableImageCell from '../components/Table/TableImageCell';
-import { daysOfWeek } from '../constants/days';
-import { web_url } from '../constants/url';
-import useDelete from '../hooks/useDelete';
-import useDeleteSelection from '../hooks/useDeleteSelection';
-import Restaurant from '../models/Restaurant.model';
-import { useAuth } from '../providers/authentication';
-import EventEmitter from '../services/EventEmitter';
+} from "../components/Forms/RestaurantForm";
+import TableContainer, { HeadCell } from "../components/Table/TableContainer";
+import TableImageCell from "../components/Table/TableImageCell";
+import { daysOfWeek } from "../constants/days";
+import { web_url } from "../constants/url";
+import useDelete from "../hooks/useDelete";
+import useDeleteSelection from "../hooks/useDeleteSelection";
+import Restaurant from "../models/Restaurant.model";
+import { useAuth } from "../providers/authentication";
+import EventEmitter from "../services/EventEmitter";
 import {
   addRestaurant,
   deleteRestaurant,
   getRestaurants,
   updateRestaurant,
-} from '../services/restaurant';
+} from "../services/restaurant";
 import DialogExportJson from "./ExportJson/Dialog";
-
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,55 +45,55 @@ const useStyles = makeStyles((theme) => ({
 
 const headCells: HeadCell<Restaurant>[] = [
   {
-    id: 'name',
-    label: 'Nom',
+    id: "name",
+    label: "Nom",
     disableSorting: true,
   },
   {
-    id: 'phoneNumber',
-    label: 'Téléphone',
+    id: "phoneNumber",
+    label: "Téléphone",
     disableSorting: true,
   },
   {
-    id: 'city',
-    label: 'Ville',
+    id: "city",
+    label: "Ville",
     disableSorting: true,
   },
   {
-    id: 'postalCode',
-    label: 'Code postal',
+    id: "postalCode",
+    label: "Code postal",
     disableSorting: true,
   },
   {
-    id: 'admin',
-    label: 'Restaurateur',
+    id: "admin",
+    label: "Restaurateur",
     disableSorting: true,
   },
   {
-    id: 'category',
-    label: 'Catégorie(s)',
+    id: "category",
+    label: "Catégorie(s)",
     disableSorting: true,
   },
   {
-    id: 'imageURL',
-    label: 'Image',
+    id: "imageURL",
+    label: "Image",
     disableSorting: true,
   },
   {
-    id: 'qrcodeLink',
-    label: 'Code QR',
+    id: "qrcodeLink",
+    label: "Code QR",
     disableSorting: true,
   },
   {
-    id: 'referencement',
-    label: 'Référencement',
-    alignment: 'center',
+    id: "referencement",
+    label: "Référencement",
+    alignment: "center",
     hideOnAdmin: true,
   },
   {
-    id: 'status',
-    label: 'Etat',
-    alignment: 'center',
+    id: "status",
+    label: "Etat",
+    alignment: "center",
     disableSorting: true,
     hideOnRestaurantAdmin: true,
   },
@@ -105,13 +101,13 @@ const headCells: HeadCell<Restaurant>[] = [
 
 const headCellsMobil: HeadCell<Restaurant>[] = [
   {
-    id: 'name',
-    label: 'Nom',
+    id: "name",
+    label: "Nom",
     disableSorting: true,
   },
   {
-    id: 'imageURL',
-    label: 'Image',
+    id: "imageURL",
+    label: "Image",
     disableSorting: true,
   },
 ];
@@ -136,7 +132,7 @@ const RestaurantListPage: React.FC = () => {
     {
       onDeleteRecord: (id) =>
         setRecords((v) => v.filter(({ _id }) => _id !== id)),
-    },
+    }
   );
 
   const { isAdmin, isRestaurantAdmin, user, restaurant, refreshRestaurant } =
@@ -152,7 +148,7 @@ const RestaurantListPage: React.FC = () => {
         setRecords(data);
       })
       .catch(() => {
-        enqueueSnackbar('Erreur lors du chargement...', { variant: 'error' });
+        enqueueSnackbar("Erreur lors du chargement...", { variant: "error" });
       })
       .finally(() => {
         setLoading(false);
@@ -164,48 +160,44 @@ const RestaurantListPage: React.FC = () => {
       setSaving(true);
 
       if (modif.current && data._id) {
-
         updateRestaurant(data._id, data)
           .then(() => {
-            enqueueSnackbar('Restaurant modifié avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Restaurant modifié avec succès", {
+              variant: "success",
             });
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
-            enqueueSnackbar('Erreur lors de la modification', {
-              variant: 'error',
+            enqueueSnackbar("Erreur lors de la modification", {
+              variant: "error",
             });
           })
           .finally(() => {
             modif.current = undefined;
             setSaving(false);
           });
-
       } else {
         addRestaurant(data)
           .then(async () => {
-            enqueueSnackbar('Restaurant ajouté avec succès', {
-              variant: 'success',
+            enqueueSnackbar("Restaurant ajouté avec succès", {
+              variant: "success",
             });
             await refreshRestaurant();
             setOpenForm(false);
-            EventEmitter.emit('REFRESH');
+            EventEmitter.emit("REFRESH");
           })
           .catch(() => {
             enqueueSnackbar("Erreur lors de l'ajout", {
-              variant: 'error',
+              variant: "error",
             });
           })
           .finally(() => {
             setSaving(false);
           });
-
       }
-
     },
-    [enqueueSnackbar, refreshRestaurant],
+    [enqueueSnackbar, refreshRestaurant]
   );
 
   const showModification = useCallback((restaurant: Restaurant) => {
@@ -252,9 +244,9 @@ const RestaurantListPage: React.FC = () => {
       discountAEmporter,
       discountDelivery,
       name_resto_code,
+      field,
+      valueField,
     } = restaurant;
-
-    console.log("restaurant",restaurant);
 
     modif.current = {
       _id,
@@ -283,6 +275,8 @@ const RestaurantListPage: React.FC = () => {
       discountAEmporter,
       discountDelivery,
       livraison: livraison,
+      field,
+      valueField,
       openingTimes: new Map(
         daysOfWeek.map((d) => [
           d,
@@ -304,10 +298,10 @@ const RestaurantListPage: React.FC = () => {
                       hour: String(eh),
                       minute: String(em),
                     },
-                  }),
+                  })
                 ) || [],
           },
-        ]),
+        ])
       ),
       status,
       paiementLivraison,
@@ -324,7 +318,7 @@ const RestaurantListPage: React.FC = () => {
       cbDirectToAdvisor,
       isMenuActive,
       isBoissonActive,
-      discount: discount as any
+      discount: discount as any,
     };
     setOpenForm(true);
   }, []);
@@ -334,10 +328,10 @@ const RestaurantListPage: React.FC = () => {
       fetch();
     };
 
-    EventEmitter.on('REFRESH', onRefresh);
+    EventEmitter.on("REFRESH", onRefresh);
 
     return () => {
-      EventEmitter.removeListener('REFRESH', onRefresh);
+      EventEmitter.removeListener("REFRESH", onRefresh);
     };
   }, [fetch]);
 
@@ -345,11 +339,11 @@ const RestaurantListPage: React.FC = () => {
     fetch();
   }, [fetch]);
 
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const handleImport = () => {
-    setOpenUpload(!openUpload)
-  }
+    setOpenUpload(!openUpload);
+  };
 
   return (
     <>
@@ -381,30 +375,34 @@ const RestaurantListPage: React.FC = () => {
           emptyPlaceholder="Aucun restaurant"
           options={{
             selectableRows: false,
-            orderBy: 'priority',
-            order: 'asc',
+            orderBy: "priority",
+            order: "asc",
             hasActionsColumn: true,
             enableDragAndDrop: true,
             filters: [
               {
-                id: 'name',
-                label: 'Nom du restaurant',
-                type: 'STRING',
+                id: "name",
+                label: "Nom du restaurant",
+                type: "STRING",
               },
-              { id: 'city', label: 'Ville', type: 'STRING' },
-              { id: 'postalCode', label: 'Code postal', type: 'STRING' },
-              { id: 'phoneNumber', label: 'Mobile', type: 'STRING' },
-              { id: 'fixedLinePhoneNumber', label: 'Téléphone fixe', type: 'STRING' },
-              { id: 'category', label: 'Catégorie', type: 'CATEGORY' },
-              { id: 'status', label: 'Etat', type: 'BOOLEAN' },
-              { id: 'referencement', label: 'Référencement', type: 'BOOLEAN' },
+              { id: "city", label: "Ville", type: "STRING" },
+              { id: "postalCode", label: "Code postal", type: "STRING" },
+              { id: "phoneNumber", label: "Mobile", type: "STRING" },
+              {
+                id: "fixedLinePhoneNumber",
+                label: "Téléphone fixe",
+                type: "STRING",
+              },
+              { id: "category", label: "Catégorie", type: "CATEGORY" },
+              { id: "status", label: "Etat", type: "BOOLEAN" },
+              { id: "referencement", label: "Référencement", type: "BOOLEAN" },
             ],
             selectOnClick: false,
             onRowClick: (_, restaurant) => showModification(restaurant),
             customComparators: {
               admin: (a, b) =>
                 `${b.admin.name.last} ${b.admin.name.first}`.localeCompare(
-                  `${a.admin.name.last} ${a.admin.name.first}`,
+                  `${a.admin.name.last} ${a.admin.name.first}`
                 ),
             },
           }}
@@ -423,96 +421,108 @@ const RestaurantListPage: React.FC = () => {
               qrcodeLink,
               referencement,
               status,
-              name_resto_code
+              name_resto_code,
             } = restaurant;
 
             return (
               <React.Fragment key={_id}>
                 <TableCell>{name_resto_code}</TableCell>
-                {mdUp && (<>
-                  <TableCell>{phoneNumber}<br />{fixedLinePhoneNumber}</TableCell>
-                  <TableCell>{city}</TableCell>
-                  <TableCell>{postalCode}</TableCell>
-                  <TableCell>{`${admin.name.last} ${admin.name.first}`}</TableCell>
-                  <TableCell>
-                    {category.map(({ _id, name: { fr: name }, imageURL }) => (
-                      <Chip
-                        style={{ margin: 2 }}
-                        key={_id}
-                        label={name}
-                        avatar={<Avatar src={imageURL} alt="name" />}
-                      />
-                    ))}
-                  </TableCell>
-                </>
+                {mdUp && (
+                  <>
+                    <TableCell>
+                      {phoneNumber}
+                      <br />
+                      {fixedLinePhoneNumber}
+                    </TableCell>
+                    <TableCell>{city}</TableCell>
+                    <TableCell>{postalCode}</TableCell>
+                    <TableCell>{`${admin.name.last} ${admin.name.first}`}</TableCell>
+                    <TableCell>
+                      {category.map(({ _id, name: { fr: name }, imageURL }) => (
+                        <Chip
+                          style={{ margin: 2 }}
+                          key={_id}
+                          label={name}
+                          avatar={<Avatar src={imageURL} alt="name" />}
+                        />
+                      ))}
+                    </TableCell>
+                  </>
                 )}
                 <TableImageCell alt={name} height={80} src={logo} showOnClick />
-                {mdUp && (<>
-
-                  <TableImageCell alt="Code qr" src={qrcodeLink} showOnClick />
-                  {isRestaurantAdmin && (
-                    <TableCell align="center">
-                      <IOSSwitch
-                        checked={referencement}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(_, c) => {
+                {mdUp && (
+                  <>
+                    <TableImageCell
+                      alt="Code qr"
+                      src={qrcodeLink}
+                      showOnClick
+                    />
+                    {isRestaurantAdmin && (
+                      <TableCell align="center">
+                        <IOSSwitch
+                          checked={referencement}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(_, c) => {
+                            setUpdating(true);
+                            updateRestaurant(_id, { referencement: c })
+                              .then(() => {
+                                restaurant.referencement = c;
+                                setRecords((records) => [...records]);
+                              })
+                              .finally(() => setUpdating(false));
+                          }}
+                        />
+                      </TableCell>
+                    )}
+                    {isAdmin && (
+                      <TableCell align="center">
+                        <IOSSwitch
+                          checked={status}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(_, c) => {
+                            setUpdating(true);
+                            updateRestaurant(_id, { status: c })
+                              .then(() => {
+                                restaurant.status = c;
+                                setRecords((records) => [...records]);
+                              })
+                              .finally(() => setUpdating(false));
+                          }}
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell>
+                      <EditButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          showModification(restaurant);
+                        }}
+                      />
+                      <DeleteButton
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setUpdating(true);
-                          updateRestaurant(_id, { referencement: c })
-                            .then(() => {
-                              restaurant.referencement = c;
-                              setRecords((records) => [...records]);
+                          handleDelete(_id)
+                            .then(async () => {
+                              if (isRestaurantAdmin) await refreshRestaurant();
+                              setRecords((v) =>
+                                v.filter(({ _id: id }) => _id !== id)
+                              );
                             })
                             .finally(() => setUpdating(false));
                         }}
                       />
-                    </TableCell>
-                  )}
-                  {isAdmin && (
-                    <TableCell align="center">
-                      <IOSSwitch
-                        checked={status}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(_, c) => {
-                          setUpdating(true);
-                          updateRestaurant(_id, { status: c })
-                            .then(() => {
-                              restaurant.status = c;
-                              setRecords((records) => [...records]);
-                            })
-                            .finally(() => setUpdating(false));
+                      <ViewButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(
+                            `${web_url}/restaurants/${restaurant._id}`,
+                            "_blank"
+                          );
                         }}
                       />
                     </TableCell>
-                  )}
-                  <TableCell>
-                    <EditButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        showModification(restaurant);
-                      }}
-                    />
-                    <DeleteButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setUpdating(true);
-                        handleDelete(_id)
-                          .then(async () => {
-                            if (isRestaurantAdmin) await refreshRestaurant();
-                            setRecords((v) =>
-                              v.filter(({ _id: id }) => _id !== id),
-                            );
-                          })
-                          .finally(() => setUpdating(false));
-                      }}
-                    />
-                    <ViewButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(`${web_url}/restaurants/${restaurant._id}`, '_blank');
-                      }}
-                    />
-                  </TableCell>
-                </>
+                  </>
                 )}
               </React.Fragment>
             );
@@ -521,7 +531,7 @@ const RestaurantListPage: React.FC = () => {
       </Paper>
       <FormDialog
         title={
-          modif.current ? 'Modifier un restaurant' : 'Ajouter un restaurant'
+          modif.current ? "Modifier un restaurant" : "Ajouter un restaurant"
         }
         onClose={() => {
           setOpenForm(false);

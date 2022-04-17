@@ -21,57 +21,62 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import React, { useCallback, useEffect, useState } from 'react';
-import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
-import Category from '../../models/Category.model';
+} from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
+import React, { useCallback, useEffect, useState } from "react";
+import useForm, { FormError, FormValidationHandler } from "../../hooks/useForm";
+import Category from "../../models/Category.model";
 // import FoodType from '../../models/FoodType.model';
-import { getCategories } from '../../services/categories';
+import { getCategories } from "../../services/categories";
 // import { getFoodTypes } from '../../services/foodTypes';
-import IOSSwitch from '../Common/IOSSwitch';
-import { DropzoneArea } from 'material-ui-dropzone';
+import IOSSwitch from "../Common/IOSSwitch";
+import { DropzoneArea } from "material-ui-dropzone";
 import {
   ExpandMore as ExpandMoreIcon,
   LocationOn as LocationOnIcon,
-} from '@material-ui/icons';
-import EmailIcon from '@material-ui/icons/Email';
-import { KeyboardTimePicker } from '@material-ui/pickers';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import moment from 'moment';
-import Chip from '@material-ui/core/Chip';
-import 'moment/locale/fr';
-import FormValidation from '../../utils/FormValidation';
-import User from '../../models/User.model';
-import { getUsers, getUsersById } from '../../services/user';
-import { getGeoLocation } from '../../utils/location';
-import { useSnackbar } from 'notistack';
-import { daysOfWeek } from '../../constants/days';
-import AddressInput from '../Common/AddressInput';
-import { geocodeByAddress, getLatLng, geocodeByPlaceId } from 'react-places-autocomplete';
-import { useAuth } from '../../providers/authentication';
-import OptionRestaurant from './OptionRestaurant';
+} from "@material-ui/icons";
+import EmailIcon from "@material-ui/icons/Email";
+import { KeyboardTimePicker } from "@material-ui/pickers";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import moment from "moment";
+import Chip from "@material-ui/core/Chip";
+import "moment/locale/fr";
+import FormValidation from "../../utils/FormValidation";
+import User from "../../models/User.model";
+import { getUsers, getUsersById } from "../../services/user";
+import { getGeoLocation } from "../../utils/location";
+import { useSnackbar } from "notistack";
+import { daysOfWeek } from "../../constants/days";
+import AddressInput from "../Common/AddressInput";
+import {
+  geocodeByAddress,
+  getLatLng,
+  geocodeByPlaceId,
+} from "react-places-autocomplete";
+import { useAuth } from "../../providers/authentication";
+import OptionRestaurant from "./OptionRestaurant";
 import ExportJson from "./ExportJson/Dialog";
-import PhoneInput from 'react-phone-input-2';
-import convertToBase64 from '../../services/convertToBase64';
-import 'react-phone-input-2/lib/material.css';
+import PhoneInput from "react-phone-input-2";
+import convertToBase64 from "../../services/convertToBase64";
+import "react-phone-input-2/lib/material.css";
+import FormFeild from "./FormField";
 
-moment.locale('fr');
+moment.locale("fr");
 
 const listParametreLivraison: any[] = [
   {
-    key: 'freeCP',
-    type: 'number',
-    titre: 'Les code postal gratuit',
-    placeholder: 'code Postal gratuit'
+    key: "freeCP",
+    type: "number",
+    titre: "Les code postal gratuit",
+    placeholder: "code Postal gratuit",
   },
   {
-    key: 'freeCity',
-    type: 'text',
-    titre: 'Les villes gratuit',
-    placeholder: 'Ville gratuit'
-  }
-]
+    key: "freeCity",
+    type: "text",
+    titre: "Les villes gratuit",
+    placeholder: "Ville gratuit",
+  },
+];
 
 type OpeningTime = {
   activated: boolean;
@@ -86,7 +91,6 @@ type OpeningTime = {
     };
   }[];
 };
-
 
 interface plageDiscount {
   id: string;
@@ -107,6 +111,13 @@ interface discount {
   codeDiscount: any[];
 }
 
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
 
 export type RestaurantFormType = {
   _id?: string;
@@ -154,7 +165,8 @@ export type RestaurantFormType = {
   discountDelivery: boolean;
   logo?: File;
   name_resto_code: string;
-
+  field: IFieldContent[] | [];
+  valueField: any;
 };
 
 interface RestaurantFormProps {
@@ -167,61 +179,61 @@ interface RestaurantFormProps {
 
 const useStyles = makeStyles(() => ({
   dropzone: {
-    height: '100%',
-    margin: '1vh'
+    height: "100%",
+    margin: "1vh",
   },
   marginTop: {
-    marginTop: '20px'
+    marginTop: "20px",
   },
   padding: {
-    padding: '0 5vh'
+    padding: "0 5vh",
   },
   paddingStripe: {
-    padding: '2vh 5vh',
-    backgroundColor: '#DCDCDC',
-    margin: '1vh',
-    borderRadius: '2vh'
+    padding: "2vh 5vh",
+    backgroundColor: "#DCDCDC",
+    margin: "1vh",
+    borderRadius: "2vh",
   },
   input: {
-    width: '100%',
-    border: '1px solid #CDCDCD',
-    borderRadius: '0.5vh'
+    width: "100%",
+    border: "1px solid #CDCDCD",
+    borderRadius: "0.5vh",
   },
   inputForm: {
-    height: '5vh',
-    margin: '1vh',
-    border: 'none'
-  }
+    height: "5vh",
+    margin: "1vh",
+    border: "none",
+  },
 }));
 
 const RestaurantForm: React.FC<RestaurantFormProps> = ({
   initialValues = {
     deliveryFixed: false,
-    priceByMiles: '0',
-    name_resto_code: '',
-    name: '',
-    address: '',
-    phoneNumber: '',
-    discountType: 'SurTotalité',
-    fixedLinePhoneNumber: '',
+    priceByMiles: "0",
+    name_resto_code: "",
+    name: "",
+    address: "",
+    phoneNumber: "",
+    discountType: "SurTotalité",
+    fixedLinePhoneNumber: "",
     categories: [],
-    city: '',
-    postalCode: '',
-    description: '',
+    city: "",
+    postalCode: "",
+    description: "",
     foodTypes: [],
     delivery: false,
     surPlace: true,
     aEmporter: true,
     referencement: true,
     status: true,
-    minPriceIsDelivery: '',
+    minPriceIsDelivery: "",
     paiementLivraison: true,
-    deliveryPrice: '0',
-    longitude: '',
-    latitude: '',
-    admin: '',
-    customerStripeKey: '',
-    customerSectretStripeKey: '',
+    deliveryPrice: "0",
+    longitude: "",
+    latitude: "",
+    admin: "",
+    customerStripeKey: "",
+    customerSectretStripeKey: "",
     paiementCB: false,
     cbDirectToAdvisor: true,
     isMenuActive: true,
@@ -232,6 +244,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     discountDelivery: false,
     livraison: {},
     DistanceMax: 0,
+    field: [],
+    valueField: {},
     openingTimes: new Map(
       daysOfWeek.map((day) => [
         day,
@@ -239,33 +253,32 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           activated: true,
           openings: [
             {
-              begin: { hour: '06', minute: '00' },
-              end: { hour: '12', minute: '00' },
+              begin: { hour: "06", minute: "00" },
+              end: { hour: "12", minute: "00" },
             },
             {
-              begin: { hour: '13', minute: '00' },
-              end: { hour: '20', minute: '00' },
+              begin: { hour: "13", minute: "00" },
+              end: { hour: "20", minute: "00" },
             },
           ],
         },
-      ]),
+      ])
     ),
     discount: {
       delivery: {
         plageDiscount: [],
-        discountType: "SurCommande"
+        discountType: "SurCommande",
       },
       aEmporter: {
         plageDiscount: [],
       },
-      codeDiscount: []
-    }
+      codeDiscount: [],
+    },
   },
   saving,
   modification,
   onSave,
   onCancel,
-
 }) => {
   const { isAdmin, isRestaurantAdmin, user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -274,46 +287,57 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     (data) => {
       const errors: FormError<RestaurantFormType> = {};
 
-      if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
+      if (!data.name.length) errors.name = "Ce champ ne doit pas être vide";
       if (!data.description.length)
-        errors.description = 'Ce champ ne doit pas être vide';
+        errors.description = "Ce champ ne doit pas être vide";
       if (!data.address.length)
-        errors.address = 'Ce champ ne doit pas être vide';
+        errors.address = "Ce champ ne doit pas être vide";
       if (!data.categories.length)
-        errors.categories = 'Vous devez au moins ajouter une catégorie';
+        errors.categories = "Vous devez au moins ajouter une catégorie";
       // if (!data.foodTypes.length)
       //   errors.foodTypes = 'Vous devez au moins ajouter un type';
       if (!data.phoneNumber.length)
-        errors.phoneNumber = 'Ce champ ne doit pas être vide';
+        errors.phoneNumber = "Ce champ ne doit pas être vide";
       else if (!FormValidation.isPhoneNumber(data.phoneNumber))
-        errors.phoneNumber = 'Téléphone non valide';
-      if (!data.city.length) errors.city = 'Ce champ ne doit pas être vide';
-      if (!data?.postalCode?.length) errors.postalCode = 'Ce champ ne doit pas être vide';
-      if (!data.admin.length) errors.admin = 'Ce champ ne doit pas être vide';
-      if (data.delivery && data.paiementCB && !data.cbDirectToAdvisor && !data.customerStripeKey.length) {
-        errors.customerStripeKey = 'Ce champ ne doit pas être vide'
-        enqueueSnackbar('Clé stripe ne doit pas être vide', {
-          variant: 'error',
+        errors.phoneNumber = "Téléphone non valide";
+      if (!data.city.length) errors.city = "Ce champ ne doit pas être vide";
+      if (!data?.postalCode?.length)
+        errors.postalCode = "Ce champ ne doit pas être vide";
+      if (!data.admin.length) errors.admin = "Ce champ ne doit pas être vide";
+      if (
+        data.delivery &&
+        data.paiementCB &&
+        !data.cbDirectToAdvisor &&
+        !data.customerStripeKey.length
+      ) {
+        errors.customerStripeKey = "Ce champ ne doit pas être vide";
+        enqueueSnackbar("Clé stripe ne doit pas être vide", {
+          variant: "error",
         });
       }
 
       if (data.delivery && !data.DistanceMax) {
-        errors.DistanceMax = 'Ce champ ne doit pas être vide'
-        enqueueSnackbar('Clé stripe ne doit pas être vide', {
-          variant: 'error',
+        errors.DistanceMax = "Ce champ ne doit pas être vide";
+        enqueueSnackbar("Clé stripe ne doit pas être vide", {
+          variant: "error",
         });
       }
 
-      if (data.delivery && data.paiementCB && !data.cbDirectToAdvisor && !data.customerSectretStripeKey.length) {
-        errors.customerSectretStripeKey = 'Ce champ ne doit pas être vide';
-        enqueueSnackbar('Client clé stripe ne doit pas être vide', {
-          variant: 'error',
+      if (
+        data.delivery &&
+        data.paiementCB &&
+        !data.cbDirectToAdvisor &&
+        !data.customerSectretStripeKey.length
+      ) {
+        errors.customerSectretStripeKey = "Ce champ ne doit pas être vide";
+        enqueueSnackbar("Client clé stripe ne doit pas être vide", {
+          variant: "error",
         });
       }
 
       return errors;
     },
-    [enqueueSnackbar],
+    [enqueueSnackbar]
   );
 
   const {
@@ -325,6 +349,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     validate,
     errors,
     setLivraison,
+    handleChangeField,
     phoneNumberChange,
   } = useForm<RestaurantFormType>(
     {
@@ -332,7 +357,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       admin: isRestaurantAdmin && user ? user._id : initialValues.admin,
     },
     false,
-    validation,
+    validation
   );
 
   const [categoryOptions, setCategoryOptions] = useState<Category[]>([]);
@@ -340,15 +365,27 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   const [userOptions, setUserOptions] = useState<User[]>([]);
   const [livraisonValue, setLivraisonValue] = useState<any>({});
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
-  const [openingTimes, setOpeningTimes] = useState<Map<string, OpeningTime>>(initialValues.openingTimes);
+  const [openingTimes, setOpeningTimes] = useState<Map<string, OpeningTime>>(
+    initialValues.openingTimes
+  );
   const [isDelivery, setIsDelivery] = useState<boolean>(values.delivery);
   const [isAEmporter, setIsAEmporter] = useState<boolean>(values.aEmporter);
-  const [discountDelivery, setDiscountDelivery] = useState<boolean>(values.discountDelivery);
-  const [discountAEmporter, setDiscountAEmport] = useState<boolean>(values.discountAEmporter);
-  const [deliveryFixed, setDeliveryFixed] = useState<boolean>(values.deliveryFixed);
+  const [discountDelivery, setDiscountDelivery] = useState<boolean>(
+    values.discountDelivery
+  );
+  const [discountAEmporter, setDiscountAEmport] = useState<boolean>(
+    values.discountAEmporter
+  );
+  const [deliveryFixed, setDeliveryFixed] = useState<boolean>(
+    values.deliveryFixed
+  );
   const [isCB, setIsCB] = useState<boolean>(values.paiementCB);
-  const [isDirectToAdvisor, setIsDirectToAdvisor] = useState<boolean>(values.cbDirectToAdvisor);
-  const [hasCodePromo, setHasCodePromo] = useState<boolean>(values.hasCodePromo);
+  const [isDirectToAdvisor, setIsDirectToAdvisor] = useState<boolean>(
+    values.cbDirectToAdvisor
+  );
+  const [hasCodePromo, setHasCodePromo] = useState<boolean>(
+    values.hasCodePromo
+  );
 
   const [existAdmin, setExistAdmin] = useState<any>(null);
 
@@ -356,17 +393,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
 
   const isDayActivated = useCallback(
     (day: string) => !!openingTimes.get(day)?.activated,
-    [openingTimes],
+    [openingTimes]
   );
 
   const getOpenings = useCallback(
     (day: string) => (openingTimes.get(day) as OpeningTime).openings,
-    [openingTimes],
+    [openingTimes]
   );
 
   const getOpeningTime = useCallback(
     (day: string) => openingTimes.get(day) as OpeningTime,
-    [openingTimes],
+    [openingTimes]
   );
 
   const applyToAll = useCallback(
@@ -380,7 +417,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         return new Map(values);
       });
     },
-    [getOpeningTime],
+    [getOpeningTime]
   );
 
   const applyToNext = useCallback(
@@ -395,7 +432,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         return new Map(values);
       });
     },
-    [getOpeningTime],
+    [getOpeningTime]
   );
 
   const classes = useStyles();
@@ -408,28 +445,25 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       .finally(() => setLoadingCategories(false));
 
     setLoadingUsers(true);
-    getUsers({ role: 'ROLE_RESTAURANT_ADMIN', alreadyRestaurantAdmin: false })
+    getUsers({ role: "ROLE_RESTAURANT_ADMIN", alreadyRestaurantAdmin: false })
       .then((data) => {
-        setUserOptions(data)
+        setUserOptions(data);
       })
       .finally(() => setLoadingUsers(false));
 
-    getUsersById(values.admin)
-      .then((data: any) => {
-        setExistAdmin(data._doc);
-      })
+    getUsersById(values.admin).then((data: any) => {
+      setExistAdmin(data._doc);
+    });
   }, [values.admin]);
 
   useEffect(() => {
-
     if (errors.image) {
-      enqueueSnackbar('Veuillez ajouter une image', {
-        variant: 'warning',
+      enqueueSnackbar("Veuillez ajouter une image", {
+        variant: "warning",
       });
     }
 
     // addnewLivraison(initialValues.livraison);
-
   }, [enqueueSnackbar, errors]);
 
   const onChangeAddress = async (data: any) => {
@@ -437,10 +471,11 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     const { lng, lat } = await getLatLng(results[0]);
     const [place] = await geocodeByPlaceId(data.placeId);
     const address = place.formatted_address;
-    const { long_name: postalCode = '' } =
-      place.address_components.find(c => c.types.includes('postal_code')) || {};
-    const { long_name: city = '' } =
-      place.address_components.find(c => c.types.includes('locality')) || {};
+    const { long_name: postalCode = "" } =
+      place.address_components.find((c) => c.types.includes("postal_code")) ||
+      {};
+    const { long_name: city = "" } =
+      place.address_components.find((c) => c.types.includes("locality")) || {};
 
     setValues((values) => ({
       ...values,
@@ -449,114 +484,101 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
       postalCode,
       latitude: String(lat),
       longitude: String(lng),
-    }))
-  }
+    }));
+  };
 
   const handleSwitchDelivery = (e: any) => {
-
     const { name, checked } = e.target;
 
-    if (name === 'delivery') {
+    if (name === "delivery") {
       setIsDelivery(checked);
 
       if (checked === false) {
-        setDiscountDelivery(false)
+        setDiscountDelivery(false);
         setValues((values) => ({
           ...values,
-          discountDelivery: false
+          discountDelivery: false,
         }));
       }
     }
 
-    if (name === 'paiementCB') {
+    if (name === "paiementCB") {
       setIsCB(checked);
     }
 
-    if (name === 'deliveryFixed') {
+    if (name === "deliveryFixed") {
       setDeliveryFixed(checked);
     }
 
-    if (name === 'cbDirectToAdvisor') {
-      setIsDirectToAdvisor(checked)
+    if (name === "cbDirectToAdvisor") {
+      setIsDirectToAdvisor(checked);
     }
 
-    if (name === 'aEmporter') {
-      setIsAEmporter(checked)
+    if (name === "aEmporter") {
+      setIsAEmporter(checked);
 
       if (checked === false) {
-        setDiscountAEmport(false)
+        setDiscountAEmport(false);
         setValues((values) => ({
           ...values,
-          discountAEmporter: false
+          discountAEmporter: false,
         }));
       }
-
     }
 
-    if (name === 'hasCodePromo') {
-      setHasCodePromo(checked)
+    if (name === "hasCodePromo") {
+      setHasCodePromo(checked);
     }
 
-    if (name === 'discountAEmporter') {
-      setDiscountAEmport(checked)
+    if (name === "discountAEmporter") {
+      setDiscountAEmport(checked);
     }
 
-    if (name === 'discountDelivery') {
-      setDiscountDelivery(checked)
+    if (name === "discountDelivery") {
+      setDiscountDelivery(checked);
     }
 
     setValues((values) => ({
       ...values,
-      [name]: checked
+      [name]: checked,
     }));
-
-  }
+  };
 
   const handleChangeLiraison = (e: any) => {
-
     setLivraisonValue({
       ...livraisonValue,
-      [e.target.name]: e.target.value.trim().toLowerCase()
+      [e.target.name]: e.target.value.trim().toLowerCase(),
     });
-
-  }
+  };
 
   const handleAddArray = (key: string) => {
-
     const list: any[] = values.livraison[key] || [];
 
-    if (livraisonValue[key] !== '') {
-
-      list.push(livraisonValue[key])
+    if (livraisonValue[key] !== "") {
+      list.push(livraisonValue[key]);
 
       setLivraison(list, key);
 
       setLivraisonValue({
         ...livraisonValue,
-        [key]: ''
+        [key]: "",
       });
-
     }
-
-  }
+  };
 
   const handleOpenExport = () => {
-    setOpenExport(!openExport)
-  }
+    setOpenExport(!openExport);
+  };
 
   const uploadImage = (name: string) => async (files: any) => {
-
     const file = files[0];
 
     if (file) {
-
       const base64 = await convertToBase64(file);
 
-      setValues((v) => ({ ...v, [name]: base64 }))
-
+      setValues((v) => ({ ...v, [name]: base64 }));
     }
-
-  }
+  };
 
   return (
     <form
@@ -566,14 +588,16 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         e.preventDefault();
         e.stopPropagation();
         (
-          e.currentTarget.querySelector('[type=submit]') as HTMLInputElement
+          e.currentTarget.querySelector("[type=submit]") as HTMLInputElement
         ).focus();
+
+        console.log("values",values);
         if (validate()) onSave?.({ ...values, openingTimes });
       }}
     >
       <Grid container spacing={2} justify="center">
         <Grid item xs={12}>
-          <Typography variant="h4" style={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography variant="h4" style={{ fontWeight: "bold" }} gutterBottom>
             Général
           </Typography>
         </Grid>
@@ -648,8 +672,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                         });
                       })
                       .catch(() => {
-                        enqueueSnackbar('Erreur lors la localisation', {
-                          variant: 'error',
+                        enqueueSnackbar("Erreur lors la localisation", {
+                          variant: "error",
                         });
                       });
                   }}
@@ -665,9 +689,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           xs={12}
           md={6}
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
           }}
         >
           <Grid container={true}>
@@ -676,32 +700,31 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               xs={12}
               md={4}
               style={{
-                padding: '1vh'
+                padding: "1vh",
               }}
             >
-              <Typography
-                variant="h5"
-                gutterBottom
-                align="center"
-              >
+              <Typography variant="h5" gutterBottom align="center">
                 Logo
-                Taille: 120 px à 120 px
+              </Typography>
+
+              <Typography variant="h5" gutterBottom align="center">
+                Taille 120 px à 120 px
               </Typography>
 
               <DropzoneArea
                 inputProps={{
-                  name: 'Logo',
+                  name: "Logo",
                 }}
                 previewGridProps={{
-                  container: { spacing: 2, justify: 'center' },
+                  container: { spacing: 2, justify: "center" },
                 }}
                 dropzoneText="Logo"
-                acceptedFiles={['image/*']}
+                acceptedFiles={["image/*"]}
                 filesLimit={1}
                 classes={{ root: classes.dropzone }}
-                getFileAddedMessage={() => 'Fichier ajouté'}
-                getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={uploadImage('logo')}
+                getFileAddedMessage={() => "Fichier ajouté"}
+                getFileRemovedMessage={() => "Fichier enlevé"}
+                onChange={uploadImage("logo")}
                 initialFiles={[initialValues.logo ?? ""]}
               />
             </Grid>
@@ -711,71 +734,59 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               xs={12}
               md={4}
               style={{
-                padding: '1vh'
+                padding: "1vh",
               }}
             >
-              <Typography
-                variant="h5"
-                gutterBottom
-                align="center"
-              >
-                Photo de couverture web
-                Taille: 1024 px à 1280 px
+              <Typography variant="h5" gutterBottom align="center">
+                Photo de couverture web Taille: 1024 px à 1280 px
               </Typography>
 
               <DropzoneArea
                 inputProps={{
-                  name: 'couvertureWeb',
+                  name: "couvertureWeb",
                 }}
                 previewGridProps={{
-                  container: { spacing: 2, justify: 'center' },
+                  container: { spacing: 2, justify: "center" },
                 }}
                 dropzoneText="Image de couverture"
-                acceptedFiles={['image/*']}
+                acceptedFiles={["image/*"]}
                 filesLimit={1}
                 classes={{ root: classes.dropzone }}
-                getFileAddedMessage={() => 'Fichier ajouté'}
-                getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={uploadImage('couvertureWeb')}
+                getFileAddedMessage={() => "Fichier ajouté"}
+                getFileRemovedMessage={() => "Fichier enlevé"}
+                onChange={uploadImage("couvertureWeb")}
                 initialFiles={[initialValues.couvertureWeb ?? ""]}
               />
-
             </Grid>
             <Grid
               item
               xs={12}
               md={4}
               style={{
-                padding: '1vh'
+                padding: "1vh",
               }}
             >
-              <Typography
-                variant="h5"
-                gutterBottom
-                align="center"
-              >
-                Photo de couverture mobile
-                Taille: 800 px à 300 px
+              <Typography variant="h5" gutterBottom align="center">
+                Photo de couverture mobile Taille: 800 px à 300 px
               </Typography>
               <DropzoneArea
                 inputProps={{
-                  name: 'couvertureMobile',
+                  name: "couvertureMobile",
                 }}
                 previewGridProps={{
-                  container: { spacing: 2, justify: 'center' },
+                  container: { spacing: 2, justify: "center" },
                 }}
                 dropzoneText="Image de couverture mobile"
-                acceptedFiles={['image/*']}
+                acceptedFiles={["image/*"]}
                 filesLimit={1}
                 classes={{ root: classes.dropzone }}
-                getFileAddedMessage={() => 'Fichier ajouté'}
-                getFileRemovedMessage={() => 'Fichier enlevé'}
-                onChange={uploadImage('couvertureMobile')}
+                getFileAddedMessage={() => "Fichier ajouté"}
+                getFileRemovedMessage={() => "Fichier enlevé"}
+                onChange={uploadImage("couvertureMobile")}
                 initialFiles={[initialValues.couvertureMobile ?? ""]}
               />
             </Grid>
           </Grid>
-
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom>
@@ -810,9 +821,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           />
         </Grid>
         {isAdmin && (
-
           <Grid item xs={12}>
-
             <Typography variant="h5" gutterBottom>
               Administrateur
             </Typography>
@@ -824,7 +833,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               filterSelectedOptions
               options={userOptions}
               value={
-                userOptions.find(({ _id }) => _id === values.admin) || existAdmin || null
+                userOptions.find(({ _id }) => _id === values.admin) ||
+                existAdmin ||
+                null
               }
               onChange={(_, v) => {
                 if (v)
@@ -848,48 +859,46 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                 />
               )}
             />
-
           </Grid>
-
         )}
 
         <Grid item xs={12}>
-
           <div
             style={{
-              width: '100%',
+              width: "100%",
             }}
           >
             <PhoneInput
-              country={'fr'}
+              country={"fr"}
               specialLabel="Mobile"
               value={initialValues.phoneNumber}
-              onChange={phone => phoneNumberChange(`+${phone}`, 'phoneNumber')}
+              onChange={(phone) =>
+                phoneNumberChange(`+${phone}`, "phoneNumber")
+              }
               inputStyle={{
-                width: '100%',
+                width: "100%",
               }}
             />
           </div>
         </Grid>
         <Grid item xs={12}>
-
-
           <div
             style={{
-              width: '100%',
+              width: "100%",
             }}
           >
             <PhoneInput
-              country={'fr'}
+              country={"fr"}
               specialLabel="Téléphone fixe"
               value={initialValues.fixedLinePhoneNumber}
-              onChange={phone => phoneNumberChange(`+${phone}`, 'fixedLinePhoneNumber')}
+              onChange={(phone) =>
+                phoneNumberChange(`+${phone}`, "fixedLinePhoneNumber")
+              }
               inputStyle={{
-                width: '100%',
+                width: "100%",
               }}
             />
           </div>
-
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom>
@@ -921,7 +930,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             filterSelectedOptions
             options={categoryOptions}
             value={categoryOptions.filter(
-              ({ _id }) => !!values.categories.find((d) => _id === d),
+              ({ _id }) => !!values.categories.find((d) => _id === d)
             )}
             onChange={(_, v) => {
               setValues((old) => {
@@ -941,10 +950,18 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             )}
           />
         </Grid>
+        <Grid item xs={12}>
+          <FormFeild
+            listForm={[...initialValues.field] as any}
+            setValue={setValues}
+            valueAll={values}
+            errors={errors}
+          />
+        </Grid>
 
         <Grid item xs={12}>
           <Box height={theme.spacing(6)} />
-          <Typography variant="h4" style={{ fontWeight: 'bold' }} gutterBottom>
+          <Typography variant="h4" style={{ fontWeight: "bold" }} gutterBottom>
             Paramètres du restaurant
           </Typography>
         </Grid>
@@ -954,7 +971,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               <Typography variant="h5">Heures d'ouvertures</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <List style={{ width: '100%' }}>
+              <List style={{ width: "100%" }}>
                 {daysOfWeek.map((day, i) => (
                   <React.Fragment key={day}>
                     <ListItem button>
@@ -971,19 +988,20 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                         />
                       </ListItemIcon>
                       <ListItemText
-                        primary={`${capitalize(day)} - ${getOpeningTime(day).activated ? 'Ouvert' : 'Fermé'
-                          }`}
+                        primary={`${capitalize(day)} - ${
+                          getOpeningTime(day).activated ? "Ouvert" : "Fermé"
+                        }`}
                         secondary={
                           <>
                             <span
                               style={{
-                                cursor: 'pointer',
-                                backgroundColor: 'transparent',
-                                outline: 'none',
+                                cursor: "pointer",
+                                backgroundColor: "transparent",
+                                outline: "none",
                                 padding: 0,
-                                border: 'none',
+                                border: "none",
                                 color: theme.palette.primary.main,
-                                textDecoration: 'underline',
+                                textDecoration: "underline",
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -997,13 +1015,13 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                             </span>
                             <span
                               style={{
-                                cursor: 'pointer',
-                                backgroundColor: 'transparent',
-                                outline: 'none',
+                                cursor: "pointer",
+                                backgroundColor: "transparent",
+                                outline: "none",
                                 padding: 0,
-                                border: 'none',
+                                border: "none",
                                 color: theme.palette.primary.main,
-                                textDecoration: 'underline',
+                                textDecoration: "underline",
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1035,7 +1053,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                                 justify="center"
                               >
                                 <span>
-                                  {i === 0 ? 'Matinée: ' : 'Après-midi: '}
+                                  {i === 0 ? "Matinée: " : "Après-midi: "}
                                 </span>
 
                                 <Box width={theme.spacing(1)} />
@@ -1053,10 +1071,10 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                                   onChange={(date) => {
                                     openingTime.begin = {
                                       hour: (date as moment.Moment).format(
-                                        'HH',
+                                        "HH"
                                       ),
                                       minute: (date as moment.Moment).format(
-                                        'mm',
+                                        "mm"
                                       ),
                                     };
                                     setOpeningTimes((v) => new Map(v));
@@ -1078,10 +1096,10 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                                   onChange={(date) => {
                                     openingTime.end = {
                                       hour: (date as moment.Moment).format(
-                                        'HH',
+                                        "HH"
                                       ),
                                       minute: (date as moment.Moment).format(
-                                        'mm',
+                                        "mm"
                                       ),
                                     };
                                     setOpeningTimes((v) => new Map(v));
@@ -1102,7 +1120,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         </Grid>
 
         <Grid container={true} justify="center" className={classes.padding}>
-
           <Grid item={true} md={4} xs={12}>
             <FormControlLabel
               control={
@@ -1116,7 +1133,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             />
           </Grid>
           <Grid item={true} md={4} xs={12}>
-
             <FormControlLabel
               control={
                 <IOSSwitch
@@ -1129,7 +1145,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             />
           </Grid>
           <Grid item={true} md={4} xs={12}>
-
             <FormControlLabel
               control={
                 <IOSSwitch
@@ -1141,13 +1156,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               label="À emporter"
             />
           </Grid>
-
         </Grid>
 
-
         <Grid container={true} className={classes.padding}>
-
-
           <Grid item={true} md={4} xs={12}>
             <FormControlLabel
               control={
@@ -1162,7 +1173,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           </Grid>
 
           <Grid item={true} md={4} xs={12}>
-
             <FormControlLabel
               control={
                 <IOSSwitch
@@ -1173,12 +1183,9 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               }
               label="Activer la boisson"
             />
-
           </Grid>
 
-
           <Grid item={true} md={4} xs={12}>
-
             <FormControlLabel
               control={
                 <IOSSwitch
@@ -1189,23 +1196,26 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               }
               label="Ajouter un code promo"
             />
-
           </Grid>
-
         </Grid>
 
         {isAEmporter && (
-          <div style={{
-            border: '1px dashed #CDCDCD',
-            width: '100%',
-            margin: '1vh 0',
-            padding: '2vh'
-          }}>
-            <Typography variant="h6" style={{ fontWeight: 'bold' }} gutterBottom>
+          <div
+            style={{
+              border: "1px dashed #CDCDCD",
+              width: "100%",
+              margin: "1vh 0",
+              padding: "2vh",
+            }}
+          >
+            <Typography
+              variant="h6"
+              style={{ fontWeight: "bold" }}
+              gutterBottom
+            >
               Paramètre emporter
             </Typography>
             <Grid container={true} className={classes.padding}>
-
               <Grid item={true} md={3} xs={12}>
                 <FormControlLabel
                   control={
@@ -1219,293 +1229,300 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
                 />
               </Grid>
             </Grid>
-          </div>)}
-
-        {
-          isDelivery && (
-            <div style={{
-              border: '1px dashed #CDCDCD',
-              width: '100%',
-              margin: '1vh 0',
-              padding: '2vh'
-            }}>
-
-              <Typography variant="h6" style={{ fontWeight: 'bold' }} gutterBottom>
-                Paramètre de livraison
-              </Typography>
-
-              <Grid container={true} className={classes.padding}>
-
-                <Grid item={true} md={3} xs={12}>
-                  <FormControlLabel
-                    control={
-                      <IOSSwitch
-                        defaultChecked={values.paiementCB}
-                        onChange={handleSwitchDelivery}
-                        name="paiementCB"
-                      />
-                    }
-                    label="Paiement par CB"
-                  />
-                </Grid>
-
-                <Grid item={true} md={3} xs={4}>
-                  <FormControlLabel
-                    control={
-                      <IOSSwitch
-                        defaultChecked={values.discountDelivery}
-                        onChange={handleSwitchDelivery}
-                        name="discountDelivery"
-                      />
-                    }
-                    label="Remise livraison"
-                  />
-                </Grid>
-
-
-                <Grid item={true} md={3} xs={4}>
-                  <FormControlLabel
-                    control={
-                      <IOSSwitch
-                        defaultChecked={values.deliveryFixed}
-                        onChange={handleSwitchDelivery}
-                        name="deliveryFixed"
-                      />
-                    }
-                    label="Prix de livraison fixe"
-                  />
-                </Grid>
-
-                <Grid item={true} md={3} xs={4}>
-                  <FormControlLabel
-                    control={
-                      <IOSSwitch
-                        defaultChecked={values.paiementLivraison}
-                        onChange={handleSwitchChange}
-                        name="paiementLivraison"
-                      />
-                    }
-                    label="Paiement à la livraison"
-                  />
-                </Grid>
-
-                {
-                  (isAdmin && isCB && isDelivery) && (
-                    <Grid item={true} md={3} xs={4}>
-                      <FormControlLabel
-                        control={
-                          <IOSSwitch
-                            defaultChecked={values.cbDirectToAdvisor}
-                            onChange={handleSwitchDelivery}
-                            name="cbDirectToAdvisor"
-                          />
-                        }
-                        label="Paiement directement a MENU ADVISOR"
-                      />
-                    </Grid>
-                  )}
-              </Grid>
-
-              {
-                (isAdmin && isDelivery && isCB && !isDirectToAdvisor) && (
-                  <Grid container={true} className={classes.paddingStripe}>
-                    <Grid item xs={12}>
-                      <Typography variant="h5" gutterBottom>
-                        Clé stripe public du restaurateur
-                      </Typography>
-                      <TextField
-                        name="customerStripeKey"
-                        placeholder="Clé stripe public du restaurateur"
-                        variant="outlined"
-                        fullWidth
-                        defaultValue={initialValues.customerStripeKey}
-                        error={!!errors.customerStripeKey}
-                        helperText={errors.customerStripeKey}
-                        onBlur={handleInputBlur}
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={12} className={classes.marginTop}>
-                      <Typography variant="h5" gutterBottom>
-                        Clé stripe privé du restaurateur
-                      </Typography>
-                      <TextField
-                        name="customerSectretStripeKey"
-                        placeholder="Clé stripe privé du restaurateur"
-                        variant="outlined"
-                        fullWidth
-                        defaultValue={initialValues.customerSectretStripeKey}
-                        error={!!errors.customerSectretStripeKey}
-                        helperText={errors.customerSectretStripeKey}
-                        onBlur={handleInputBlur}
-                        required
-                      />
-                    </Grid>
-                  </Grid>
-                )
-              }
-
-            </div>
-
-          )}
-        {/**
- * -------------------------------------------------------------------------------------
- */}
-
-        {(isDelivery && !deliveryFixed) && (<>
-
-          <Grid item xs={12}>
-            <Typography variant="h4" style={{ fontWeight: 'bold' }} gutterBottom>
-              Paramètres du livraison
-            </Typography>
-          </Grid>
-
-          {listParametreLivraison.map((listParametreLivraison: any) => {
-            return (<Grid container={true} >
-
-              <Grid item xs={12}>
-                <div
-                  className={classes.input}
-                >
-                  <div
-                    style={{
-                      width: '93%',
-                      display: 'inline-block',
-                    }}
-                  >
-
-                    <div
-                      style={{
-                        display: 'inline-block'
-                      }}
-                    >
-                      {values.livraison[listParametreLivraison.key] && values.livraison[listParametreLivraison.key].map((items: any, index: any) => {
-                        return <Chip
-                          icon={<EmailIcon />}
-                          label={items}
-                          key={items}
-                          onDelete={() => setLivraison(items, values.livraison?.[listParametreLivraison.key].splice(index, 1))}
-                          style={{
-                            margin: '0.5vh 0.5vh'
-                          }}
-                        />
-                      })}
-                    </div>
-
-                    <div
-                      style={{
-                        display: 'inline-block'
-                      }}
-                    >
-                      <input
-                        className={classes.inputForm}
-                        name={listParametreLivraison.key}
-                        placeholder={listParametreLivraison.placeholder}
-                        type={listParametreLivraison.type}
-                        value={livraisonValue[listParametreLivraison.key] || ""}
-                        onChange={handleChangeLiraison}
-                        required
-                      />
-                    </div>
-
-                  </div>
-
-                  <div
-                    style={{
-                      width: '5%',
-                      display: 'inline-block',
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      component="span"
-                      onClick={() => {
-                        handleAddArray(listParametreLivraison.key)
-                      }}>
-                      <AddCircleIcon />
-                    </Button>
-                  </div>
-
-                </div>
-
-                <br />
-
-              </Grid>
-
-            </Grid>)
-
-          })}
-
-          <Grid item xs={12}>
-            <Typography variant="h5" gutterBottom>
-              Distance maximun (Km)
-            </Typography>
-            <TextField
-              name="DistanceMax"
-              type="number"
-              placeholder="xxx km"
-              variant="outlined"
-              fullWidth
-              defaultValue={initialValues.DistanceMax}
-              error={!!errors.DistanceMax}
-              helperText={errors.DistanceMax}
-              onBlur={handleInputBlur}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="h5" gutterBottom>
-              Prix par kilomètre
-            </Typography>
-            <TextField
-              name="priceByMiles"
-              type="number"
-              placeholder="Prix par kilomètre "
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">€</InputAdornment>
-                ),
-              }}
-              variant="outlined"
-              fullWidth
-              defaultValue={initialValues.priceByMiles}
-              error={!!errors.priceByMiles}
-              helperText={errors.priceByMiles}
-              onBlur={handleInputBlur}
-            />
-          </Grid>
-
-
-        </>
+          </div>
         )}
 
-        {
-          (isDelivery && deliveryFixed) && (
-            <>
-              <Grid item xs={12}>
-                <Typography variant="h5" gutterBottom>
-                  Prix de livraison
-                </Typography>
-                <TextField
-                  name="deliveryPrice"
-                  type="number"
-                  placeholder="Prix de livraison "
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">€</InputAdornment>
-                    ),
-                  }}
-                  variant="outlined"
-                  fullWidth
-                  defaultValue={initialValues.deliveryPrice}
-                  error={!!errors.deliveryPrice}
-                  helperText={errors.deliveryPrice}
-                  onBlur={handleInputBlur}
+        {isDelivery && (
+          <div
+            style={{
+              border: "1px dashed #CDCDCD",
+              width: "100%",
+              margin: "1vh 0",
+              padding: "2vh",
+            }}
+          >
+            <Typography
+              variant="h6"
+              style={{ fontWeight: "bold" }}
+              gutterBottom
+            >
+              Paramètre de livraison
+            </Typography>
+
+            <Grid container={true} className={classes.padding}>
+              <Grid item={true} md={3} xs={12}>
+                <FormControlLabel
+                  control={
+                    <IOSSwitch
+                      defaultChecked={values.paiementCB}
+                      onChange={handleSwitchDelivery}
+                      name="paiementCB"
+                    />
+                  }
+                  label="Paiement par CB"
                 />
               </Grid>
-            </>
-          )}
+
+              <Grid item={true} md={3} xs={4}>
+                <FormControlLabel
+                  control={
+                    <IOSSwitch
+                      defaultChecked={values.discountDelivery}
+                      onChange={handleSwitchDelivery}
+                      name="discountDelivery"
+                    />
+                  }
+                  label="Remise livraison"
+                />
+              </Grid>
+
+              <Grid item={true} md={3} xs={4}>
+                <FormControlLabel
+                  control={
+                    <IOSSwitch
+                      defaultChecked={values.deliveryFixed}
+                      onChange={handleSwitchDelivery}
+                      name="deliveryFixed"
+                    />
+                  }
+                  label="Prix de livraison fixe"
+                />
+              </Grid>
+
+              <Grid item={true} md={3} xs={4}>
+                <FormControlLabel
+                  control={
+                    <IOSSwitch
+                      defaultChecked={values.paiementLivraison}
+                      onChange={handleSwitchChange}
+                      name="paiementLivraison"
+                    />
+                  }
+                  label="Paiement à la livraison"
+                />
+              </Grid>
+
+              {isAdmin && isCB && isDelivery && (
+                <Grid item={true} md={3} xs={4}>
+                  <FormControlLabel
+                    control={
+                      <IOSSwitch
+                        defaultChecked={values.cbDirectToAdvisor}
+                        onChange={handleSwitchDelivery}
+                        name="cbDirectToAdvisor"
+                      />
+                    }
+                    label="Paiement directement a MENU ADVISOR"
+                  />
+                </Grid>
+              )}
+            </Grid>
+
+            {isAdmin && isDelivery && isCB && !isDirectToAdvisor && (
+              <Grid container={true} className={classes.paddingStripe}>
+                <Grid item xs={12}>
+                  <Typography variant="h5" gutterBottom>
+                    Clé stripe public du restaurateur
+                  </Typography>
+                  <TextField
+                    name="customerStripeKey"
+                    placeholder="Clé stripe public du restaurateur"
+                    variant="outlined"
+                    fullWidth
+                    defaultValue={initialValues.customerStripeKey}
+                    error={!!errors.customerStripeKey}
+                    helperText={errors.customerStripeKey}
+                    onBlur={handleInputBlur}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.marginTop}>
+                  <Typography variant="h5" gutterBottom>
+                    Clé stripe privé du restaurateur
+                  </Typography>
+                  <TextField
+                    name="customerSectretStripeKey"
+                    placeholder="Clé stripe privé du restaurateur"
+                    variant="outlined"
+                    fullWidth
+                    defaultValue={initialValues.customerSectretStripeKey}
+                    error={!!errors.customerSectretStripeKey}
+                    helperText={errors.customerSectretStripeKey}
+                    onBlur={handleInputBlur}
+                    required
+                  />
+                </Grid>
+              </Grid>
+            )}
+          </div>
+        )}
+        {/**
+         * -------------------------------------------------------------------------------------
+         */}
+
+        {isDelivery && !deliveryFixed && (
+          <>
+            <Grid item xs={12}>
+              <Typography
+                variant="h4"
+                style={{ fontWeight: "bold" }}
+                gutterBottom
+              >
+                Paramètres du livraison
+              </Typography>
+            </Grid>
+
+            {listParametreLivraison.map((listParametreLivraison: any) => {
+              return (
+                <Grid container={true}>
+                  <Grid item xs={12}>
+                    <div className={classes.input}>
+                      <div
+                        style={{
+                          width: "93%",
+                          display: "inline-block",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "inline-block",
+                          }}
+                        >
+                          {values.livraison[listParametreLivraison.key] &&
+                            values.livraison[listParametreLivraison.key].map(
+                              (items: any, index: any) => {
+                                return (
+                                  <Chip
+                                    icon={<EmailIcon />}
+                                    label={items}
+                                    key={items}
+                                    onDelete={() =>
+                                      setLivraison(
+                                        items,
+                                        values.livraison?.[
+                                          listParametreLivraison.key
+                                        ].splice(index, 1)
+                                      )
+                                    }
+                                    style={{
+                                      margin: "0.5vh 0.5vh",
+                                    }}
+                                  />
+                                );
+                              }
+                            )}
+                        </div>
+
+                        <div
+                          style={{
+                            display: "inline-block",
+                          }}
+                        >
+                          <input
+                            className={classes.inputForm}
+                            name={listParametreLivraison.key}
+                            placeholder={listParametreLivraison.placeholder}
+                            type={listParametreLivraison.type}
+                            value={
+                              livraisonValue[listParametreLivraison.key] || ""
+                            }
+                            onChange={handleChangeLiraison}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          width: "5%",
+                          display: "inline-block",
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          component="span"
+                          onClick={() => {
+                            handleAddArray(listParametreLivraison.key);
+                          }}
+                        >
+                          <AddCircleIcon />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <br />
+                  </Grid>
+                </Grid>
+              );
+            })}
+
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Distance maximun (Km)
+              </Typography>
+              <TextField
+                name="DistanceMax"
+                type="number"
+                placeholder="xxx km"
+                variant="outlined"
+                fullWidth
+                defaultValue={initialValues.DistanceMax}
+                error={!!errors.DistanceMax}
+                helperText={errors.DistanceMax}
+                onBlur={handleInputBlur}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Prix par kilomètre
+              </Typography>
+              <TextField
+                name="priceByMiles"
+                type="number"
+                placeholder="Prix par kilomètre "
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">€</InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                fullWidth
+                defaultValue={initialValues.priceByMiles}
+                error={!!errors.priceByMiles}
+                helperText={errors.priceByMiles}
+                onBlur={handleInputBlur}
+              />
+            </Grid>
+          </>
+        )}
+
+        {isDelivery && deliveryFixed && (
+          <>
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Prix de livraison
+              </Typography>
+              <TextField
+                name="deliveryPrice"
+                type="number"
+                placeholder="Prix de livraison "
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">€</InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                fullWidth
+                defaultValue={initialValues.deliveryPrice}
+                error={!!errors.deliveryPrice}
+                helperText={errors.deliveryPrice}
+                onBlur={handleInputBlur}
+              />
+            </Grid>
+          </>
+        )}
 
         {isDelivery && (
           <Grid item xs={12}>
@@ -1530,9 +1547,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         )}
 
         {/**
- * -------------------------------------------------------------------------------------
-       */}
-
+         * -------------------------------------------------------------------------------------
+         */}
 
         <OptionRestaurant
           isDelivery={discountDelivery}
@@ -1550,16 +1566,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         />
 
         <Grid item container justify="flex-end" alignItems="center" xs={12}>
-
-          {modification && (<Button
-            variant="contained"
-            color="default"
-            disabled={saving}
-            size="large"
-            onClick={handleOpenExport}
-          >
-            Export
-          </Button>)}
+          {modification && (
+            <Button
+              variant="contained"
+              color="default"
+              disabled={saving}
+              size="large"
+              onClick={handleOpenExport}
+            >
+              Export
+            </Button>
+          )}
 
           <Box width={theme.spacing(2)} />
 
@@ -1580,7 +1597,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             type="submit"
           >
             {!saving ? (
-              'Enregistrer'
+              "Enregistrer"
             ) : (
               <CircularProgress color="inherit" size="25.45px" />
             )}

@@ -27,6 +27,7 @@ import {
 } from '../services/accompaniments';
 import EventEmitter from '../services/EventEmitter';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -157,7 +158,7 @@ const AccompanimentListPage: React.FC = () => {
 
   const showModification = useCallback((accompaniment: Accompaniment) => {
 
-    const { _id, name, price, isObligatory, priority, imageURL, restaurant } = accompaniment;
+    const { _id, name, price, isObligatory, priority, imageURL, restaurant,field,valueField } = accompaniment;
 
     modif.current = {
       _id,
@@ -166,9 +167,13 @@ const AccompanimentListPage: React.FC = () => {
       isObligatory,
       priority,
       imageURL,
-      restaurant: restaurant?._id
+      restaurant: restaurant?._id,
+      field,
+      valueField,
     };
+
     setOpenForm(true);
+  
   }, []);
 
   useEffect(() => {

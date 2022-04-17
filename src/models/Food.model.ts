@@ -3,6 +3,14 @@ import FoodAttribute from './FoodAttribute.model';
 import FoodType from './FoodType.model';
 import Restaurant from './Restaurant.model';
 
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
+
 interface Food {
   _id: string;
   name: string;
@@ -27,6 +35,8 @@ interface Food {
   imageNotContractual: boolean;
   allergene: string[];
   isAvailable?: boolean;
+  field: IFieldContent[] | [];
+  valueField: any;
 }
 
 export default Food;

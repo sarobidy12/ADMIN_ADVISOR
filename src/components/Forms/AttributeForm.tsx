@@ -15,6 +15,13 @@ import IOSSwitch from '../Common/IOSSwitch';
 import { useSnackbar } from 'notistack';
 import convertToBase64 from '../../services/convertToBase64';
 
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
 
 export type AttributeFormType = {
   _id?: string;
@@ -22,6 +29,8 @@ export type AttributeFormType = {
   isAllergen: boolean;
   image?: File;
   imageURL?: string;
+  field?: IFieldContent[] | [];
+  valueField?: any;
 };
 
 interface AttributeFormProps {
@@ -37,6 +46,8 @@ const AttributeForm: React.FC<AttributeFormProps> = ({
   initialValues = {
     name: '',
     isAllergen: false,
+    field:[],
+    valueField:{}
   },
   onSave,
   onCancel,

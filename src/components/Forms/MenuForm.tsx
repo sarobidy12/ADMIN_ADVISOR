@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,22 +13,30 @@ import {
   TextField,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
-import Restaurant from '../../models/Restaurant.model';
-import { getRestaurants } from '../../services/restaurant';
-import { Autocomplete } from '@material-ui/lab';
-import { getFoods, addFoodMenu } from '../../services/food';
-import Food from '../../models/Food.model';
-import { useAuth } from '../../providers/authentication';
-import InputMenu from '../../components/DND/ListMenu';
-import {
-  AddCircle as AddCircleIcon,
-} from '@material-ui/icons';
-import FormDialog from '../Common/FormDialog';
-import AddEditMenu from '../../components/Forms/AddEditMenu';
-import FoodForm from '../../components/Forms/FoodForm';
-import { useSnackbar } from 'notistack';
+} from "@material-ui/core";
+import useForm, { FormError, FormValidationHandler } from "../../hooks/useForm";
+import Restaurant from "../../models/Restaurant.model";
+import { getRestaurants } from "../../services/restaurant";
+import { Autocomplete } from "@material-ui/lab";
+import { getFoods, addFoodMenu } from "../../services/food";
+import Food from "../../models/Food.model";
+import { useAuth } from "../../providers/authentication";
+import InputMenu from "../../components/DND/ListMenu";
+import { AddCircle as AddCircleIcon } from "@material-ui/icons";
+import FormDialog from "../Common/FormDialog";
+import AddEditMenu from "../../components/Forms/AddEditMenu";
+import FoodForm from "../../components/Forms/FoodForm";
+import { useSnackbar } from "notistack";
+import FormFeild from "./FormField";
+
+
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
 
 export type MenuFormType = {
   _id?: string;
@@ -38,9 +46,16 @@ export type MenuFormType = {
   type: string;
   restaurant: string;
   foods: string[];
-  options: { title: string; maxOptions: string; items: any[], isObligatory?: boolean }[];
+  options: {
+    title: string;
+    maxOptions: string;
+    items: any[];
+    isObligatory?: boolean;
+  }[];
   price: string;
   prices: any;
+  field: IFieldContent[] | [];
+  valueField: any;
 };
 
 interface MenuFormProps {
@@ -52,14 +67,16 @@ interface MenuFormProps {
 
 const MenuForm: React.FC<MenuFormProps> = ({
   initialValues = {
-    name: '',
-    description: '',
-    type: '',
-    restaurant: '',
+    name: "",
+    description: "",
+    type: "",
+    restaurant: "",
     foods: [],
     options: [],
-    price: '0',
+    price: "0",
     prices: {},
+    field: [],
+    valueField: {},
   },
   saving,
   onSave,
@@ -76,18 +93,17 @@ const MenuForm: React.FC<MenuFormProps> = ({
   const [openAccompagnement, setOpenAccompagnement] = useState<boolean>(false);
   const [loadFood, setLoadFood] = useState(false);
 
-
   const validation: FormValidationHandler<MenuFormType> = (data) => {
     const errors: FormError<MenuFormType> = {};
 
-    if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
-    if (!data.type.length) errors.type = 'Ce champ ne doit pas être vide';
+    if (!data.name.length) errors.name = "Ce champ ne doit pas être vide";
+    if (!data.type.length) errors.type = "Ce champ ne doit pas être vide";
     if (!data.restaurant.length)
-      errors.restaurant = 'Ce champ ne doit pas être vide';
+      errors.restaurant = "Ce champ ne doit pas être vide";
     if (!data.options.length)
-      errors.foods = 'Vous devez sélectionner au moins un plat';
+      errors.foods = "Vous devez sélectionner au moins un plat";
     if (!data.description.length)
-      errors.description = 'Ce champ ne doit pas être vide';
+      errors.description = "Ce champ ne doit pas être vide";
 
     return errors;
   };
@@ -106,7 +122,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
       restaurant: restaurant ? restaurant._id : initialValues.restaurant,
     },
     false,
-    validation,
+    validation
   );
 
   const theme = useTheme();
@@ -117,17 +133,14 @@ const MenuForm: React.FC<MenuFormProps> = ({
   const [food, setFood] = useState<any>({});
   const [openFood, setOpenFood] = useState<boolean>(false);
 
-  const handleSelectResto = useCallback(
-    (resto: Restaurant) => {
-      if (resto) {
-        setSelectedResto(resto);
-        setDisableAll(false);
-      }
-    }, []
-  )
+  const handleSelectResto = useCallback((resto: Restaurant) => {
+    if (resto) {
+      setSelectedResto(resto);
+      setDisableAll(false);
+    }
+  }, []);
 
   useEffect(() => {
-
     if (values.restaurant) {
       setDisableAll(false);
     }
@@ -136,72 +149,66 @@ const MenuForm: React.FC<MenuFormProps> = ({
     getRestaurants()
       .then((data) => setRestaurantOptions(data))
       .finally(() => setLoadingRestaurants(false));
-
   }, [values, setDisableAll, setRestaurantOptions, setLoadingRestaurants]);
 
-  const filterArray = useCallback((a: any[], b: any[]) => {
+  const filterArray = useCallback(
+    (a: any[], b: any[]) => {
+      const arrayHasFilter: any[] = [];
+      const idExist: any[] = [];
 
-    const arrayHasFilter: any[] = [];
-    const idExist: any[] = [];
-
-    for (let i = 0; i < b.length; i++) {
-
-      if (b[i].length > 0) {
-
-        for (let t = 0; t < b[i].length; t++) {
-
-          if (!idExist.includes(b[i][t]._id)) {
-            arrayHasFilter.push(b[i][t]);
+      for (let i = 0; i < b.length; i++) {
+        if (b[i].length > 0) {
+          for (let t = 0; t < b[i].length; t++) {
+            if (!idExist.includes(b[i][t]._id)) {
+              arrayHasFilter.push(b[i][t]);
+            }
           }
+        }
+      }
 
+      const mapTest = a.map((items: any) => {
+        if (
+          arrayHasFilter.filter((item: any) => item._id === items._id).length >
+          0
+        ) {
+          return arrayHasFilter.find((item: any) => item._id === items._id);
         }
 
-      }
+        return items;
+      });
 
-    }
-
-    const mapTest = a.map((items: any) => {
-
-      if (arrayHasFilter.filter((item: any) => item._id === items._id).length > 0) {
-        return arrayHasFilter.find((item: any) => item._id === items._id);
-      }
-
-      return items;
-
-    });
-
-    setFoodOptions(mapTest);
-  }, [setFoodOptions])
+      setFoodOptions(mapTest);
+    },
+    [setFoodOptions]
+  );
 
   useEffect(() => {
-
     let filter = values.restaurant;
     if (isRestaurantAdmin && restaurant) {
-      filter = restaurant._id
+      filter = restaurant._id;
     } else if (!isRestaurantAdmin && selectedResto) {
-      filter = selectedResto?._id
+      filter = selectedResto?._id;
     }
 
     getFoods({
-      lang: 'fr',
-      restaurant: filter
-    })
-      .then((data) => {
-        filterArray(data as any[], values.options.map((item: any) => item.items) as any[]);
-      })
+      lang: "fr",
+      restaurant: filter,
+    }).then((data) => {
+      filterArray(
+        data as any[],
+        values.options.map((item: any) => item.items) as any[]
+      );
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
   }, [values, selectedResto, filterArray, isRestaurantAdmin, restaurant]);
 
   const listPrice = (a: any[], b: any[]) => {
-
     const array = [];
 
     if (b.length > 0) {
-
       for (let i = 0; i < b.length; i++) {
-        array.push(a.filter((items: any) => items._id === b[i])[0])
+        array.push(a.filter((items: any) => items._id === b[i])[0]);
       }
 
       const priority = array;
@@ -209,29 +216,25 @@ const MenuForm: React.FC<MenuFormProps> = ({
       if (priority.filter((item: any) => item).length) {
         return priority;
       }
-
     }
 
     return [];
-
-  }
+  };
 
   const setAddEdit = (value: any, index: number) => {
-
     setInitValue(value);
     setIndex(index);
-    setOpenAccompagnement(true)
-  }
+    setOpenAccompagnement(true);
+  };
 
   const addNewAccompaniment = useCallback(() => {
-
     const { options } = values;
 
     options.push({
-      title: '',
-      maxOptions: '1',
+      title: "",
+      maxOptions: "1",
       items: [],
-      isObligatory: false
+      isObligatory: false,
     });
 
     setValues((v) => ({ ...v, options }));
@@ -240,56 +243,42 @@ const MenuForm: React.FC<MenuFormProps> = ({
   const saveData = async (data: any) => {
     setLoadFood(true);
     try {
-
       const id = data._id;
 
       const response: any = await addFoodMenu(data);
 
       if (response) {
-
         const foodMap = foodOptions.map((item: any) => {
-
           if (item._id === id) {
-
             return {
               ...response.data,
               name: response.data.name.fr,
-              _id: id
+              _id: id,
             };
-
           }
 
           return item;
-
         });
 
         foodMap.length > 0 && setFoodOptions(foodMap);
 
-        enqueueSnackbar('Plat modifié avec succès', {
-          variant: 'success',
+        enqueueSnackbar("Plat modifié avec succès", {
+          variant: "success",
         });
-
       }
-
-
     } catch (err: any) {
-
-      enqueueSnackbar('Erreur lors de la modification', {
-        variant: 'error',
+      enqueueSnackbar("Erreur lors de la modification", {
+        variant: "error",
       });
-
     } finally {
       setFood({});
-      setOpenFood(false)
+      setOpenFood(false);
       //  setOpenAccompagnement(true)
       setLoadFood(false);
-
     }
-
-  }
+  };
 
   const UpdateFood = (data: any) => {
-
     setFood({
       ...data,
       restaurant: data.restaurant._id,
@@ -300,26 +289,23 @@ const MenuForm: React.FC<MenuFormProps> = ({
           title: item.title,
           maxOptions: String(item.maxOptions),
           items: item.items.map((v: any) => v),
-          isObligatory: item.isObligatory
-        }
+          isObligatory: item.isObligatory,
+        };
       }),
       type: data.type._id,
       price: String((data.price.amount || 0) / 100),
     });
 
-    setOpenFood(true)
+    setOpenFood(true);
     //    setOpenAccompagnement(false)
-
-  }
+  };
 
   useEffect(() => {
-    
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
-    if(object){
+    if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
-
   }, [setValues, sessionStorage.getItem("filterSelected")]);
 
   return (
@@ -329,10 +315,9 @@ const MenuForm: React.FC<MenuFormProps> = ({
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          (e.currentTarget.querySelector(
-            '[type=submit]',
-          ) as HTMLInputElement).focus();
-
+          (
+            e.currentTarget.querySelector("[type=submit]") as HTMLInputElement
+          ).focus();
 
           if (validate()) onSave?.(values);
         }}
@@ -373,7 +358,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
               <FormHelperText>{errors.type}</FormHelperText>
             </FormControl>
           </Grid>
-          {values.type === 'fixed_price' && (
+          {values.type === "fixed_price" && (
             <Grid item xs={12}>
               <Typography variant="h5" gutterBottom>
                 Prix
@@ -397,11 +382,10 @@ const MenuForm: React.FC<MenuFormProps> = ({
           )}
           {!isRestaurantAdmin && (
             <Grid item xs={12}>
-
               <Typography variant="h5" gutterBottom>
                 Restaurant
               </Typography>
-              
+
               <Autocomplete
                 loadingText="Chargement"
                 noOptionsText="Aucun restaurant disponible"
@@ -410,18 +394,17 @@ const MenuForm: React.FC<MenuFormProps> = ({
                 getOptionLabel={(option) => option.name_resto_code}
                 value={
                   restaurantOptions.find(
-                    ({ _id }) => values.restaurant === _id,
+                    ({ _id }) => values.restaurant === _id
                   ) || null
                 }
                 onChange={(_, v) => {
                   if (v) {
                     setValues((old) => ({ ...old, restaurant: v._id }));
-                    handleSelectResto(v)
-                  }
-                  else {
-                    setValues((old) => ({ ...old, restaurant: '' }));
-                    setSelectedResto(null)
-                    setDisableAll(true)
+                    handleSelectResto(v);
+                  } else {
+                    setValues((old) => ({ ...old, restaurant: "" }));
+                    setSelectedResto(null);
+                    setDisableAll(true);
                   }
                 }}
                 renderInput={(params) => (
@@ -434,19 +417,17 @@ const MenuForm: React.FC<MenuFormProps> = ({
                   />
                 )}
               />
-
             </Grid>
           )}
 
           <Grid item xs={12}>
-
             <Grid
               container
               justify="flex-end"
               alignItems="center"
               style={{
-                position: 'relative',
-                margin: '1vh 0'
+                position: "relative",
+                margin: "1vh 0",
               }}
             >
               <Button
@@ -460,7 +441,6 @@ const MenuForm: React.FC<MenuFormProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-              
               <InputMenu
                 updateList={(value: any) => {
                   setOption(value);
@@ -476,76 +456,74 @@ const MenuForm: React.FC<MenuFormProps> = ({
                 selectedResto={selectedResto}
                 disableAll={disableAll}
               />
-
             </Grid>
-
           </Grid>
 
-          {(values.type === 'fixed_price' && listPrice(foodOptions, values.foods).length > 0) && (
-
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                gutterBottom
-                style={{ textDecoration: 'underline', fontWeight: 'bold' }}
-              >
-                Prix additionnels
-              </Typography>
-              <Container
-                maxWidth="sm"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr',
-                  columnGap: theme.spacing(2),
-                  padding: theme.spacing(2, 0),
-                }}
-              >
-                {listPrice(foodOptions, values.foods).map((food, i) => (
-                  <React.Fragment key={i}>
-                    <Typography
-                      variant="h5"
-                      style={{ display: 'flex', alignItems: 'center' }}
-                    >
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: 'grey',
-                          marginRight: theme.spacing(1),
+          {values.type === "fixed_price" &&
+            listPrice(foodOptions, values.foods).length > 0 && (
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  style={{ textDecoration: "underline", fontWeight: "bold" }}
+                >
+                  Prix additionnels
+                </Typography>
+                <Container
+                  maxWidth="sm"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "auto 1fr",
+                    columnGap: theme.spacing(2),
+                    padding: theme.spacing(2, 0),
+                  }}
+                >
+                  {listPrice(foodOptions, values.foods).map((food, i) => (
+                    <React.Fragment key={i}>
+                      <Typography
+                        variant="h5"
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 4,
+                            backgroundColor: "grey",
+                            marginRight: theme.spacing(1),
+                          }}
+                        ></span>
+                        {food.name}
+                      </Typography>
+                      <TextField
+                        type="number"
+                        fullWidth
+                        variant="outlined"
+                        placeholder="Prix"
+                        name={food._id}
+                        defaultValue={values.prices[food._id]}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">€</InputAdornment>
+                          ),
                         }}
-                      ></span>
-                      {food.name}
-                    </Typography>
-                    <TextField
-                      type="number"
-                      fullWidth
-                      variant="outlined"
-                      placeholder="Prix"
-                      name={food._id}
-                      defaultValue={values.prices[food._id]}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">€</InputAdornment>
-                        ),
-                      }}
-                      onChange={({ target: { value, name } }) => {
-                        setValues((old) => {
-                          return {
-                            ...old,
-                            prices: {
-                              ...old.prices,
-                              [name]: value
-                            }
-                          }
-                        })
-                      }}
-                    />
-                  </React.Fragment>
-                ))}
-              </Container>
-            </Grid>
-          )}
+                        onChange={({ target: { value, name } }) => {
+                          setValues((old) => {
+                            return {
+                              ...old,
+                              prices: {
+                                ...old.prices,
+                                [name]: value,
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </React.Fragment>
+                  ))}
+                </Container>
+              </Grid>
+            )}
 
           <Grid item xs={12}>
             <Typography variant="h5" gutterBottom>
@@ -564,6 +542,16 @@ const MenuForm: React.FC<MenuFormProps> = ({
               helperText={errors.description}
             />
           </Grid>
+
+          <Grid item xs={12}>
+          <FormFeild
+            listForm={[...initialValues.field] as any}
+            setValue={setValues}
+            valueAll={values}
+            errors={errors}
+          />
+          </Grid>
+
           <Grid item container justify="flex-end" alignItems="center" xs={12}>
             <Button
               variant="contained"
@@ -582,7 +570,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
               type="submit"
             >
               {!saving ? (
-                'Enregistrer'
+                "Enregistrer"
               ) : (
                 <CircularProgress color="inherit" size="25.45px" />
               )}
@@ -596,11 +584,11 @@ const MenuForm: React.FC<MenuFormProps> = ({
         open={openAccompagnement}
         fullScreen={false}
         onClose={() => {
-          setOpenAccompagnement(false)
+          setOpenAccompagnement(false);
         }}
       >
         <AddEditMenu
-          isPriceFix={values.type === 'fixed_price' || false}
+          isPriceFix={values.type === "fixed_price" || false}
           initialValues={initValue}
           type={initialValues.type}
           listMenu={foodOptions}
@@ -615,11 +603,11 @@ const MenuForm: React.FC<MenuFormProps> = ({
       </FormDialog>
 
       <FormDialog
-        title='Modifier un plat'
+        title="Modifier un plat"
         open={openFood}
         onClose={() => {
           setFood({});
-          setOpenFood(false)
+          setOpenFood(false);
           //   setOpenAccompagnement(true)
         }}
       >
@@ -630,7 +618,7 @@ const MenuForm: React.FC<MenuFormProps> = ({
           onSave={saveData}
           onCancel={() => {
             setFood({});
-            setOpenFood(false)
+            setOpenFood(false);
             //      setOpenAccompagnement(true)
           }}
         />

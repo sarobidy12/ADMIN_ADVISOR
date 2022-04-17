@@ -15,6 +15,8 @@ import { getRestaurants } from '../../services/restaurant';
 import { useSnackbar } from 'notistack';
 import { useAuth } from '../../providers/authentication';
 import { Autocomplete } from '@material-ui/lab';
+import FormFeild from "./FormField";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,11 +24,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
+
 export type FoodTypeFormType = {
   _id?: string;
   priority?: number;
   name: string;
   restaurant?: Restaurant;
+  field?: IFieldContent[] | [];
+  valueField?: any;
 };
 
 interface FoodTypeFormProps {
@@ -41,6 +54,8 @@ const FoodTypeForm: React.FC<FoodTypeFormProps> = ({
   initialValues = {
     name: '',
     restaurant: undefined,
+    field: [],
+    valueField: {},
   },
   onSave,
   onCancel,
@@ -157,10 +172,10 @@ const FoodTypeForm: React.FC<FoodTypeFormProps> = ({
             value={restoOptions.find((item: any) => item._id === values.restaurant) || null}
             onChange={(_, v) => {
               if (v) {
-                setValues((old) => ({ ...old, restaurant: v._id }));
+                setValues((old) => ({ ...old, restaurant: v._id } as any));
               }
               else {
-                setValues((old) => ({ ...old, restaurant: '' }));
+                setValues((old) => ({ ...old, restaurant: '' } as any));
               }
             }}
             renderInput={(params: any) => (
@@ -175,6 +190,16 @@ const FoodTypeForm: React.FC<FoodTypeFormProps> = ({
           />
 
         </Grid>)}
+
+        <Grid item xs={12}>
+          <FormFeild
+            listForm={(values.field ? [...values.field] : []) as any}
+            setValue={setValues}
+            valueAll={values}
+            errors={errors}
+          />
+        </Grid>
+
         <Grid item container justify="flex-end" alignItems="center" xs={12}>
           <Button
             variant="contained"

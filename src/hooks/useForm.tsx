@@ -97,6 +97,16 @@ function useForm<T extends { _id?: string }>(
 
   }
 
+  const handleChangeField = (data:any) => {
+
+    setValues({
+      ...values,
+      valueField: data,
+    });
+
+  }
+
+
   const addnewLivraison = (value: any) => {
     setValues({
       ...values,
@@ -124,6 +134,7 @@ function useForm<T extends { _id?: string }>(
     setOption,
     setFoodsId,
     setLivraison,
+    handleChangeField,
     addnewLivraison,
     phoneNumberChange
   };

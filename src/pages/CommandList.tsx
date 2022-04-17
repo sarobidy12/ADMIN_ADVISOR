@@ -129,13 +129,14 @@ const CommandList: React.FC = () => {
     setLoading(true);
     setRecords([]);
 
-    console.log("restaurant?._id",restaurant);
-
     try {
       
       await dispatch(getAllCommands(isRestaurantAdmin ? restaurant?._id || "" : undefined));
 
     } catch (e) {
+
+
+      console.log("tes",e);
       
       enqueueSnackbar("Erreur lors du chargement...", {
         variant: "error",
@@ -227,6 +228,9 @@ const CommandList: React.FC = () => {
         title="Commandes"
         subTitle="Liste de tous commandes"
       />
+      
+      {console.log("records",records)}
+
       <Paper className={classes.root}>
         <TableContainer
           headCells={mdUp ? headCells : headCellsMobil}

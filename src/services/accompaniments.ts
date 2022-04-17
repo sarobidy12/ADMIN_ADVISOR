@@ -25,8 +25,10 @@ const getFormData: (data: Partial<AccompanimentFormType>) => FormData = (
     );
   data.imageURL && formData.append('imageURL', data.imageURL);
   data.priority && formData.append('priority', JSON.stringify(data.priority));
+  data.valueField && formData.append('valueField', JSON.stringify(data.valueField));
 
   return formData;
+
 };
 
 export const addAccompaniment: (

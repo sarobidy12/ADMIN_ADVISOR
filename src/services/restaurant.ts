@@ -176,6 +176,9 @@ const getFormData: (data: Partial<RestaurantFormType>) => FormData = (data) => {
     );
   data.priceByMiles && formData.append('priceByMiles', data.priceByMiles);
   data.phoneNumber && formData.append('phoneNumber', data.phoneNumber);
+
+  data.valueField && formData.append('valueField',  JSON.stringify(data.valueField));
+  
   data.fixedLinePhoneNumber &&
     formData.append('fixedLinePhoneNumber', data.fixedLinePhoneNumber);
   data.admin && formData.append('admin', data.admin);

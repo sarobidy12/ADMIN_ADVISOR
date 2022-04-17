@@ -41,8 +41,17 @@ import { useSnackbar } from "notistack";
 import FormDialog from "../Common/FormDialog";
 import DnDList from "../../components/DND/List";
 import AddEditAccompagnement from "../../components/Forms/AddEditAccompagnement";
-import convertToBase64 from '../../services/convertToBase64';
+import convertToBase64 from "../../services/convertToBase64";
+import FormFeild from "./FormField";
 
+
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
 
 export type FoodFormType = {
   _id?: string;
@@ -65,6 +74,8 @@ export type FoodFormType = {
   imageURL?: string;
   allergene: any[];
   isAvailable?: boolean;
+  field: IFieldContent[] | [];
+  valueField: any;
 };
 
 const useStyles = makeStyles(() => ({
@@ -99,6 +110,8 @@ const FoodForm: React.FC<FoodFormProps> = ({
     imageNotContractual: false,
     allergene: [],
     isAvailable: true,
+    field: [],
+    valueField: {},
   },
   saving,
   onSave,
@@ -328,23 +341,17 @@ const FoodForm: React.FC<FoodFormProps> = ({
     if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
-
   }, [setValues, sessionStorage.getItem("filterSelected")]);
 
-
   const uploadImage = (name: string) => async (files: any) => {
-
     const file = files[0];
 
     if (file) {
-
       const base64 = await convertToBase64(file);
 
-      setValues((v) => ({ ...v, [name]: base64 }))
-
+      setValues((v) => ({ ...v, [name]: base64 }));
     }
-
-  }
+  };
 
   return (
     <div>
@@ -649,6 +656,7 @@ const FoodForm: React.FC<FoodFormProps> = ({
                     </Button>
                   </Grid>
                 </Grid>
+
                 {!!values.options.length && (
                   <>
                     <Box height={theme.spacing(2)} />
@@ -664,8 +672,7 @@ const FoodForm: React.FC<FoodFormProps> = ({
                         setAddEdit={setAddEdit}
                         setValues={setValues}
                         values={values}
-                        accompanimentOptions={accompanimentOptions.filter(
-                          (item: Accompaniment) =>
+                        accompanimentOptions={accompanimentOptions.filter((item: Accompaniment) =>
                             item.restaurant?._id === values.restaurant
                         )}
                         setUpdatePrice={setUpdatePrice}
@@ -710,6 +717,15 @@ const FoodForm: React.FC<FoodFormProps> = ({
               onBlur={handleInputBlur}
             />
           </Grid>
+          <Grid item xs={12}>
+            <FormFeild
+            listForm={[...initialValues.field] as any}
+            setValue={setValues}
+            valueAll={values}
+            errors={errors}
+          />
+          </Grid>
+
           <Grid item container justify="flex-end" alignItems="center" xs={12}>
             <Button
               variant="contained"

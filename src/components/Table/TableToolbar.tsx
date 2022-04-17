@@ -730,21 +730,24 @@ function TableToolbar<T>(props: TableToolbarProps<T>) {
                         ) || null
                       }
                       onChange={(e: any, value: any) => {
+                        if (value) {
 
-                        onFilterValuesChange?.(id as string, {
-                          restaurant: (value.value || "") as string,
-                        });
+                          onFilterValuesChange?.(id as string, {
+                            restaurant: (value.value || "") as string,
+                          });
 
-                        sessionStorage.setItem(
-                          "filterSelected",
-                          JSON.stringify({
-                            restaurant: value.id,
-                          })
-                        );
+                          sessionStorage.setItem(
+                            "filterSelected",
+                            JSON.stringify({
+                              restaurant: value.id,
+                            })
+                          );
 
-                        setRestaurantSelected(value.value);
+                          setRestaurantSelected(value.value);
 
-                        setActiveType(true);
+                          setActiveType(true);
+                        }
+
                       }}
                       renderInput={(params) => (
                         <TextField

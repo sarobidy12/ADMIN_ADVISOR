@@ -653,6 +653,7 @@ const CommandDetailsDialog: React.FC<CommandDetailsDialogProps> = ({
                               marginBottom: theme.spacing(2),
                             }}
                           >
+
                             {foods.map(
                               ({
                                 options,

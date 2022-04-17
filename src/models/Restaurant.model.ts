@@ -33,6 +33,13 @@ interface discount {
   codeDiscount: any[];
 }
 
+export interface IFieldContent {
+  name: string;
+  label:string
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+}
 
 interface Restaurant {
   _id: string;
@@ -89,6 +96,8 @@ interface Restaurant {
   hasCodePromo: boolean;
   discountAEmporter: boolean;
   discountDelivery: boolean;
+  field: IFieldContent[] | [];
+  valueField: any;
 }
 
 export default Restaurant;

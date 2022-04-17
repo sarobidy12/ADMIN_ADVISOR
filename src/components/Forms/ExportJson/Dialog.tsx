@@ -41,7 +41,12 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
     const classes = useStyles();
 
     const [value, setValue] = useState<any>({
-        Restaurant: true
+        Restaurants: true,
+        Plat: true,
+        Accompagnement: true,
+        Menu: true,
+        Type: true,
+        Commande: true,
     });
 
     const [isLoading, setisLoading] = useState(false);
@@ -63,6 +68,9 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
         },
         {
             "label": "Type",
+        },
+        {
+            "label": "Commandes",
         }
     ];
 
@@ -184,7 +192,7 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                                                 inputProps={{ 'aria-labelledby': item.label }}
                                             />
                                         </ListItemIcon>
-                                        <ListItemText id={item.label} primary={item.label} />
+                                        <ListItemText id={item.label} primary={item.label === "Restaurants" ? "Restaurant" : item.label} />
                                     </ListItem>
                                 )}
                             </List>
@@ -232,7 +240,7 @@ const DialogExportJson: FC<IDialogJson> = ({ open, setOpen, idRetaurant, name })
                                     >
                                         <Grid item={true} xs={12}>
                                             <label>
-                                                {item.label}
+                                                {item.label === "Restaurants" ? "Restaurant" : item.label}
                                             </label>
                                             <br />
                                             <br />

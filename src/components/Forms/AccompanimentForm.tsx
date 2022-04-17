@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,16 +8,25 @@ import {
   TextField,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import useForm, { FormError, FormValidationHandler } from '../../hooks/useForm';
-import { DropzoneArea } from 'material-ui-dropzone';
-import { useSnackbar } from 'notistack';
-import Restaurant from '../../models/Restaurant.model';
-import { useAuth } from '../../providers/authentication';
-import { getRestaurants } from '../../services/restaurant';
-import { Autocomplete } from '@material-ui/lab';
-import convertToBase64 from '../../services/convertToBase64';
+} from "@material-ui/core";
+import useForm, { FormError, FormValidationHandler } from "../../hooks/useForm";
+import { DropzoneArea } from "material-ui-dropzone";
+import { useSnackbar } from "notistack";
+import Restaurant from "../../models/Restaurant.model";
+import { useAuth } from "../../providers/authentication";
+import { getRestaurants } from "../../services/restaurant";
+import { Autocomplete } from "@material-ui/lab";
+import convertToBase64 from "../../services/convertToBase64";
+import FormFeild from "./FormField";
 
+
+interface IFieldContent {
+  name: string;
+  type: string;
+  addField: boolean;
+  Obligatoire: boolean;
+  label: string;
+}
 
 export type AccompanimentFormType = {
   _id?: string;
@@ -29,11 +38,13 @@ export type AccompanimentFormType = {
   priority?: number;
   preventDefault?: any;
   restaurant?: any;
+  field: IFieldContent[] | [];
+  valueField: any;
 };
 
 const useStyles = makeStyles(() => ({
   dropzone: {
-    height: '100%',
+    height: "100%",
   },
 }));
 
@@ -49,35 +60,33 @@ interface AccompanimentFormProps {
 const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
   modification,
   initialValues = {
-    name: '',
+    name: "",
     restaurant: {},
+      field: [],
+  valueField: {},
   },
   onSave,
   onCancel,
   saving,
-  isUpdate
+  isUpdate,
 }) => {
   const validation = useCallback<FormValidationHandler<AccompanimentFormType>>(
     (data) => {
       const errors: FormError<AccompanimentFormType> = {};
 
-      if (!data.name.length) errors.name = 'Ce champ ne doit pas être vide';
-      if (!data.restaurant) errors.restaurant = 'Ce champ ne doit pas être vide';
+      if (!data.name.length) errors.name = "Ce champ ne doit pas être vide";
+      if (!data.restaurant)
+        errors.restaurant = "Ce champ ne doit pas être vide";
       // if (!modification && !data.image)
       //   errors.image = 'Ce champ ne doit pas être vide';
 
       return errors;
     },
-    [modification],
+    [modification]
   );
 
-  const {
-    values,
-    setValues,
-    validate,
-    errors,
-    handleInputBlur,
-  } = useForm<AccompanimentFormType>(initialValues, false, validation);
+  const { values, setValues, validate, errors, handleInputBlur } =
+    useForm<AccompanimentFormType>(initialValues, false, validation);
 
   const classes = useStyles();
   const theme = useTheme();
@@ -103,38 +112,34 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
     }
     setLoadingRestaurants(true);
     getRestaurants()
-      .then(data => {
-        setRestoOptions(data || [])
+      .then((data) => {
+        setRestoOptions(data || []);
         setLoadingRestaurants(false);
       })
-      .catch(e => {
-        enqueueSnackbar('Erreur lors du chargement des restos', { variant: 'error' })
-      })
-  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues])
+      .catch((e) => {
+        enqueueSnackbar("Erreur lors du chargement des restos", {
+          variant: "error",
+        });
+      });
+  }, [enqueueSnackbar, isRestaurantAdmin, restaurant, setValues]);
 
   useEffect(() => {
-
     const object = JSON.parse(sessionStorage.getItem("filterSelected") as any);
 
     if (object) {
       setValues((old) => ({ ...old, restaurant: object.restaurant || "" }));
     }
-
   }, [setValues, sessionStorage.getItem("filterSelected")]);
 
   const uploadImage = (name: string) => async (files: any) => {
-
     const file = files[0];
 
     if (file) {
-
       const base64 = await convertToBase64(file);
 
-      setValues((v) => ({ ...v, [name]: base64 }))
-
+      setValues((v) => ({ ...v, [name]: base64 }));
     }
-
-  }
+  };
 
   return (
     <form
@@ -144,9 +149,9 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        (e.currentTarget.querySelector(
-          '[type=submit]',
-        ) as HTMLButtonElement).focus();
+        (
+          e.currentTarget.querySelector("[type=submit]") as HTMLButtonElement
+        ).focus();
         if (validate()) onSave?.(values);
       }}
     >
@@ -195,13 +200,16 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
                 loading={loadingRestaurants}
                 options={restoOptions}
                 getOptionLabel={(option) => option.name_resto_code}
-                value={restoOptions.find((item: any) => item._id === values.restaurant) || null}
+                value={
+                  restoOptions.find(
+                    (item: any) => item._id === values.restaurant
+                  ) || null
+                }
                 onChange={(_, v) => {
                   if (v) {
                     setValues((old) => ({ ...old, restaurant: v._id }));
-                  }
-                  else {
-                    setValues((old) => ({ ...old, restaurant: '' }));
+                  } else {
+                    setValues((old) => ({ ...old, restaurant: "" }));
                   }
                 }}
                 renderInput={(params: any) => (
@@ -230,15 +238,25 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
               label="Obligatoire"
             />
           </Grid> */}
+
+          <Grid item xs={12}>
+          <FormFeild
+            listForm={[...initialValues.field] as any}
+            setValue={setValues}
+            valueAll={values}
+            errors={errors}
+          />
+          </Grid>
+          
         </Grid>
         <Grid
           item
           xs={12}
           md={6}
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
           }}
         >
           <Typography variant="h5" gutterBottom>
@@ -246,17 +264,17 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
           </Typography>
           <DropzoneArea
             inputProps={{
-              name: 'image',
+              name: "image",
             }}
             previewGridProps={{
-              container: { spacing: 2, justify: 'center' },
+              container: { spacing: 2, justify: "center" },
             }}
             dropzoneText="Image"
-            acceptedFiles={['image/*']}
+            acceptedFiles={["image/*"]}
             filesLimit={1}
             classes={{ root: classes.dropzone }}
-            getFileAddedMessage={() => 'Fichier ajouté'}
-            getFileRemovedMessage={() => 'Fichier enlevé'}
+            getFileAddedMessage={() => "Fichier ajouté"}
+            getFileRemovedMessage={() => "Fichier enlevé"}
             onChange={uploadImage("imageURL")}
             initialFiles={[initialValues.imageURL ?? ""]}
           />
@@ -275,7 +293,7 @@ const AccompanimentForm: React.FC<AccompanimentFormProps> = ({
           <Box width={10} />
           <Button variant="contained" color="primary" type="submit">
             {!saving ? (
-              'Enregistrer'
+              "Enregistrer"
             ) : (
               <CircularProgress color="inherit" size="25.45px" />
             )}

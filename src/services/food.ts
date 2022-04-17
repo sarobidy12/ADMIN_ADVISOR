@@ -132,6 +132,8 @@ const getFormData: (data: Partial<FoodFormType>) => FormData = (data) => {
       ),
     );
   data.imageURL && formData.append('imageURL', data.imageURL);
+  data.valueField && formData.append('valueField',  JSON.stringify(data.valueField));
+
   typeof data.statut !== 'undefined' &&
     formData.append('statut', JSON.stringify(data.statut));
   typeof data.imageNotContractual !== 'undefined' &&

@@ -152,7 +152,8 @@ const MenuListPage: React.FC = () => {
       foods,
       type,
       price: { amount: price },
-      options
+      options,
+      field,valueField 
     } = menu;
 
     let prices: any = {};
@@ -177,6 +178,7 @@ const MenuListPage: React.FC = () => {
       })) : [],
       restaurant: restaurant?._id || '',
       type,
+      field,valueField 
     };
     setOpenForm(true);
   }, []);
